@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <line x1="13.514" y1="23.5" x2="10.514" y2="23.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+    <line x1="14.514" y1="21.5" x2="9.514" y2="21.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+    <line x1="12.014" y1="0.5" x2="12.014" y2="3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+    <line x1="3.528" y1="4.015" x2="5.65" y2="6.136" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+    <line x1="20.499" y1="4.015" x2="18.378" y2="6.136" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+    <line x1="0.514" y1="12.5" x2="3.514" y2="12.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+    <line x1="23.514" y1="12.5" x2="20.514" y2="12.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></line>
+    <path d="M18.014,12.5a6,6,0,1,0-9.429,4.917,1,1,0,0,1,.429.821V19a.5.5,0,0,0,.5.5h5a.5.5,0,0,0,.5-.5v-.763a1,1,0,0,1,.429-.821A5.98,5.98,0,0,0,18.014,12.5Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>

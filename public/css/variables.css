@@ -1,0 +1,33 @@
+:root {
+    --color-theme-color1: rgba(70, 71, 83, 1);
+    --color-theme-color1-alpha: rgba(70, 71, 83, 0.8);
+    --color-theme-color1-accent: rgba(62, 63, 74, 1);
+    --color-theme-color1-alpha0: rgba(70, 71, 83, 0);
+    --color-theme-color2: rgba(0, 255, 203, 1);
+    --color-theme-color2-alpha: rgba(0, 255, 203, 0.5);
+    --color-theme-color2-alpha0: rgba(0, 255, 203, 0);
+    --color-theme-color3: rgba(91, 110, 120, 1);
+    --color-theme-color3-alpha: rgba(91, 110, 120, 0.5);
+
+    --color-black-alpha40: rgba(0, 0, 0, 0.4);
+    --color-black: rgba(0, 0, 0, 0.8);
+    --color-black-alpha: rgba(0, 0, 0, 0.2);
+    --color-white: rgba(255, 255, 255, 0.9);
+    --color-white-dim: rgba(255, 255, 255, 0.5);
+    --tap-highlight: rgba(0, 0, 0, 0);
+    
+    --color-top: #0f0;
+    --color-intermediate:  #00f;
+    --color-start: #f00;
+
+    --padding-base: 20px;
+    --padding-base-half: 10px;
+    --padding-base-wide: 20px 40px;
+
+    --font-size-small: 0.65rem; /* 10px */
+    --font-size-base: 0.81rem; /* 13px */
+    --font-size-bodytext: 1.234rem; /* 20px - 1rem = 16px */
+    --font-size-heading-1: 2rem; /* 32px */
+    --font-size-heading-2: 3rem; /* 48px */
+    
+}

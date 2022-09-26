@@ -1,0 +1,25 @@
+.status-ticker {
+  background: var(--color-theme-color1);
+  height: 50px;
+  display: block;
+  justify-content: space-between;
+  color: var(--color-white);
+  position: relative;
+  overflow: hidden;
+  grid-area: header;
+  z-index: 2;
+  cursor: pointer;
+  position: absolute;
+  top: calc(-50px - var(--padding-base-half));
+  left: 0;
+  right: 0;
+  margin: var(--padding-base-half);
+  border-radius: 4px;
+  transition: all 300ms ease-in-out;
+  padding: var(--padding-base);
+  text-transform: uppercase;
+}
+
+.status-ticker.active {
+  top: 0px;
+}

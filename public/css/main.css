@@ -1,0 +1,110 @@
+@import url('variables.css');
+@import url('fonts.css');
+
+@import url('board.css');
+@import url('bottom_navi.css');
+
+@import url('button.css');
+@import url('forms.css');
+@import url('modal.css');
+@import url('ticker.css');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+BODY, HTML {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: 'Roboto';
+    background: #000;
+    color: #000;
+    font-size: var(--font-size-base);
+    -webkit-text-size-adjust: none;
+      overflow: hidden;
+}
+
+h2 {
+    color: var(--color-white);
+    font-family: 'IBM Plex Mono';
+    font-size: var(--font-size-heading-1);
+    margin: 0;
+    font-weight: 100;
+    line-height: 32px;
+  }
+  
+h3,
+label {
+    color: inherit;
+    font-family: 'IBM Plex Mono';
+    font-size: 12px;
+    text-transform: uppercase;
+    margin: 0;
+    font-weight: 300;
+  }
+  
+h4 {
+    color: var(--color-white);
+    font-family: 'IBM Plex Mono';
+    font-size: 16px;
+    margin: 0 0 10px;
+    font-weight: 100;
+}
+
+.app {
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+    touch-action: none;
+  }
+
+  
+.page-content {
+    height: 100%;
+    color: var(--color-white);
+    background: linear-gradient(to bottom, #000 0%, var(--color-theme-color1-accent) env(safe-area-inset-top, 0), var(--color-theme-color1-accent) 100%);
+    flex: 1;
+    transition: filter 300ms ease-in-out;
+    overflow: hidden;
+    touch-action: none;
+    padding-top: env(safe-area-inset-top, 0);
+    background: #eee;
+}
+
+
+.controls {
+    margin: 10px 0;
+    display: flex;
+    justify-content:space-between;    
+}
+
+.page-tick {
+    height: 100%;
+    display: grid;
+    grid-template-rows: minmax(100%, 1fr) 70px;
+  }
+
+.route-list-item {
+    text-transform: uppercase;
+    margin: 0 0 10px;
+    padding: 5px 10px;
+    color: var(--color-white-dim)
+}
+
+.route-list-item.selected {
+    background: var(--color-theme-color1);
+    color: var(--color-white)
+}

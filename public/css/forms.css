@@ -1,0 +1,58 @@
+BUTTON {
+  background: var(--color-theme-color2);
+  border: 0;
+  border-radius: var(--base-btn-border-radius);
+  color: var(--color-black);
+  display: block;
+  font-size: var(--font-size-bodytext);
+  font-family: 'Roboto';
+  line-height: 35px;
+  text-transform: uppercase;
+  text-align: center;
+  position: relative;
+  transition: all 300ms ease-in-out;
+  width: 100%;
+  -webkit-tap-highlight-color: var(--color-theme-color2);
+  -webkit-appearance: none;
+}
+
+button:disabled {
+  background-color: var(--color-white-dim);
+}
+
+input,
+select {
+  background: var(--color-black);
+  border: 0;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rbga(0,0,0,0);
+  color: var(--color-white);
+  font-family: 'Roboto';
+  line-height: 3em;
+  text-indent: var(--padding-base-half);
+  margin: 0 auto var(--padding-base);
+  width: 100%;
+  user-select: auto;
+  -webkit-user-select: text;
+  outline: none;
+  font-size: var(--font-size-base);
+  transition: box-shadow 300ms ease-in-out;
+  -webkit-appearance: none;
+}
+
+input:disabled {
+  box-shadow: inset 0 0 0 1px var(--color-white-dim);
+  color: var(--color-white-dim);
+}
+
+input:focus {
+  box-shadow: inset 0 0 0 1px var(--color-theme-color2), 0 0 5px 0 var(--color-theme-color2-alpha);
+}
+
+input:invalid:not(:placeholder-shown) {
+  box-shadow: inset 0 0 0 1px var(--color-redpoint);
+}
+
+input:invalid:not(:placeholder-shown):focus {
+  box-shadow: inset 0 0 0 1px var(--color-redpoint), 0 0 5px 0 var(--color-redpoint);
+}
