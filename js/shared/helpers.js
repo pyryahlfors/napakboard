@@ -1,4 +1,4 @@
-import { globals } from '/js/shared/globals.js';
+import { globals } from './globals.js';
 
 let storeObserver = { 
   add : ( params ) => {

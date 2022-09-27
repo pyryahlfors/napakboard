@@ -1,8 +1,8 @@
-import { dce } from '/js/shared/helpers.js';
-import { globals } from '/js/shared/globals.js';
+import { dce } from '../../shared/helpers.js';
+import { globals } from '../../shared/globals.js';
 
-import dsModal  from '/js/components/ds-modal/index.js';
-import dsButton from '/js/components/ds-button/index.js';
+import dsModal  from '../../components/ds-modal/index.js';
+import dsButton from '../../components/ds-button/index.js';
 
 const controller = new AbortController();
 const signal = controller.signal;

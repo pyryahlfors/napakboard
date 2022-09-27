@@ -1,4 +1,4 @@
-import { dce } from '/js/shared/helpers.js';
+import { dce } from '../../shared/helpers.js';
 
 class dsModal extends HTMLElement {
   constructor( params ) {

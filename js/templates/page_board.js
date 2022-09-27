@@ -1,8 +1,7 @@
-import { dce } from '/js/shared/helpers.js';
-import { globals } from '/js/shared/globals.js';
+import { dce } from '../shared/helpers.js';
  
-import systemBoard  from '/js/components/system_board/system_board.js';
-import bottomNavi   from '/js/components/bottom_navi/bottom_navi.js';
+import systemBoard  from '../components/system_board/system_board.js';
+import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
 
 class viewBoard {
   constructor() {

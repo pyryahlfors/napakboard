@@ -1,5 +1,5 @@
-import { globals } from '/js/shared/globals.js';
-import { storeObserver } from '/js/shared/helpers.js';
+import { globals } from './globals.js';
+import { storeObserver } from '../shared/helpers.js';
 
 let route = (params) => {
   if(params !== globals.route) {
