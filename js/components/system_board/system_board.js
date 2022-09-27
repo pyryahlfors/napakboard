@@ -256,7 +256,7 @@ class systemBoard {
 
             // clear db
             this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: false})
-
+            globals.selectedRoute = false;
             this.updateLeds();
         }
 
