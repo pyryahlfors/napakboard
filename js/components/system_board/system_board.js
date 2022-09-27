@@ -145,12 +145,12 @@ class systemBoard {
         this.loadRoute = ( routeId ) => {
             this.db.collection("routes").doc(routeId).get().then((doc) => {
                 if (doc.exists) {
+                    this.clearRoute();
 
                     let routeData = doc.data();
                     let holdSetup = routeData.holdSetup;
 
                     globals.selectedRoute = routeData['name'];
-                    this.clearRoute();
 
                     // Update currentRoute to firestore - server will read this and update leds
                     this.db.collection("current").doc("currentRoute").update({routeId : routeId})
