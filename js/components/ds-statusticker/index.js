@@ -24,7 +24,7 @@ class statusTicker {
       key: 'selectedRoute',
       id: 'selectedRoute',
       callback: () => {
-        currentTitleContent.innerHTML = globals.selectedRoute;
+        currentTitleContent.innerHTML = globals.selectedRoute || 'No route selected';
       }
     });
 
