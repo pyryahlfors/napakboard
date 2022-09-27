@@ -120,3 +120,7 @@ h4 {
     background: var(--color-theme-color2);
     color: var(--color-black)
 }
+
+.route-list-item.selected > DIV {
+  color: var(--color-black-dim);
+}

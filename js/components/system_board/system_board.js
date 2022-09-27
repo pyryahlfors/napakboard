@@ -1,6 +1,6 @@
 import { dce } from '../../shared/helpers.js';
 import { globals } from '../../shared/globals.js';
-
+import { handleDate } from '../../shared/date.js';
 import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
 
@@ -175,8 +175,9 @@ class systemBoard {
                 let routeName = dce({el: 'h3', content: routeData.name});
                 let routeDetails = dce({el: 'div'});
                 let routeGrade = dce({el: 'div', cssClass: `grade-legend ${globals.difficulty[routeData.grade]}`, content: globals.grades.font[routeData.grade]});
+                let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
                 let routeSetter = dce({el: 'div', content: routeData.setter});
-                routeDetails.append(routeGrade, routeSetter);
+                routeDetails.append(routeGrade, routeAdded, routeSetter);
                 routeItem.append(routeName, routeDetails);
                 routeItem.addEventListener('click', () => { 
                     let toggleSelected = listDialog.querySelectorAll('.selected');
