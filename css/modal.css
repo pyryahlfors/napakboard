@@ -13,7 +13,7 @@
     position: fixed;
     border-radius: 4px;
     background: #373844;
-    max-height: 95vh;
+    max-height: 80vh;
     z-index: 999;
     left: var(--padding-base);
     right: var(--padding-base);
