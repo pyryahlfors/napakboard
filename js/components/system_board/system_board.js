@@ -17,6 +17,8 @@ class systemBoard {
         let boardWidth = params.width;
         let boardHeight = params.height;
     
+        this.db = firebase.firestore();
+
         // create css for board
         let style = document.createElement("style");    
         document.body.appendChild(style);
@@ -133,35 +135,26 @@ class systemBoard {
 
             const routeData = {holdSetup : holdSetup}
 
-            // LIGHT IT UP!
-            fetch( '/', {
-                method: 'PUT',
-                headers:{ 'Content-Type':'application/json' },
-                body:JSON.stringify(routeData)
-                }).then(response=>{
-                    // console.log(response)
-                })
+            // Update currentRoute to firestore - server will read this and update leds
+            this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: routeData})
+            .then(() => {})
+            .catch((error) => {
+            });
         }
 
         this.loadRoute = ( routeId ) => {
-            const db = firebase.firestore();
-            db.collection("routes").doc(routeId).get().then((doc) => {
+            this.db.collection("routes").doc(routeId).get().then((doc) => {
                 if (doc.exists) {
 
                     let routeData = doc.data();
                     let holdSetup = routeData.holdSetup;
 
                     this.clearRoute();
-                    
-                    // LIGHT IT UP!
-                    fetch( '/', {
-                        method: 'PUT',
-                        headers:{ 'Content-Type':'application/json' },
-                        body:JSON.stringify(routeData)
-                        }).then(response=>{
-                            // console.log(response)
-                        })
-    
+
+                    // Update currentRoute to firestore - server will read this and update leds
+                    this.db.collection("current").doc("currentRoute").update({routeId : routeId})
+                    .then(() => {})
+                    .catch((error) => {});
     
                     for ( let hold in holdSetup ) {
                         this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
@@ -252,6 +245,10 @@ class systemBoard {
             this.clearClassNames(top, 'top');
             this.clearClassNames(start, 'start');
             this.clearClassNames(intermediate, 'intermediate');
+
+            // clear db
+            this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: false})
+
             this.updateLeds();
         }
 
@@ -325,22 +322,17 @@ class systemBoard {
             }
 
             if(routeReady) {
-                const db = firebase.firestore();
-
-                db.collection("routes").add({
+                this.db.collection("routes").add({
                     "added": new Date(),
                     "name": `${params.routeName}`,
                     "grade": params.grade,
                     "setter": `${params.setter}`,
-                
                     "holdSetup": holdSetup
                 })
                 .then((docRef) => {
                     console.log("Document written with ID: ", docRef.id);
                     alert('Route saved!')
-                    if(params.callBack) {
-                        params.callBack()
-                    }
+                    if( params.callBack ) { params.callBack() }
     
                 })
                 .catch((error) => {
