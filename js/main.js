@@ -38,7 +38,7 @@ const napakBoard = {
 
         appTicker.notify({title: 'Fetching routes'});
         const db = firebase.firestore();
-        db.collection('routes').onSnapshot(function(querySnapshot) {
+        db.collection('routes').orderBy('name').onSnapshot(function(querySnapshot) {
             var routes = [];
             querySnapshot.forEach(function(doc) {
                 let routeData = doc.data();

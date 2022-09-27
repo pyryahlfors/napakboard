@@ -171,7 +171,13 @@ class systemBoard {
             let listDialog = dce({el:'div'});
             globals.boardRoutes.forEach((routeData) => {
                 // doc.data() is never undefined for query doc snapshots
-                let routeItem = dce({el: 'DIV', cssClass: 'route-list-item', content: routeData.name});
+                let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
+                let routeName = dce({el: 'h3', content: routeData.name});
+                let routeDetails = dce({el: 'div'});
+                let routeGrade = dce({el: 'div', cssClass: `grade-legend ${globals.difficulty[routeData.grade]}`, content: globals.grades.font[routeData.grade]});
+                let routeSetter = dce({el: 'div', content: routeData.setter});
+                routeDetails.append(routeGrade, routeSetter);
+                routeItem.append(routeName, routeDetails);
                 routeItem.addEventListener('click', () => { 
                     let toggleSelected = listDialog.querySelectorAll('.selected');
                     toggleSelected.forEach( ( el) => {el.classList.remove('selected')});

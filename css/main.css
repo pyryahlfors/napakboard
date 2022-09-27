@@ -3,6 +3,7 @@
 
 @import url('board.css');
 @import url('bottom_navi.css');
+@import url('legend.css');
 
 @import url('button.css');
 @import url('forms.css');
@@ -100,11 +101,22 @@ h4 {
 .route-list-item {
     text-transform: uppercase;
     margin: 0 0 10px;
-    padding: 5px 10px;
-    color: var(--color-white-dim)
+    padding: 10px;
+    color: var(--color-white);
+    background: var(--color-theme-color1);
+    border-radius: 4px;
+}
+.route-list-item > DIV {
+  display: flex;
+  gap: 10px;
+  color: var(--color-white-dim);
 }
 
+.route-list-item h3 {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
 .route-list-item.selected {
-    background: var(--color-theme-color1);
-    color: var(--color-white)
+    background: var(--color-theme-color2);
+    color: var(--color-black)
 }
