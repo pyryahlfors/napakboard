@@ -89,7 +89,7 @@ class systemBoard {
 
         this.getHoldSetup = () => {
              // fetch hold setup
-            fetch(`hold_setup.json`)
+            fetch(`/projects/napakboard/hold_setup.json`)
             .then(response => response.json())
             .then(data => {
                 for( let holds in data) {
