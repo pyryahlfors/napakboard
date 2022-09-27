@@ -98,7 +98,7 @@ class systemBoard {
                     let holdContainer = document.createElement("DIV");
                     holdContainer.className = "hold";
 
-                    let holdImage = `/images/holds/${data[holds].holdImage ? data[holds].holdImage : 'placeholder.svg'}`;
+                    let holdImage = `/projects/napakboard/images/holds/${data[holds].holdImage ? data[holds].holdImage : 'placeholder.svg'}`;
                     parent.append(holdContainer)
                     fetch(holdImage)
                         .then(response => response.text())
