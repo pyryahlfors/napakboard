@@ -1,10 +1,10 @@
 //  import napakBoard       from '/js/components/napak_board/napak_board.js';
-import { dce }  from '/js/shared/helpers.js';
-import { route } from '/js/shared/route.js';
-import { globals } from '/js/shared/globals.js';
+import { dce }  from './shared/helpers.js';
+import { route } from './shared/route.js';
+import { globals } from './shared/globals.js';
 
-import viewBoard from '/js/templates/page_board.js';
-import dsTicker from '/js/components/ds-ticker/index.js';
+import viewBoard from './templates/page_board.js';
+import dsTicker from './components/ds-ticker/index.js';
 
 
 const napakBoard = {
