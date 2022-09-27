@@ -149,6 +149,7 @@ class systemBoard {
                     let routeData = doc.data();
                     let holdSetup = routeData.holdSetup;
 
+                    globals.selectedRoute = routeData['name'];
                     this.clearRoute();
 
                     // Update currentRoute to firestore - server will read this and update leds

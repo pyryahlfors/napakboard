@@ -8,7 +8,7 @@
 @import url('button.css');
 @import url('forms.css');
 @import url('modal.css');
-@import url('ticker.css');
+@import url('status_ticker.css');
 
 *,
 *::before,
@@ -95,7 +95,8 @@ h4 {
 .page-tick {
     height: 100%;
     display: grid;
-    grid-template-rows: minmax(100%, 1fr) 70px;
+    grid-template-rows: 40px minmax(100%, 1fr) 70px;
+    grid-template-areas: "header";
   }
 
 .route-list-item {

@@ -2,10 +2,13 @@ import { dce } from '../shared/helpers.js';
  
 import systemBoard  from '../components/system_board/system_board.js';
 import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
+import statusTicker from '../components/ds-statusticker/index.js';
 
 class viewBoard {
   constructor() {
     let tickPage = dce({el: 'DIV', cssClass: 'page-tick'});
+
+    let ticker = new statusTicker();
 
     let mySystemBoard = new systemBoard({width: 11, height: 21});
     tickPage.append(mySystemBoard.render());
@@ -15,7 +18,7 @@ class viewBoard {
       level1: [['list', () => {mySystemBoard.list()}], ['save', () => {mySystemBoard.save()}], ['clear', () => {mySystemBoard.clear()}]],
       }
     });
-    tickPage.appendChild(footerNavi.render());
+    tickPage.append(ticker.render(), footerNavi.render());
 
     this.render = () => {
       return tickPage;

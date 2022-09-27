@@ -1,11 +1,9 @@
 //  import napakBoard       from '/js/components/napak_board/napak_board.js';
-import { dce }  from './shared/helpers.js';
+import { dce, storeObserver }  from './shared/helpers.js';
 import { route } from './shared/route.js';
 import { globals } from './shared/globals.js';
 
 import viewBoard from './templates/page_board.js';
-import dsTicker from './components/ds-ticker/index.js';
-
 
 const napakBoard = {
     initialize : () => {
@@ -31,12 +29,11 @@ const napakBoard = {
   
         appContainer.append(appContentContainer);
 
-        let appTicker = new dsTicker();
-        appContainer.appendChild(appTicker)
         document.body.appendChild(appContainer);
 
+        globals.serverMessage.push({message : 'Fetching routes', timeout: 1, id : 'tick-sync'});
+        globals.serverMessage = globals.serverMessage;
 
-        appTicker.notify({title: 'Fetching routes'});
         const db = firebase.firestore();
         db.collection('routes').orderBy('name').onSnapshot(function(querySnapshot) {
             var routes = [];
@@ -46,9 +43,13 @@ const napakBoard = {
                 routes.push(routeData);
             });
             globals.boardRoutes = routes;
-            appTicker.update({title: `${routes.length} routes found`});
-            appTicker.hide({timeOut: 1000});
-          });
+            
+            globals.serverMessage[0].finished = true; 
+            globals.serverMessage = globals.serverMessage;
+        
+            globals.standardMessage.push({message : `${routes.length} routes found`, timeout: 1, id : 'tick-sync'});
+            globals.standardMessage = globals.standardMessage;
+        });
 
 
         route('board'); 
