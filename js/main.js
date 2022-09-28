@@ -31,8 +31,6 @@ const napakBoard = {
 
         document.body.appendChild(appContainer);
 
-        globals.serverMessage.push({message : 'Fetching routes', timeout: 1, id : 'tick-sync'});
-        globals.serverMessage = globals.serverMessage;
 
         const db = firebase.firestore();
         db.collection('routes').orderBy('name').onSnapshot(function(querySnapshot) {
@@ -42,15 +40,26 @@ const napakBoard = {
                 routeData.id = doc.id;
                 routes.push(routeData);
             });
-            globals.boardRoutes = routes;
-            
-            globals.serverMessage[0].finished = true; 
-            globals.serverMessage = globals.serverMessage;
-        
-            globals.standardMessage.push({message : `${routes.length} routes found`, timeout: 1, id : 'tick-sync'});
+            globals.boardRoutes = routes;        
+            globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
             globals.standardMessage = globals.standardMessage;
         });
 
+        const notify = () => {
+            globals.serverMessage.push({message : 'Fetching new data', timeout: 1, id : 'tick-sync'});
+            globals.serverMessage = globals.serverMessage;
+            globals.serverMessage[0].finished = true; 
+            globals.serverMessage = globals.serverMessage;
+
+        }
+
+        storeObserver.add({
+            store: globals,
+            key: 'boardRoutes',
+            id: 'routesUpdate',
+            callback: notify
+          });
+      
 
         route('board'); 
     }   
