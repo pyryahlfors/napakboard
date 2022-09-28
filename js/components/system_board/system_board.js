@@ -77,7 +77,7 @@ class systemBoard {
                             }
 
                             // update leds and firestore
-                            this.updateLeds(true);
+                            this.updateLeds();
                         }, false)
                     }
                 }
@@ -130,28 +130,32 @@ class systemBoard {
                     let routeId = queryData.routeId;
                     let routeData = queryData.routeData;
 
-                    let doUpdate = false;
                     // If route is selected - load it 
                     if(routeId) {
+                        self.clearRoute();
                         self.loadRoute(routeId, false)
                     }
 
                     // If holds are selected - show selected 
                     if(routeData) {
-                        for ( let hold in routeData.holdSetup ) {
-                            self.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${routeData.holdSetup[hold]}`)   
-                            }
+                        self.clearRoute();
+                        self.updateRoute(routeData.holdSetup);
                     }
-                    if(!routeId && !routeData) {
-                        doUpdate = true;
+                    
+                    if(!routeId && ! routeData) {
+                        self.clearRoute();
                     }
-                    self.updateLeds(doUpdate);
                 });
             });
         }
 
-        // Update leds and firebase
-        this.updateLeds = ( updateDb ) => {
+        this.updateRoute = ( holdSetup )=>  {
+            for ( let hold in holdSetup ) {
+                this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
+                }
+        }
+
+        this.updateLeds = ( updateDB ) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
 
             let holdSetup = {};
@@ -162,21 +166,16 @@ class systemBoard {
                 holdSetup[hold.id] = holdType;
             });
 
-            if(updateDb) {
-                const routeData = {holdSetup : holdSetup}
-                // Update currentRoute to firestore - server will read this and update leds
-                this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: routeData})
-                .then(() => {})
-                .catch((error) => {
-                });
-            }
+            const routeData = {holdSetup : holdSetup}
+            // Update currentRoute to firestore - server will read this and update leds
+            this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: routeData})
+            .then(() => {})
+            .catch((error) => {});
         }
 
         this.loadRoute = ( routeId ) => {
             this.db.collection("routes").doc(routeId).get().then((doc) => {
                 if (doc.exists) {
-                    this.clearRoute(true);
-
                     let routeData = doc.data();
                     let holdSetup = routeData.holdSetup;
 
@@ -262,7 +261,8 @@ class systemBoard {
                         title: 'Confirm', 
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
-                            this.clearRoute(true);
+                            globals.selectedRoute = null;
+                            this.db.collection("current").doc("currentRoute").update({routeId: false, routeData: false})
                             modalWindow.close()
                         }
                     })
@@ -271,7 +271,7 @@ class systemBoard {
             mother.append(modalWindow)
         }
 
-        this.clearRoute = ( dbClear ) => {
+        this.clearRoute = ( ) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
             let start = this.boardContainer.querySelectorAll('.start'); 
             let intermediate = this.boardContainer.querySelectorAll('.intermediate'); 
@@ -280,13 +280,6 @@ class systemBoard {
             this.clearClassNames(top, 'top');
             this.clearClassNames(start, 'start');
             this.clearClassNames(intermediate, 'intermediate');
-
-            if(dbClear) {
-                // clear db
-                this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: false})
-            }
-            globals.selectedRoute = null;
-            this.updateLeds();
         }
 
         this.clearClassNames = ( elems, cssClass ) => {
