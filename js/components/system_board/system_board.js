@@ -123,19 +123,19 @@ class systemBoard {
             this.db.collection('current').onSnapshot(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     let queryData = doc.data();
+                    // clear route - do not update DB
+                    self.clearRoute(false);
                     let routeId = queryData.routeId;
                     let routeData = queryData.routeData;
 
                     let doUpdate = false;
                     // If route is selected - load it 
                     if(routeId) {
-                        console.log('here') 
                         self.loadRoute(routeId, false)
                     }
 
                     // If holds are selected - show selected 
                     if(routeData) {
-                        self.clearRoute();
                         for ( let hold in routeData.holdSetup ) {
                             self.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${routeData.holdSetup[hold]}`)   
                             }
