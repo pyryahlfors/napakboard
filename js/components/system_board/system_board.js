@@ -138,11 +138,13 @@ class systemBoard {
 
                     // If holds are selected - show selected 
                     if(routeData) {
+                        globals.selectedRoute = null;
                         self.clearRoute();
                         self.updateRoute(routeData.holdSetup);
                     }
                     
                     if(!routeId && ! routeData) {
+                        globals.selectedRoute = null;
                         self.clearRoute();
                     }
                 });
@@ -280,6 +282,7 @@ class systemBoard {
             this.clearClassNames(top, 'top');
             this.clearClassNames(start, 'start');
             this.clearClassNames(intermediate, 'intermediate');
+            globals.selectedRoute = null;
         }
 
         this.clearClassNames = ( elems, cssClass ) => {
