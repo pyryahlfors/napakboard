@@ -30,15 +30,6 @@ BODY, HTML {
     -webkit-text-size-adjust: none;
       overflow: hidden;
 }
-
-h2 {
-    color: var(--color-white);
-    font-family: 'IBM Plex Mono';
-    font-size: var(--font-size-heading-1);
-    margin: 0;
-    font-weight: 100;
-    line-height: 32px;
-  }
   
 h3,
 label {
@@ -49,14 +40,7 @@ label {
     margin: 0;
     font-weight: 300;
   }
-  
-h4 {
-    color: var(--color-white);
-    font-family: 'IBM Plex Mono';
-    font-size: 16px;
-    margin: 0 0 10px;
-    font-weight: 100;
-}
+
 
 .app {
     height: 100%;
@@ -82,7 +66,6 @@ h4 {
     overflow: hidden;
     touch-action: none;
     padding-top: env(safe-area-inset-top, 0);
-    background: #eee;
 }
 
 
@@ -96,8 +79,14 @@ h4 {
     height: 100%;
     display: grid;
     grid-template-rows: 40px minmax(100%, 1fr) 70px;
-    grid-template-areas: "header";
+    grid-template-areas: "header"
+      "board"
+      "footer"
   }
+
+.page-tick .status-ticker {grid-area: header;}
+.page-tick .board-container {grid-area: board;}
+.page-tick .bottom-navi {grid-area: footer;}
 
 .route-list-item {
     text-transform: uppercase;
