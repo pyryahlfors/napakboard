@@ -77,7 +77,7 @@ class systemBoard {
                             }
 
                             // update leds and firestore
-                            this.updateLeds();
+                            this.updateLeds(true);
                         }, false)
                     }
                 }
@@ -119,27 +119,34 @@ class systemBoard {
                 }
             })
 
+            let self = this;
             // Get current state from firestore
-            this.db.collection("current").doc("currentRoute").get().then((doc) => {
-                let queryData = doc.data();
-                let routeId = queryData.routeId;
-                let routeData = queryData.routeData;
+            this.db.collection('current').onSnapshot(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    let queryData = doc.data();
+                    let routeId = queryData.routeId;
+                    let routeData = queryData.routeData;
 
-                // If route is selected - load it 
-                if(routeId) { this.loadRoute(routeId) }
+                    // If route is selected - load it 
+                    if(routeId) {
+                        console.log('here') 
+                        self.loadRoute(routeId, false)
+                    }
 
-                // If holds are selected - show selected 
-                if(routeData) {
-                    for ( let hold in routeData.holdSetup ) {
-                        this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${routeData.holdSetup[hold]}`)   
-                        }
-                }
-                this.updateLeds();
+                    // If holds are selected - show selected 
+                    if(routeData) {
+                        self.clearRoute();
+                        for ( let hold in routeData.holdSetup ) {
+                            self.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${routeData.holdSetup[hold]}`)   
+                            }
+                    }
+                    self.updateLeds();
+                });
             });
         }
 
         // Update leds and firebase
-        this.updateLeds = ( ) => {
+        this.updateLeds = ( updateDb ) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
 
             let holdSetup = {};
@@ -150,30 +157,33 @@ class systemBoard {
                 holdSetup[hold.id] = holdType;
             });
 
-            const routeData = {holdSetup : holdSetup}
-
-            // Update currentRoute to firestore - server will read this and update leds
-            this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: routeData})
-            .then(() => {})
-            .catch((error) => {
-            });
+            if(updateDb) {
+                const routeData = {holdSetup : holdSetup}
+                // Update currentRoute to firestore - server will read this and update leds
+                this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: routeData})
+                .then(() => {})
+                .catch((error) => {
+                });
+            }
         }
 
-        this.loadRoute = ( routeId ) => {
+        this.loadRoute = ( routeId, updateDb ) => {
             this.db.collection("routes").doc(routeId).get().then((doc) => {
                 if (doc.exists) {
-                    this.clearRoute();
+                    this.clearRoute(true);
 
                     let routeData = doc.data();
                     let holdSetup = routeData.holdSetup;
 
                     globals.selectedRoute = routeData['name'];
 
-                    // Update currentRoute to firestore - server will read this and update leds
-                    this.db.collection("current").doc("currentRoute").update({routeId : routeId})
-                    .then(() => {})
-                    .catch((error) => {});
-    
+                    if(updateDb) {
+                        // Update currentRoute to firestore - server will read this and update leds
+                        this.db.collection("current").doc("currentRoute").update({routeId : routeId})
+                        .then(() => {})
+                        .catch((error) => {});
+                    }
+        
                     for ( let hold in holdSetup ) {
                         this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
                         }
@@ -221,7 +231,7 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             if(selectedRoute) {
-                                this.loadRoute(selectedRoute)
+                                this.loadRoute(selectedRoute, true)
                             }
                             modalWindow.close()
                         }
@@ -252,7 +262,7 @@ class systemBoard {
                         title: 'Confirm', 
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
-                            this.clearRoute();
+                            this.clearRoute(true);
                             modalWindow.close()
                         }
                     })
@@ -261,7 +271,7 @@ class systemBoard {
             mother.append(modalWindow)
         }
 
-        this.clearRoute = () => {
+        this.clearRoute = ( dbClear ) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
             let start = this.boardContainer.querySelectorAll('.start'); 
             let intermediate = this.boardContainer.querySelectorAll('.intermediate'); 
@@ -271,8 +281,10 @@ class systemBoard {
             this.clearClassNames(start, 'start');
             this.clearClassNames(intermediate, 'intermediate');
 
-            // clear db
-            this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: false})
+            if(dbClear) {
+                // clear db
+                this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: false})
+            }
             globals.selectedRoute = null;
             this.updateLeds();
         }
