@@ -4,9 +4,6 @@ import { handleDate } from '../../shared/date.js';
 import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
 
-const controller = new AbortController();
-const signal = controller.signal;
-
 class systemBoard {
     constructor( params ) {
         this.boardData = params;
@@ -57,6 +54,8 @@ class systemBoard {
                         gridCell.style['gridArea'] = `grid-cell-${boardCols[k]}${i+1}`;
                         gridCell.id = `${boardCols[k]}${i+1}`
                         gridCell.addEventListener('click', (e) => {
+                            // prevent adding holds to route
+                            if(globals.selectedRoute !== null) return;
                             let hold = e.target;
 
                             if(hold.classList.contains('selected')) {
@@ -76,9 +75,10 @@ class systemBoard {
                             else {
                                 hold.classList.add('selected');
                             }
-                        this.updateLeds();
-                        }, false)
 
+                            // update leds and firestore
+                            this.updateLeds();
+                        }, false)
                     }
                 }
                 this.boardContainer.appendChild(gridCell);
@@ -118,11 +118,28 @@ class systemBoard {
                     holdContainer.style.transform = holdTransform;
                 }
             })
-        this.updateLeds();
+
+            // Get current state from firestore
+            this.db.collection("current").doc("currentRoute").get().then((doc) => {
+                let queryData = doc.data();
+                let routeId = queryData.routeId;
+                let routeData = queryData.routeData;
+
+                // If route is selected - load it 
+                if(routeId) { this.loadRoute(routeId) }
+
+                // If holds are selected - show selected 
+                if(routeData) {
+                    for ( let hold in routeData.holdSetup ) {
+                        this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${routeData.holdSetup[hold]}`)   
+                        }
+                }
+                this.updateLeds();
+            });
         }
 
+        // Update leds and firebase
         this.updateLeds = ( ) => {
-            controller.abort();
             let selected = this.boardContainer.querySelectorAll('.selected'); 
 
             let holdSetup = {};
@@ -168,7 +185,7 @@ class systemBoard {
         }
 
         this.list = () => {
-            let selectedRoute = false;
+            let selectedRoute = null;
             let listDialog = dce({el:'div'});
             globals.boardRoutes.forEach((routeData) => {
                 // doc.data() is never undefined for query doc snapshots
@@ -256,7 +273,7 @@ class systemBoard {
 
             // clear db
             this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: false})
-            globals.selectedRoute = false;
+            globals.selectedRoute = null;
             this.updateLeds();
         }
 
