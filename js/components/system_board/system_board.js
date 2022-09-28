@@ -114,10 +114,9 @@ class systemBoard {
                         holdTransform+= `translate3d(${data[holds].boltPlacement[0]}%, ${data[holds].boltPlacement[1]}%, 0)`;
                         holdContainer.style['transformOrigin'] = `${50 + data[holds].boltPlacement[0]}% ${50 + (data[holds].boltPlacement[1] * -1)}%`;
                     }
-
                     holdContainer.style.transform = holdTransform;
-                }
-            })
+                    }
+                })
 
             let self = this;
             // Get current state from firestore
@@ -127,6 +126,7 @@ class systemBoard {
                     let routeId = queryData.routeId;
                     let routeData = queryData.routeData;
 
+                    let doUpdate = false;
                     // If route is selected - load it 
                     if(routeId) {
                         console.log('here') 
@@ -140,7 +140,10 @@ class systemBoard {
                             self.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${routeData.holdSetup[hold]}`)   
                             }
                     }
-                    self.updateLeds();
+                    if(!routeId && !routeData) {
+                        doUpdate = true;
+                    }
+                    self.updateLeds(doUpdate);
                 });
             });
         }
