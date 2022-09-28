@@ -137,13 +137,13 @@ class systemBoard {
                     }
 
                     // If holds are selected - show selected 
-                    if(routeData) {
+                    else if(routeData) {
                         globals.selectedRoute = null;
                         self.clearRoute();
                         self.updateRoute(routeData.holdSetup);
                     }
                     
-                    if(!routeId && ! routeData) {
+                    else {
                         globals.selectedRoute = null;
                         self.clearRoute();
                     }
@@ -230,7 +230,7 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             if(selectedRoute) {
-                                this.db.collection("current").doc("currentRoute").update({routeId : selectedRoute})
+                                this.db.collection("current").doc("currentRoute").update({routeId : selectedRoute, holdSetup: false})
                                 .then(() => {})
                                 .catch((error) => {});
                             }
