@@ -118,13 +118,15 @@ class systemBoard {
                     }
                 })
 
+/**
+ * Listen changes in DB and act
+ */
             let self = this;
             // Get current state from firestore
             this.db.collection('current').onSnapshot(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
                     let queryData = doc.data();
                     // clear route - do not update DB
-                    self.clearRoute(false);
                     let routeId = queryData.routeId;
                     let routeData = queryData.routeData;
 
@@ -170,7 +172,7 @@ class systemBoard {
             }
         }
 
-        this.loadRoute = ( routeId, updateDb ) => {
+        this.loadRoute = ( routeId ) => {
             this.db.collection("routes").doc(routeId).get().then((doc) => {
                 if (doc.exists) {
                     this.clearRoute(true);
@@ -179,13 +181,6 @@ class systemBoard {
                     let holdSetup = routeData.holdSetup;
 
                     globals.selectedRoute = routeData['name'];
-
-                    if(updateDb) {
-                        // Update currentRoute to firestore - server will read this and update leds
-                        this.db.collection("current").doc("currentRoute").update({routeId : routeId})
-                        .then(() => {})
-                        .catch((error) => {});
-                    }
         
                     for ( let hold in holdSetup ) {
                         this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
@@ -234,7 +229,9 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             if(selectedRoute) {
-                                this.loadRoute(selectedRoute, true)
+                                this.db.collection("current").doc("currentRoute").update({routeId : selectedRoute})
+                                .then(() => {})
+                                .catch((error) => {});
                             }
                             modalWindow.close()
                         }
