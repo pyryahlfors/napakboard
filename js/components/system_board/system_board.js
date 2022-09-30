@@ -3,6 +3,7 @@ import { globals } from '../../shared/globals.js';
 import { handleDate } from '../../shared/date.js';
 import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
+import { getFirestore, getDoc, collection, query, doc, onSnapshot, updateDoc , addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 class systemBoard {
     constructor( params ) {
@@ -10,12 +11,11 @@ class systemBoard {
     
         this.boardContainer = dce({el: 'div', cssClass:'board-container' })
 
+        this.db = getFirestore();
         let boardCols = 'abcdefghijklmnopqrstuvwxyz';    
         let boardWidth = params.width;
         let boardHeight = params.height;
     
-        this.db = firebase.firestore();
-
         // create css for board
         let style = document.createElement("style");    
         document.body.appendChild(style);
@@ -136,9 +136,10 @@ class systemBoard {
  * Listen changes in DB and act
  */
             let self = this;
-            // Get current state from firestore
-            this.db.collection('current').onSnapshot(function(querySnapshot) {
-                querySnapshot.forEach(function(doc) {
+            const dbQuery = query(collection(this.db, 'current'));
+            onSnapshot(dbQuery, (querySnapshot) => {
+                const routes = [];
+                querySnapshot.forEach((doc) => {
                     let queryData = doc.data();
                     // clear route - do not update DB
                     let routeId = queryData.routeId;
@@ -182,17 +183,20 @@ class systemBoard {
                 holdSetup[hold.id] = holdType;
             });
 
-            const routeData = {holdSetup : holdSetup}
+            const routeData = {holdSetup : holdSetup};
             // Update currentRoute to firestore - server will read this and update leds
-            this.db.collection("current").doc("currentRoute").update({routeId : false, routeData: routeData})
-            .then(() => {})
-            .catch((error) => {});
+
+            const routeRef = doc(this.db, "current", "currentRoute");
+            updateDoc(routeRef, { routeData: routeData });
         }
 
         this.loadRoute = ( routeId ) => {
-            this.db.collection("routes").doc(routeId).get().then((doc) => {
-                if (doc.exists) {
-                    let routeData = doc.data();
+            ( async () => {
+                const docRef = doc(this.db, "routes", routeId);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    let routeData = docSnap.data();
                     let holdSetup = routeData.holdSetup;
 
                     globals.selectedRoute = routeData['name'];
@@ -200,12 +204,13 @@ class systemBoard {
                     for ( let hold in holdSetup ) {
                         this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
                         }
+                    } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
                     }
-                else {
-                    console.log('not found')
-                }
-            });
-        }
+                })();
+            }
+        
 
         this.list = () => {
             let selectedRoute = null;
@@ -244,9 +249,10 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             if(selectedRoute) {
-                                this.db.collection("current").doc("currentRoute").update({routeId : selectedRoute, holdSetup: false})
-                                .then(() => {})
-                                .catch((error) => {});
+                                (async () => {
+                                    const routeRef = doc(this.db, "current", "currentRoute");
+                                    await updateDoc(routeRef, { routeId : selectedRoute, holdSetup: false });
+                                })();                    
                             }
                             modalWindow.close()
                         }
@@ -278,7 +284,12 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             globals.selectedRoute = null;
-                            this.db.collection("current").doc("currentRoute").update({routeId: false, routeData: false})
+
+                            (async () => {
+                                const routeRef = doc(this.db, "current", "currentRoute");
+                                await updateDoc(routeRef, { routeId : false, routeData: false });
+                            })();
+
                             modalWindow.close()
                         }
                     })
@@ -369,25 +380,18 @@ class systemBoard {
             }
 
             if(routeReady) {
-                this.db.collection("routes").add({
-                    "added": new Date(),
-                    "name": `${params.routeName}`,
-                    "grade": params.grade,
-                    "setter": `${params.setter}`,
-                    "holdSetup": holdSetup
-                })
-                .then((docRef) => {
-                    console.log("Document written with ID: ", docRef.id);
+                // Add a new document in collection "cities"
+                ( async () => {
+                    await addDoc(collection(this.db, "routes"), {
+                        "added": new Date(),
+                        "name": `${params.routeName}`,
+                        "grade": params.grade,
+                        "setter": `${params.setter}`,
+                        "holdSetup": holdSetup                   
+                    });
                     alert('Route saved!')
-                    if( params.callBack ) { params.callBack() }
-    
-                })
-                .catch((error) => {
-                    console.error("Error adding document: ", error);
-                    alert('error adding route. Please try again later')
-                    this.boardContainer.classList.remove('shadow');
-                    modal.parentNode.removeChild(modal);    
-                });
+                    if( params.callBack ) { params.callBack() } 
+                })();
             }
         }
 
