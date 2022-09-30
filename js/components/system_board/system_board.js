@@ -1,4 +1,4 @@
-import { dce } from '../../shared/helpers.js';
+import { dce, svg } from '../../shared/helpers.js';
 import { globals } from '../../shared/globals.js';
 import { handleDate } from '../../shared/date.js';
 import dsModal  from '../../components/ds-modal/index.js';
@@ -88,35 +88,49 @@ class systemBoard {
         sheet.insertRule(`.board-container {grid-template-areas: ${gridTemplateAreas}}`);
 
         this.getHoldSetup = () => {
-             // fetch hold setup
-            fetch(`/projects/napakboard/hold_setup.json`)
-            .then(response => response.json())
-            .then(data => {
-                for( let holds in data) {
-                    let parent = document.querySelector(`#${holds}`);
-                    parent.style.color = data[holds].holdColor ? data[holds].holdColor : 'transparent';
-                    let holdContainer = document.createElement("DIV");
-                    holdContainer.className = "hold";
+            this.holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 
-                    let holdImage = `/projects/napakboard/images/holds/${data[holds].holdImage ? data[holds].holdImage : 'placeholder.svg'}`;
-                    parent.append(holdContainer)
-                    fetch(holdImage)
-                        .then(response => response.text())
-                        .then(svg => {
-                            holdContainer.insertAdjacentHTML("afterbegin", svg);
-                        });
-
-                    let holdTransform = "";
-                    if( data[holds].rotation ) {
-                        holdTransform =  `rotate(${data[holds].rotation}deg) `;
-                    }
-                    if( data[holds].boltPlacement ) {
-                        holdTransform+= `translate3d(${data[holds].boltPlacement[0]}%, ${data[holds].boltPlacement[1]}%, 0)`;
-                        holdContainer.style['transformOrigin'] = `${50 + data[holds].boltPlacement[0]}% ${50 + (data[holds].boltPlacement[1] * -1)}%`;
-                    }
-                    holdContainer.style.transform = holdTransform;
-                    }
+            fetch('/projects/napakboard/images/holds.svg')
+                .then(r => r.text())
+                .then(text => {
+                    this.holdImages.innerHTML = text;
+                    loadHoldSetup();
                 })
+                .catch(console.error.bind(console));
+    
+            const loadHoldSetup = () => {
+                // fetch hold setup
+                fetch(`/projects/napakboard/hold_setup.json`)
+                .then(response => response.json())
+                .then(data => {
+                    for( let holds in data) {
+                        let parent = document.querySelector(`#${holds}`);
+                        parent.style.color = data[holds].holdColor ? data[holds].holdColor : 'transparent';
+                        let holdContainer = dce({el: 'div', cssClass: 'hold'});
+
+                        let nakki = svg({el: 'svg', attrbs: [['viewBox', '0 0 30 30']]});
+
+                        if(this.holdImages.querySelector(`.${data[holds].hold}`)) {
+                            nakki.append(this.holdImages.querySelector(`.${data[holds].hold}`).cloneNode(true));
+                        }
+                        else {
+                            nakki.append(this.holdImages.querySelector(`.placeholder`).cloneNode(true));
+                        }
+                        holdContainer.append(nakki);
+                        parent.append(holdContainer)
+
+                        let holdTransform = "";
+                        if( data[holds].rotation ) {
+                            holdTransform =  `rotate(${data[holds].rotation}deg) `;
+                        }
+                        if( data[holds].boltPlacement ) {
+                            holdTransform+= `translate3d(${data[holds].boltPlacement[0]}%, ${data[holds].boltPlacement[1]}%, 0)`;
+                            holdContainer.style['transformOrigin'] = `${50 + data[holds].boltPlacement[0]}% ${50 + (data[holds].boltPlacement[1] * -1)}%`;
+                        }
+                        holdContainer.style.transform = holdTransform;
+                        }
+                    })
+                }
 
 /**
  * Listen changes in DB and act

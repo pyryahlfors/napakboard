@@ -74,18 +74,9 @@ let svg = (params) => {
   let xlmns = 'http://www.w3.org/2000/svg';
   let element = document.createElementNS(xlmns, params.el);
 
-  if (params.cssClass) {
-    element.className = params.cssClass;
-  }
-
-  if (params.cssStyle) {
-    element.setAttribute('style', params.cssStyle);
-  }
-
-  if (params.id) {
-    element.setAttribute('id', params.id);
-  }
-
+  if (params.cssClass) { element.className = params.cssClass; }
+  if (params.cssStyle) { element.setAttribute('style', params.cssStyle);}
+  if (params.id) { element.setAttribute('id', params.id); }
   if (params.attrbs) {
     for (let i = 0, j = params.attrbs.length; i < j; i++) {
       element.setAttributeNS(null, params.attrbs[i][0], params.attrbs[i][1]);
