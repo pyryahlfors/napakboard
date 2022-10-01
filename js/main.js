@@ -34,6 +34,7 @@ const napakBoard = {
 
         document.body.appendChild(appContainer);
 
+        // Listen changes in routes collection and update list
         const dbQuery = query(collection(getFirestore(), 'routes'));
         onSnapshot(dbQuery, (querySnapshot) => {
          const routes = [];
@@ -42,25 +43,12 @@ const napakBoard = {
              routeData.id = doc.id;
              routes.push(routeData);
          });
-         globals.boardRoutes = routes;        
+         globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
          globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
          globals.standardMessage = globals.standardMessage;
          });
-  /*
-        const db = firebase.firestore();
-        db.collection('routes').orderBy('name').onSnapshot(function(querySnapshot) {
-            var routes = [];
-            querySnapshot.forEach(function(doc) {
-                let routeData = doc.data();
-                routeData.id = doc.id;
-                routes.push(routeData);
-            });
-            globals.boardRoutes = routes;        
-            globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
-            globals.standardMessage = globals.standardMessage;
-        });
-*/
-        const notify = () => {
+
+         const notify = () => {
             globals.serverMessage.push({message : 'Fetching new data', timeout: 1, id : 'tick-sync'});
             globals.serverMessage = globals.serverMessage;
             globals.serverMessage[0].finished = true; 

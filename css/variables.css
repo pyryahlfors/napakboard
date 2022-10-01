@@ -25,6 +25,8 @@
     --padding-base-half: 10px;
     --padding-base-wide: 20px 40px;
 
+    --padding-base-top-negative: -20px;
+    
     --font-size-small: 0.65rem; /* 10px */
     --font-size-base: 0.81rem; /* 13px */
     --font-size-bodytext: 1.234rem; /* 20px - 1rem = 16px */

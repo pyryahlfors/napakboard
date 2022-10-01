@@ -1,4 +1,4 @@
-import { dce, svg } from '../../shared/helpers.js';
+import { dce, svg, storeObserver} from '../../shared/helpers.js';
 import { globals } from '../../shared/globals.js';
 import { handleDate } from '../../shared/date.js';
 import dsModal  from '../../components/ds-modal/index.js';
@@ -215,25 +215,76 @@ class systemBoard {
         this.list = () => {
             let selectedRoute = null;
             let listDialog = dce({el:'div'});
-            globals.boardRoutes.forEach((routeData) => {
-                // doc.data() is never undefined for query doc snapshots
-                let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
-                let routeName = dce({el: 'h3', content: routeData.name});
-                let routeDetails = dce({el: 'div'});
-                let routeGrade = dce({el: 'div', cssClass: `grade-legend ${globals.difficulty[routeData.grade]}`, content: globals.grades.font[routeData.grade]});
-                let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
-                let routeSetter = dce({el: 'div', content: routeData.setter});
-                routeDetails.append(routeGrade, routeAdded, routeSetter);
-                routeItem.append(routeName, routeDetails);
-                routeItem.addEventListener('click', () => { 
-                    let toggleSelected = listDialog.querySelectorAll('.selected');
-                    toggleSelected.forEach( ( el) => {el.classList.remove('selected')});
-                    routeItem.classList.add('selected'); 
-                    selectedRoute = routeData.id;
-                }, false);
-                listDialog.appendChild(routeItem)
-            });
+            let sortOptionsContainer = dce({el: 'form', cssClass: 'sticky', content: 'Sort by:', attrbs: [["name", "routesort"]]});
+            let sortMenu = dce({el: 'ul', cssClass: 'radio-menu'});
+            let sortOptions = [['name'], ['grade'], ['date']];
+            sortOptions.forEach((sortOption) => {
+                console.log(globals.routeSorting === sortOption[0])
+                let option = dce({el: 'li'});
+                let radioButton = dce({el: 'input', attrbs: [["name", "sort"], ["value", sortOption[0]], ["type", "radio"], ["id", `sort-${sortOption[0]}`]]});
+                radioButton.checked = globals.routeSorting == sortOption[0] ? "checked" : null;
+                option.appendChild(radioButton)
+                option.appendChild(dce({el: 'label', attrbs:[["for", `sort-${sortOption[0]}`]], content: sortOption[0]}))
+                option.addEventListener('change', () => { globals.routeSorting = document.forms['routesort'].sort.value; }, false);
+                sortMenu.appendChild(option)
+            })
+
+            sortOptionsContainer.append(sortMenu)
+            listDialog.append(sortOptionsContainer);
+
+            const updateRouteList = ( ) => {
+                let routelistContainer = dce({el: 'div', cssClass : 'route-list-container'});
+
+                globals.boardRoutes.forEach((routeData) => {
+                    // doc.data() is never undefined for query doc snapshots
+                    let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
+                    let routeName = dce({el: 'h3', content: routeData.name});
+                    let routeDetails = dce({el: 'div'});
+                    let routeGrade = dce({el: 'div', cssClass: `grade-legend ${globals.difficulty[routeData.grade]}`, content: globals.grades.font[routeData.grade]});
+                    let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
+                    let routeSetter = dce({el: 'div', content: routeData.setter});
+                    routeDetails.append(routeGrade, routeAdded, routeSetter);
+                    routeItem.append(routeName, routeDetails);
+                    routeItem.addEventListener('click', () => { 
+                        let toggleSelected = listDialog.querySelectorAll('.selected');
+                        toggleSelected.forEach( ( el) => {el.classList.remove('selected')});
+                        routeItem.classList.add('selected'); 
+                        selectedRoute = routeData.id;
+                    }, false);
+                    routelistContainer.appendChild(routeItem)
+                });
+                
+                if(listDialog.querySelector('.route-list-container')) {
+                    let clearList = listDialog.querySelector('.route-list-container');
+                    clearList.parentNode.removeChild(clearList);
+                }
+                listDialog.append(routelistContainer)
+            }
+
+            const updateRouteListSorting = ( ) => {
+                if(globals.routeSorting === 'name')  { globals.boardRoutes = globals.boardRoutes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)); }
+                if(globals.routeSorting === 'grade') { globals.boardRoutes = globals.boardRoutes.sort((a,b) => a.grade - b.grade)};
+                if(globals.routeSorting === 'date')  { globals.boardRoutes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)); }       
+            }
             
+            storeObserver.add({
+                store: globals,
+                key: 'boardRoutes',
+                id: 'systemBoardRoutesUpdate',
+                callback: () => {updateRouteList()}
+            });
+
+            // Sort listener
+            storeObserver.add({
+                store: globals,
+                key: 'routeSorting',
+                id: 'sortRoutesBy',
+                callback: () => {updateRouteListSorting()}
+              });
+
+            updateRouteList(); 
+
+
             let mother = document.querySelector('.app');
             let modalWindow = new dsModal({
                 title: 'Route list',

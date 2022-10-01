@@ -56,3 +56,48 @@ input:invalid:not(:placeholder-shown) {
 input:invalid:not(:placeholder-shown):focus {
   box-shadow: inset 0 0 0 1px var(--color-redpoint), 0 0 5px 0 var(--color-redpoint);
 }
+
+
+
+.radio-menu {
+  display: flex;
+  list-style-type:none;
+  margin: 0;
+  padding: 0;
+}
+
+.radio-menu-container label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+
+.radio-menu input[type=radio] {
+  box-shadow: 0 0 0 1px var(--color-white-dim);
+  width: 1rem;
+  height: 1rem;
+  border-radius: 1em; 
+  border: none;
+  background: radial-gradient(var(--color-white-dim) 40%, rgba(0, 0, 0, 0) 41%);
+  margin: 0 5px;
+  transition: all 60ms ease-in-out;
+  appearance: radio;
+  -webkit-appearance: radio;
+}
+
+input[type="radio"]:before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em var(--form-control-color);
+  transform: scale(0);
+}
+input[type="radio"]:checked::before {
+  transform: scale(1);
+  box-shadow: 0 0 0 1px var(--color-theme-color2);
+  background: radial-gradient(var(--color-theme-color2) 40%, rgba(0, 0, 0, 0) 41%);
+}
+
