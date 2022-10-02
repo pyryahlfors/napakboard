@@ -135,35 +135,38 @@ class systemBoard {
 /**
  * Listen changes in DB and act
  */
-            let self = this;
-            const dbQuery = query(collection(this.db, 'current'));
-            onSnapshot(dbQuery, (querySnapshot) => {
-                const routes = [];
-                querySnapshot.forEach((doc) => {
-                    let queryData = doc.data();
-                    // clear route - do not update DB
-                    let routeId = queryData.routeId;
-                    let routeData = queryData.routeData;
+            // only authenticated user will get live updates
+            if(globals.user.email) {
+                let self = this;
+                const dbQuery = query(collection(this.db, 'current'));
+                onSnapshot(dbQuery, (querySnapshot) => {
+                    const routes = [];
+                    querySnapshot.forEach((doc) => {
+                        let queryData = doc.data();
+                        // clear route - do not update DB
+                        let routeId = queryData.routeId;
+                        let routeData = queryData.routeData;
 
-                    // If route is selected - load it 
-                    if(routeId) {
-                        self.clearRoute();
-                        self.loadRoute(routeId, false)
-                    }
+                        // If route is selected - load it 
+                        if(routeId) {
+                            self.clearRoute();
+                            self.loadRoute(routeId, false)
+                        }
 
-                    // If holds are selected - show selected 
-                    else if(routeData) {
-                        globals.selectedRoute = null;
-                        self.clearRoute();
-                        self.updateRoute(routeData.holdSetup);
-                    }
-                    
-                    else {
-                        globals.selectedRoute = null;
-                        self.clearRoute();
-                    }
+                        // If holds are selected - show selected 
+                        else if(routeData) {
+                            globals.selectedRoute = null;
+                            self.clearRoute();
+                            self.updateRoute(routeData.holdSetup);
+                        }
+                        
+                        else {
+                            globals.selectedRoute = null;
+                            self.clearRoute();
+                        }
+                    });
                 });
-            });
+            }
         }
 
         this.updateRoute = ( holdSetup )=>  {
@@ -172,7 +175,7 @@ class systemBoard {
                 }
         }
 
-        this.updateLeds = ( updateDB ) => {
+        this.updateLeds = ( ) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
 
             let holdSetup = {};
@@ -186,8 +189,10 @@ class systemBoard {
             const routeData = {holdSetup : holdSetup};
             // Update currentRoute to firestore - server will read this and update leds
 
-            const routeRef = doc(this.db, "current", "currentRoute");
-            updateDoc(routeRef, { routeData: routeData });
+            if(globals.user.email) {
+                const routeRef = doc(this.db, "current", "currentRoute");
+                updateDoc(routeRef, { routeData: routeData });
+            }
         }
 
         this.loadRoute = ( routeId ) => {
@@ -219,7 +224,6 @@ class systemBoard {
             let sortMenu = dce({el: 'ul', cssClass: 'radio-menu'});
             let sortOptions = [['name'], ['grade'], ['date']];
             sortOptions.forEach((sortOption) => {
-                console.log(globals.routeSorting === sortOption[0])
                 let option = dce({el: 'li'});
                 let radioButton = dce({el: 'input', attrbs: [["name", "sort"], ["value", sortOption[0]], ["type", "radio"], ["id", `sort-${sortOption[0]}`]]});
                 radioButton.checked = globals.routeSorting == sortOption[0] ? "checked" : null;
@@ -300,10 +304,15 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             if(selectedRoute) {
-                                (async () => {
-                                    const routeRef = doc(this.db, "current", "currentRoute");
-                                    await updateDoc(routeRef, { routeId : selectedRoute, holdSetup: false });
-                                })();                    
+                                if(!globals.user.email) {
+                                    this.loadRoute(selectedRoute);
+                                }
+                                else {
+                                    (async () => {
+                                        const routeRef = doc(this.db, "current", "currentRoute");
+                                        await updateDoc(routeRef, { routeId : selectedRoute, holdSetup: false });
+                                    })();
+                                }
                             }
                             modalWindow.close()
                         }
@@ -330,16 +339,22 @@ class systemBoard {
                         cssClass: 'btn btn_small', 
                         thisOnClick: () => { modalWindow.close() }
                     }),
-                    save: new dsButton({
+                    confirm: new dsButton({
                         title: 'Confirm', 
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             globals.selectedRoute = null;
+                            // only update for authenticated users
+                            if(globals.user.email) {
+                                (async () => {
+                                    const routeRef = doc(this.db, "current", "currentRoute");
+                                    await updateDoc(routeRef, { routeId : false, routeData: false });
+                                })();
+                            }
 
-                            (async () => {
-                                const routeRef = doc(this.db, "current", "currentRoute");
-                                await updateDoc(routeRef, { routeId : false, routeData: false });
-                            })();
+                            else {
+                                this.clearRoute();
+                            }
 
                             modalWindow.close()
                         }
@@ -431,6 +446,8 @@ class systemBoard {
             }
 
             if(routeReady) {
+                if(!globals.user.email) { return }
+
                 // Add a new document in collection "cities"
                 ( async () => {
                     await addDoc(collection(this.db, "routes"), {

@@ -3,6 +3,7 @@ import { dce } from '../shared/helpers.js';
 
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
 import { globals } from '../shared/globals.js';
+import { route } from '../shared/route.js';
 
 class viewLogin {
   constructor() {
@@ -17,8 +18,17 @@ class viewLogin {
       cssClass: 'btn btn_small preferred', 
       thisOnClick: () => { login(userName.value, password.value) }
     });
+
+    let visitorBtn = new dsButton({
+      title: 'Visitor', 
+      cssClass: 'btn btn_small mt', 
+      thisOnClick: () => { 
+        globals.user = {dummy: true};
+        route('board') }
+    });
+
     
-    loginContainer.append(pageTitle, userName, password, loginBtn)
+    loginContainer.append(pageTitle, userName, password, loginBtn, visitorBtn)
 
     const auth = getAuth();
     // Allready signed in

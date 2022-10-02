@@ -53,7 +53,6 @@ const napakBoard = {
             globals.serverMessage = globals.serverMessage;
             globals.serverMessage[0].finished = true; 
             globals.serverMessage = globals.serverMessage;
-
         }
 
         storeObserver.add({
