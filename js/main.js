@@ -3,14 +3,14 @@ import { dce, storeObserver }  from './shared/helpers.js';
 import { route } from './shared/route.js';
 import { globals } from './shared/globals.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";  
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 import { getFirestore, getDocs, collection, query, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 import viewBoard from './templates/page_board.js';
-
+import viewLogin from './templates/page_login.js';
 const napakBoard = {
     initialize : () => {
         // Routes
+        globals.routes.login = viewLogin;
         globals.routes.board = viewBoard;
 
         const firebaseConfig = {
@@ -21,7 +21,7 @@ const napakBoard = {
             messagingSenderId: "809734457516",
             appId: "1:809734457516:web:adfea8fe6a0ac8c9983709"
         };
-        initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig);
         // Firebase
         // Your web app's Firebase configuration
 
@@ -34,7 +34,7 @@ const napakBoard = {
 
         document.body.appendChild(appContainer);
 
-        // Listen changes in routes collection and update list
+    // Listen changes in routes collection and update list
         const dbQuery = query(collection(getFirestore(), 'routes'));
         onSnapshot(dbQuery, (querySnapshot) => {
          const routes = [];
@@ -63,8 +63,26 @@ const napakBoard = {
             callback: notify
           });
       
+    // Auth
+        const routeUser = () => {
+            if(!globals.user) {
+                route('login')
+            }
+            else {
+                route('board')
+            }
+        };
 
-        route('board'); 
+        routeUser();
+        
+        storeObserver.add({
+            store: globals,
+            key: 'user',
+            id: 'routeUser',
+            callback: routeUser
+          });
+
+
     }   
 }
 

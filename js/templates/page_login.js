@@ -1,27 +1,48 @@
 import { dce } from '../shared/helpers.js';
- 
-import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
-import statusTicker from '../components/ds-statusticker/index.js';
-import { user } from '../shared/user.js';
+ import dsButton     from '../components/ds-button/index.js';
+
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
+import { globals } from '../shared/globals.js';
 
 class viewLogin {
   constructor() {
     let loginPage = dce({el: 'DIV', cssClass: 'page-login'});
 
-    let ticker = new statusTicker();
-
-    let loginContainer = dce({el: 'div'});
-    let userName = dce({el: 'input', attrbs: [['name', 'username'], ['placeholder', 'User name']]});
+    let loginContainer = dce({el: 'form', cssClass: 'login-form'});
+    let pageTitle = dce({el: 'h3', content: 'Napak board - Login', cssClass: 'mb'});
+    let userName = dce({el: 'input', attrbs: [['name', 'email'], ['placeholder', 'User name']]});
     let password = dce({el: 'input', attrbs: [['name', 'password'], ['placeholder', 'Password'], ["type", "password"]]});
+    let loginBtn = new dsButton({
+      title: 'Login', 
+      cssClass: 'btn btn_small preferred', 
+      thisOnClick: () => { login(userName.value, password.value) }
+    });
+    
+    loginContainer.append(pageTitle, userName, password, loginBtn)
 
-    loginContainer.append(userName, password)
-
-    const footerNavi = new bottomNavi({options : {
-      level1: [['list', () => {mySystemBoard.list()}], ['save', () => {mySystemBoard.save()}], ['clear', () => {mySystemBoard.clear()}]],
-      }
+    const auth = getAuth();
+    // Allready signed in
+    auth.onAuthStateChanged(function(user) {
+      if (user) {
+        globals.user = user;
+      } 
     });
 
-    loginPage.append(ticker.render(), loginContainer, footerNavi.render());
+    const login = (email, password ) => {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in 
+          const user = userCredential.user;
+          globals.user = user;
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        });
+    }
+
+    loginPage.append(loginContainer);
 
     this.render = () => {
       return loginPage;

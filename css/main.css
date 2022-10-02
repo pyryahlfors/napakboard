@@ -85,6 +85,29 @@ label {
     background: rgba(0,0,0,.3);
   }
 
+.page-login {
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,.6);
+  position: relative;
+  z-index: 1;
+  padding: var(--padding-base);
+  display: flex;
+  align-items: center;
+}
+
+.page-login:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../images/bgr_login.jpeg');
+  background-size: cover;
+  z-index: -1
+}
+
 .page-tick .status-ticker {grid-area: header;}
 .page-tick .board-container {grid-area: board;}
 .page-tick .bottom-navi {grid-area: footer;}
@@ -114,4 +137,23 @@ label {
 
 .route-list-item.selected > DIV {
   color: var(--color-black-dim);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: var(--padding-base);
+  background: rgba(0,0,0,.5);
+}
+
+
+.mb {
+  margin-bottom: 10px !important;
+}
+
+.mt {
+  margin-top: 10px !important;
 }

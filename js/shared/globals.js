@@ -58,7 +58,9 @@ let globalObjects = {
   },
 
   serverMessage :[] ,
-  standardMessage: []
+  standardMessage: [],
+
+  user: null
 };
 
 const globals = new Proxy(globalObjects, handler);
