@@ -78,7 +78,7 @@ label {
 .page-tick {
     height: 100%;
     display: grid;
-    grid-template-rows: 40px minmax(100%, 1fr) 70px;
+    grid-template-rows: 40px minmax(100%, 1fr) 40px;
     grid-template-areas: "header"
       "board"
       "footer";

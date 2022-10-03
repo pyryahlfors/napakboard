@@ -16,7 +16,7 @@
     line-height: 0;
     aspect-ratio: 6/11;
     grid-template-rows: repeat(22, 1fr);
-    height: calc( 100% - 70px - 40px );
+    height: calc( 100% - 40px - 40px ); /* - header 40px and footer 40px*/
     transform: translate3d(0,0,0);
 }
 
