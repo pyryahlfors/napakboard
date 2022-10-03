@@ -304,7 +304,9 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             if(selectedRoute) {
+                                // dont update current route in db if user is not authenticated
                                 if(!globals.user.email) {
+                                    this.clearRoute();
                                     this.loadRoute(selectedRoute);
                                 }
                                 else {
