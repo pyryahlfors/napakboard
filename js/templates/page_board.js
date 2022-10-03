@@ -11,14 +11,14 @@ class viewBoard {
     let ticker = new statusTicker();
 
     let mySystemBoard = new systemBoard({width: 11, height: 21});
-    tickPage.append(mySystemBoard.render());
-    mySystemBoard.getHoldSetup();
 
     const footerNavi = new bottomNavi({options : {
       level1: [['list', () => {mySystemBoard.list()}], ['save', () => {mySystemBoard.save()}], ['clear', () => {mySystemBoard.clear()}]],
       }
     });
-    tickPage.append(ticker.render(), footerNavi.render());
+
+    tickPage.append(ticker.render(), mySystemBoard.render(),footerNavi.render());
+    mySystemBoard.getHoldSetup();
 
     this.render = () => {
       return tickPage;
