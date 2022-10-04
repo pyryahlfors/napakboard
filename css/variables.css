@@ -1,36 +1,62 @@
 :root {
-    --color-theme-color1: rgba(70, 71, 83, 1);
-    --color-theme-color1-alpha: rgba(70, 71, 83, 0.8);
-    --color-theme-color1-accent: rgba(62, 63, 74, 1);
-    --color-theme-color1-alpha0: rgba(70, 71, 83, 0);
+    --color-theme-color0: rgb(0, 0, 0);
+    --color-theme-color1: #292a36;
+    --color-theme-color1-accent: #373844;
     --color-theme-color2: rgba(0, 255, 203, 1);
-    --color-theme-color2-alpha: rgba(0, 255, 203, 0.5);
-    --color-theme-color2-alpha0: rgba(0, 255, 203, 0);
+    --color-theme-color2-alpha: rgba(0, 255, 203, 0.3);
     --color-theme-color3: rgba(91, 110, 120, 1);
-    --color-theme-color3-alpha: rgba(91, 110, 120, 0.5);
+    --color-redpoint: #dc2c4b;
+    --color-flash: #d8d6b2; /* #F8F682; */
+    --color-onsight: #00ffcb;
 
-    --color-black-alpha40: rgba(0, 0, 0, 0.4);
-    --color-black: rgba(0, 0, 0, 0.8);
-    --color-black-alpha: rgba(0, 0, 0, 0.2);
-    --color-black-dim: rgba(0, 0, 0, 0.5);
-    --color-white: rgba(255, 255, 255, 0.9);
-    --color-white-dim: rgba(255, 255, 255, 0.5);
-    --tap-highlight: rgba(0, 0, 0, 0);
-    
     --color-top: #0f0;
     --color-intermediate:  #00f;
     --color-start: #f00;
-
-    --padding-base: 20px;
-    --padding-base-half: 10px;
-    --padding-base-wide: 20px 40px;
-
-    --padding-base-top-negative: -20px;
     
+    --color-black-alpha40: rgba(0, 0, 0, 0.4);
+    --color-black-alpha60: rgba(0, 0, 0, 0.6);
+    --color-black: rgba(0, 0, 0, 0.8);
+    --color-black-alpha: rgba(0, 0, 0, 0.2);
+    --color-white: rgba(255, 255, 255, 0.9);
+    --color-white-dim: rgba(255, 255, 255, 0.5);
+    --color-white-disabled: rgba(255, 255, 255, 0.2);
+    --color-white-disabled2: rgb(95, 95, 95);
+    --tap-highlight: rgba(0, 0, 0, 0);
+    --font-size-tiny: 0.5rem; /* 8px */
     --font-size-small: 0.65rem; /* 10px */
     --font-size-base: 0.81rem; /* 13px */
+    --font-size-medium: 0.75rem; /*12px*/
     --font-size-bodytext: 1.234rem; /* 20px - 1rem = 16px */
     --font-size-heading-1: 2rem; /* 32px */
-    --font-size-heading-2: 3rem; /* 48px */
-    
-}
+    --font-size-heading-2: 2rem; /* 48px */
+  
+    --padding-base: 20px;
+    --padding-base-double: 40px;
+    --padding-base-half: 10px;
+    --padding-base-wide: 20px 40px;
+    --padding-base-wide-horizontal: 40px;
+    --padding-base-negative: -20px;
+    --padding-base-negative-half: -10px;
+    --chart-bar-radius: 2px;
+    --base-btn-border-radius: 2px;
+  }
+  
+  @media (orientation: portrait) {
+    :root {
+      --font-size-bodytext: 1.234rem; /* 20px - 1rem = 16px */
+    }
+  }
+  
+  @media (orientation: landscape) {
+    :root {
+      --font-size-bodytext: 1rem; /* 16px */
+    }
+  }
+  
+  @media only screen and (max-width: 320px) {
+    :root {
+      --font-size-bodytext: 1rem; /* 16px */
+      --font-size-heading-1: 1.5rem;
+    }
+  }
+  

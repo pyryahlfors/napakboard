@@ -2,16 +2,28 @@
 import { dce, storeObserver }  from './shared/helpers.js';
 import { route } from './shared/route.js';
 import { globals } from './shared/globals.js';
+import { user } from './shared/user.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";  
-import { getFirestore, getDocs, collection, query, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getFirestore, collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
+
 
 import viewBoard from './templates/page_board.js';
 import viewLogin from './templates/page_login.js';
+import viewSignup from './templates/page_signup.js';
+import viewResetPassword from './templates/page_reset-password.js';
+import viewProfile from './templates/page_profile.js';
+
+import otc from './templates/partials/section_otc.js';
+
 const napakBoard = {
     initialize : () => {
         // Routes
-        globals.routes.login = viewLogin;
         globals.routes.board = viewBoard;
+        globals.routes.login = viewLogin;
+        globals.routes.profile = viewProfile;
+        globals.routes.resetPassword = viewResetPassword
+        globals.routes.signup = viewSignup;
 
         const firebaseConfig = {
             apiKey: "AIzaSyCIKa0tKpjQhPynVjNO3sehFmJrGqocyLA",
@@ -22,6 +34,7 @@ const napakBoard = {
             appId: "1:809734457516:web:adfea8fe6a0ac8c9983709"
         };
         const app = initializeApp(firebaseConfig);
+        window.app = app;
         // Firebase
         // Your web app's Firebase configuration
 
@@ -30,8 +43,16 @@ const napakBoard = {
         const appContainer = dce({el: 'DIV', cssClass : 'app'});
         const appContentContainer = dce({el: 'DIV', cssClass : 'page-content'});
   
-        appContainer.append(appContentContainer);
+        // Off the canvas navigation
+        let otcMenu = new otc();
+        let naviShadow = dce({el: 'DIV', cssClass: 'navi-shadow'});
 
+        // Shadow
+        naviShadow.addEventListener('click', () => {
+          document.body.classList.remove('otc');
+        }, false);
+
+        appContainer.append(appContentContainer, naviShadow, otcMenu.render());
         document.body.appendChild(appContainer);
 
     // Listen changes in routes collection and update list
@@ -61,26 +82,20 @@ const napakBoard = {
             id: 'routesUpdate',
             callback: notify
           });
-      
-    // Auth
-        const routeUser = () => {
-            if(!globals.user) {
-                route('login')
-            }
-            else {
-                route('board')
-            }
-        };
 
-        routeUser();
-        
-        storeObserver.add({
-            store: globals,
-            key: 'user',
-            id: 'routeUser',
-            callback: routeUser
+        let loginStatus = () => {
+          getAuth().onAuthStateChanged(function(authUser) {
+            if (authUser) {
+              user.login.isLoggedIn = true;
+              user.login = user.login;
+              route('board');
+            } else {
+              route('login');
+            }
           });
-
+        }
+              
+        loginStatus();
 
     }   
 }

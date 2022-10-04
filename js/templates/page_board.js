@@ -6,15 +6,42 @@ import statusTicker from '../components/ds-statusticker/index.js';
 
 class viewBoard {
   constructor() {
-    let tickPage = dce({el: 'DIV', cssClass: 'page-tick'});
+    let tickPage = dce({el: 'DIV', cssClass: 'page-board'});
 
     let ticker = new statusTicker();
 
     let mySystemBoard = new systemBoard({width: 11, height: 21});
 
-    const footerNavi = new bottomNavi({options : {
-      level1: [['list', () => {mySystemBoard.list()}], ['save', () => {mySystemBoard.save()}], ['clear', () => {mySystemBoard.clear()}]],
-      }
+    const footerNavi = new bottomNavi({options : 
+        {
+          list: { 
+            title: 'list',
+            icon: 'list',
+            link: () => {mySystemBoard.list()}
+            },
+          save: { 
+            title: 'save',
+            icon: 'save',
+            link: () => {mySystemBoard.save()}
+            },
+          clear: { 
+            title: 'clear',
+            icon: 'clear',
+            link: () => {mySystemBoard.clear()}
+            },
+          tick: { 
+            title: 'tick',
+            icon: 'tick',
+            disabled: true,
+            link: () => {mySystemBoard.clear()}
+            },
+            light: { 
+            title: 'light',
+            icon: 'light',
+            disabled: true,
+            link: () => {mySystemBoard.list()}
+            },
+          }
     });
 
     tickPage.append(ticker.render(), mySystemBoard.render(),footerNavi.render());

@@ -1,0 +1,167 @@
+.otc-navigation {
+  background: var(--color-theme-color1);
+  color: var(--color-white);
+  transform: translateX(100vw);
+  transition: transform 0.3s ease-in-out;
+  position: absolute;
+  top: 0;
+  width: 75vw;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  font-family: Roboto;
+  backdrop-filter: blur(0);
+  will-change: transform;
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+.otc-links-container {
+  width: 100%;
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+}
+
+.otc-links-container .sidenav-links {
+  align-self: flex-end;
+  position: relative;
+  color: var(--color-white);
+  margin: 0;
+  font-family: 'IBM Plex Mono';
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.otc-links-container h2 {
+  text-align: center;
+}
+
+.otc-links-container .sidenav-links a {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+  position: relative;
+  text-transform: uppercase;
+  background: var(--color-theme-color3);
+  color: var(--color-white);
+}
+
+.otc-links-container .sidenav-links a.selected {
+  background: var(--color-theme-color2);
+  color: var(--color-black);
+}
+
+.otc-links-container .sidenav-links a span {
+  position: relative;
+}
+
+.logo-container {
+  position: relative;
+  padding: var(--padding-base);
+  text-align: center;
+  color: var(--color-white);
+}
+
+.logo-container .logo {
+  height: 2em;
+  opacity: 0.9;
+}
+
+.logo-container span {
+  font-size: 0.75em;
+  position: absolute;
+  margin-top: 1.75em;
+  white-space: pre;
+}
+
+.login-info,
+.settings {
+  position: relative;
+  color: var(--color-white);
+  margin: 0;
+  font-family: 'IBM Plex Mono';
+  font-size: 12px;
+  font-weight: 300;
+  padding: var(--padding-base);
+  text-align: center;
+  width: 100%;
+}
+
+.login-info h3 {
+  margin: 0 0 10px;
+}
+
+.page-settings h3 {
+  margin: 20px auto 0;
+  text-align: center;
+}
+
+.otc-navigation .on-off-selector {
+  width: 100%;
+}
+
+.otc-navigation .on-off-switch {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.navi-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 997;
+  transition: all 300ms ease-in-out;
+  pointer-events: none;
+  height: 100%;
+}
+
+
+body.otc .navi-shadow {
+  background: rgba(0, 0, 0, 0.6);
+  pointer-events: all;
+}
+
+
+
+.sidenav-links {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+}
+
+.otc .otc-navigation {
+  transform: translateX(25vw);
+}
+
+.otc-links-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+
+@media only screen and (min-width: 1024px) and (min-height: 768px) { 
+  .otc-navigation {
+    width: 75%;
+    transform: translateX(0);
+    right: -100%;
+    transition: right 300ms ease-in-out;
+
+  }
+
+  .otc .otc-navigation {
+    transform: translateX(0);
+    right: 0;
+  }
+}

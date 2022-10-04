@@ -1,61 +1,76 @@
 import { dce } from '../shared/helpers.js';
- import dsButton     from '../components/ds-button/index.js';
-
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
-import { globals } from '../shared/globals.js';
+import { user } from '../shared/user.js';
 import { route } from '../shared/route.js';
+
+import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
 
 class viewLogin {
   constructor() {
-    let loginPage = dce({el: 'DIV', cssClass: 'page-login'});
 
-    let loginContainer = dce({el: 'form', cssClass: 'login-form'});
-    let pageTitle = dce({el: 'h3', content: 'Napak board - Login', cssClass: 'mb'});
-    let userName = dce({el: 'input', attrbs: [['name', 'email'], ['placeholder', 'User name']]});
-    let password = dce({el: 'input', attrbs: [['name', 'password'], ['placeholder', 'Password'], ["type", "password"]]});
-    let loginBtn = new dsButton({
-      title: 'Login', 
-      cssClass: 'btn btn_small preferred', 
-      thisOnClick: () => { login(userName.value, password.value) }
-    });
+    let container = dce({el: 'DIV', cssClass: 'page-login'});
+    let loginFormContainer = dce({el: 'SECTION', cssClass: 'login-form'});
 
-    let visitorBtn = new dsButton({
-      title: 'Visitor', 
-      cssClass: 'btn btn_small mt', 
-      thisOnClick: () => { 
-        globals.user = {dummy: true};
-        route('board') }
-    });
+    let loginTitle = dce({el: 'h3', cssClass: 'mb', content: 'Login'});
+    let loginForm = dce({el: 'FORM', attrbs: [['name', 'napak-login']]});
+    let userEmail = dce({el: 'INPUT', attrbs: [['placeholder', 'email'], ['name', 'email']]});
+    let password = dce({el: 'INPUT', attrbs: [['placeholder', 'Password'], ['type', 'password'], ['name', 'pass']]});
+    let loginError = dce({el: 'DIV', cssClass : 'login-error'});
+    let loginButton = dce({el: 'BUTTON', cssClass: 'mb btn_small preferred', content: 'Login'});
+    let noAccount = dce({el: 'DIV', cssClass: '', content: 'No account? '});
+    let createAccountLink = dce({el: 'A', cssClass: 'text-link', content: 'Create one!'});
+    noAccount.appendChild(createAccountLink);
+    createAccountLink.addEventListener('click', ()=>{
+      route('signup');
+    }, false)
 
-    
-    loginContainer.append(pageTitle, userName, password, loginBtn, visitorBtn)
+    let forgotPasswordContainer = dce({el: 'DIV', cssClass: 'mt mb'});
+    let forgotPasswordLink = dce({el: 'A', cssClass: 'mb mt text-link', content: 'Forgot password'})
+    forgotPasswordContainer.appendChild(forgotPasswordLink);
 
-    const auth = getAuth();
-    // Allready signed in
-    auth.onAuthStateChanged(function(user) {
-      if (user) {
-        globals.user = user;
-      } 
-    });
+    forgotPasswordLink.addEventListener('click', ()=>{
+      route('resetPassword');
+    }, false)
 
-    const login = (email, password ) => {
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed in 
-          const user = userCredential.user;
-          globals.user = user;
-          // ...
+
+
+
+    let doLogin = () => {
+      signInWithEmailAndPassword(getAuth(), userEmail.value, password.value)
+        .then(function(result) {
+          user.login.isLoggedIn = true;
+          user.name.email = result.user.email;
+          user.name.id = result.user.uid;
+          user.name.displayName = result.user.displayName;
+          user.login = user.login;
         })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-        });
-    }
+          // result.user.tenantId sho
+        .catch(function(error) {
+        // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          if (errorCode === 'auth/wrong-password') {
+            loginError.innerHTML = "Wrong password";
+          } else {
+            loginError.innerHTML = errorMessage; //body.error.message.replace(/_/g, " ");
+          }
+          console.log(error);
+          });
+    } 
 
-    loginPage.append(loginContainer);
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      doLogin();
+      return;
+    }, false)
+
+
+    loginForm.append(userEmail, password, loginError, loginButton)
+    loginFormContainer.append(loginTitle, loginForm, noAccount, forgotPasswordContainer);
+
+    container.append(loginFormContainer);
 
     this.render = () => {
-      return loginPage;
+      return container
     }
   }
 }

@@ -1,31 +1,51 @@
-import { dce } from '../../shared/helpers.js';
+import { dce, svg } from '../../shared/helpers.js';
 
  
 class bottomNavi {
     constructor( params ) {
-        this.naviContainer = dce({el: 'div', cssClass: 'bottom-navi'});
-/*
-        let naviHandle = dce({el: 'div', cssClass: 'navi-handle'});
-        this.naviContainer.appendChild(naviHandle);
+        this.naviContainer = dce({el: 'footer', cssClass: 'bottom-navi'});
 
-        naviHandle.addEventListener('click', () => {
-            this.naviContainer.isOpen = !this.naviContainer.isOpen;
-            this.naviContainer.style.height = this.naviContainer.isOpen ? '300px' : null;
-        }, false)
-*/
+        const navContainer = dce({el: 'NAV'});
 
-        for( let itemRows in params.options ) {
-            let routeOptionsContainer = dce({el: 'div', cssClass: 'nakki'});
+        // Load icons
+        this.icons = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 
-            params.options[itemRows].forEach(routeOptions => {
-                let naviItem = dce({el: 'div', cssClass: 'navi-item'});
-                naviItem.addEventListener('click', ( ) => { routeOptions[1]() }, false);
-                naviItem.innerHTML = routeOptions[0];
-                routeOptionsContainer.appendChild(naviItem)
-                });
+        fetch('/projects/napakboard/images/icons.svg')
+            .then(r => r.text())
+            .then(text => {
+                this.icons.innerHTML = text;
+                createLinks();
+            })
+            .catch(console.error.bind(console));
+            
+        const createLinks = () => {
+            let linksContainer = dce({el: 'div', cssClass: 'nav-bottom-links'});
+            for( let navigationItems in params.options ) {
+                let naviItem = dce({el: 'a', cssClass: `link-container`});
+                if(params.options[navigationItems].disabled) {naviItem.classList.add('disabled')}
+                naviItem.addEventListener('click', () => {
+                    if(params.options[navigationItems].disabled) {
+                        return;
+                    }
+                    params.options[navigationItems].link()
+                }, false);
 
-            this.naviContainer.append(routeOptionsContainer)    
+                let naviIcon = svg({el: 'svg', attrbs: [['viewBox', '0 0 24 24']]});
+                naviIcon.append(this.icons.querySelector(`.${params.options[navigationItems].icon}`).cloneNode(true));
+                naviItem.append(naviIcon, document.createTextNode(params.options[navigationItems].title))
+                linksContainer.appendChild(naviItem)
+            }
+            navContainer.append(linksContainer)    
         }
+
+        let toggleOtc = dce({el: 'A', cssClass: 'more'});
+        let toggleSpan = dce({el: 'SPAN', content: '→'});
+        toggleOtc.appendChild(toggleSpan)
+
+        toggleOtc.addEventListener('click', () => { document.body.classList.toggle('otc')}, false);
+
+        navContainer.appendChild(toggleOtc);
+        this.naviContainer.append(navContainer)
 
 
         this.render = () => {

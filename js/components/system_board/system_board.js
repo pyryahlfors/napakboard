@@ -1,9 +1,11 @@
 import { dce, svg, storeObserver} from '../../shared/helpers.js';
 import { globals } from '../../shared/globals.js';
+import { user } from '../../shared/user.js';
 import { handleDate } from '../../shared/date.js';
 import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
 import { getFirestore, getDoc, collection, query, doc, onSnapshot, updateDoc , addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
 
 class systemBoard {
     constructor( params ) {
@@ -135,38 +137,35 @@ class systemBoard {
 /**
  * Listen changes in DB and act
  */
-            // only authenticated user will get live updates
-            if(globals.user.email) {
-                let self = this;
-                const dbQuery = query(collection(this.db, 'current'));
-                onSnapshot(dbQuery, (querySnapshot) => {
-                    const routes = [];
-                    querySnapshot.forEach((doc) => {
-                        let queryData = doc.data();
-                        // clear route - do not update DB
-                        let routeId = queryData.routeId;
-                        let routeData = queryData.routeData;
+            let self = this;
+            const dbQuery = query(collection(this.db, 'current'));
+            onSnapshot(dbQuery, (querySnapshot) => {
+                const routes = [];
+                querySnapshot.forEach((doc) => {
+                    let queryData = doc.data();
+                    // clear route - do not update DB
+                    let routeId = queryData.routeId;
+                    let routeData = queryData.routeData;
 
-                        // If route is selected - load it 
-                        if(routeId) {
-                            self.clearRoute();
-                            self.loadRoute(routeId, false)
-                        }
+                    // If route is selected - load it 
+                    if(routeId) {
+                        self.clearRoute();
+                        self.loadRoute(routeId, false)
+                    }
 
-                        // If holds are selected - show selected 
-                        else if(routeData) {
-                            globals.selectedRoute = null;
-                            self.clearRoute();
-                            self.updateRoute(routeData.holdSetup);
-                        }
-                        
-                        else {
-                            globals.selectedRoute = null;
-                            self.clearRoute();
-                        }
-                    });
+                    // If holds are selected - show selected 
+                    else if(routeData) {
+                        globals.selectedRoute = null;
+                        self.clearRoute();
+                        self.updateRoute(routeData.holdSetup);
+                    }
+                    
+                    else {
+                        globals.selectedRoute = null;
+                        self.clearRoute();
+                    }
                 });
-            }
+            });
         }
 
         this.updateRoute = ( holdSetup )=>  {
@@ -189,10 +188,8 @@ class systemBoard {
             const routeData = {holdSetup : holdSetup};
             // Update currentRoute to firestore - server will read this and update leds
 
-            if(globals.user.email) {
-                const routeRef = doc(this.db, "current", "currentRoute");
-                updateDoc(routeRef, { routeData: routeData });
-            }
+            const routeRef = doc(this.db, "current", "currentRoute");
+            updateDoc(routeRef, { routeData: routeData });
         }
 
         this.loadRoute = ( routeId ) => {
@@ -304,17 +301,10 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             if(selectedRoute) {
-                                // dont update current route in db if user is not authenticated
-                                if(!globals.user.email) {
-                                    this.clearRoute();
-                                    this.loadRoute(selectedRoute);
-                                }
-                                else {
-                                    (async () => {
-                                        const routeRef = doc(this.db, "current", "currentRoute");
-                                        await updateDoc(routeRef, { routeId : selectedRoute, holdSetup: false });
-                                    })();
-                                }
+                                (async () => {
+                                    const routeRef = doc(this.db, "current", "currentRoute");
+                                    await updateDoc(routeRef, { routeId : selectedRoute, holdSetup: false });
+                                })();
                             }
                             modalWindow.close()
                         }
@@ -347,16 +337,10 @@ class systemBoard {
                         thisOnClick: () => {
                             globals.selectedRoute = null;
                             // only update for authenticated users
-                            if(globals.user.email) {
-                                (async () => {
-                                    const routeRef = doc(this.db, "current", "currentRoute");
-                                    await updateDoc(routeRef, { routeId : false, routeData: false });
-                                })();
-                            }
-
-                            else {
-                                this.clearRoute();
-                            }
+                            (async () => {
+                                const routeRef = doc(this.db, "current", "currentRoute");
+                                await updateDoc(routeRef, { routeId : false, routeData: false });
+                            })();
 
                             modalWindow.close()
                         }
@@ -386,7 +370,7 @@ class systemBoard {
             let saveDialog = dce({el:'FORM'});
 
             let routeName = dce({el: 'input', attrbs: [['name', 'routename'], ['placeholder', 'Route name']]});
-            let setter = dce({el: 'input', attrbs: [['placeholder', 'Setter']]});
+            let setter = dce({el: 'input', attrbs: [['placeholder', 'Setter'], ['value', getAuth().currentUser.displayName || '']]});
             let grade = dce({el: 'select', attrbs: [['placeholder', 'Setter']]});
 
             for(let i=0, j=globals.grades.font.length; i<j; i++) {
@@ -448,8 +432,6 @@ class systemBoard {
             }
 
             if(routeReady) {
-                if(!globals.user.email) { return }
-
                 // Add a new document in collection "cities"
                 ( async () => {
                     await addDoc(collection(this.db, "routes"), {
