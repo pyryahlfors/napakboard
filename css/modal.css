@@ -31,7 +31,7 @@
     padding: var(--padding-base-half) var(--padding-base);
     color: var(--color-white);
     box-shadow: 0 0 10px 10px rgba(0,0,0,.2);
-    z-index: 1
+    z-index: 2;
   }
   
 .modal-window .modal-content {
@@ -63,5 +63,6 @@
   background: #373844;
   padding: 10px;
   position: sticky;
-  top: var(--padding-base-top-negative)
+  top: var(--padding-base-negative);
+  z-index: 1
 }
