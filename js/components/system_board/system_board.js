@@ -4,7 +4,7 @@ import { user } from '../../shared/user.js';
 import { handleDate } from '../../shared/date.js';
 import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
-import { getFirestore, getDoc, collection, query, doc, onSnapshot, updateDoc , addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { addDoc, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
 
 class systemBoard {
@@ -89,6 +89,9 @@ class systemBoard {
         }
         sheet.insertRule(`.board-container {grid-template-areas: ${gridTemplateAreas}}`);
 
+/**
+ * Get hold setup
+ */
         this.getHoldSetup = () => {
             this.holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 
@@ -156,24 +159,32 @@ class systemBoard {
                     // If holds are selected - show selected 
                     else if(routeData) {
                         globals.selectedRoute = null;
+                        globals.selectedRouteId = null;
                         self.clearRoute();
                         self.updateRoute(routeData.holdSetup);
                     }
                     
                     else {
                         globals.selectedRoute = null;
+                        globals.selectedRouteId = null;
                         self.clearRoute();
                     }
                 });
             });
         }
 
+/**
+ * Update route (show selected holds)
+ */
         this.updateRoute = ( holdSetup )=>  {
             for ( let hold in holdSetup ) {
                 this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
                 }
         }
 
+/** 
+ * Update firestore to light up the leds
+ */
         this.updateLeds = ( ) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
 
@@ -192,6 +203,9 @@ class systemBoard {
             updateDoc(routeRef, { routeData: routeData });
         }
 
+/**
+ * Load route from firebase
+ */
         this.loadRoute = ( routeId ) => {
             ( async () => {
                 const docRef = doc(this.db, "routes", routeId);
@@ -202,6 +216,8 @@ class systemBoard {
                     let holdSetup = routeData.holdSetup;
 
                     globals.selectedRoute = routeData['name'];
+                    globals.selectedRouteId = routeId;
+
         
                     for ( let hold in holdSetup ) {
                         this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
@@ -213,7 +229,9 @@ class systemBoard {
                 })();
             }
         
-
+/**
+ * Get list of routes
+ */
         this.list = () => {
             let selectedRoute = null;
             let listDialog = dce({el:'div'});
@@ -239,6 +257,8 @@ class systemBoard {
                 globals.boardRoutes.forEach((routeData) => {
                     // doc.data() is never undefined for query doc snapshots
                     let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
+                    if( globals.selectedRouteId === routeData.id ) { routeItem.classList.add('selected'); }
+                    if( routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid) ) { routeItem.classList.add('climbed'); }
                     let routeName = dce({el: 'h3', content: routeData.name});
                     let routeDetails = dce({el: 'div'});
                     let routeGrade = dce({el: 'div', cssClass: `grade-legend ${globals.difficulty[routeData.grade]}`, content: globals.grades.font[routeData.grade]});
@@ -262,6 +282,7 @@ class systemBoard {
                 listDialog.append(routelistContainer)
             }
 
+// Sorting options
             const updateRouteListSorting = ( ) => {
                 if(globals.routeSorting === 'name')  { globals.boardRoutes = globals.boardRoutes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)); }
                 if(globals.routeSorting === 'grade') { globals.boardRoutes = globals.boardRoutes.sort((a,b) => a.grade - b.grade)};
@@ -303,7 +324,7 @@ class systemBoard {
                             if(selectedRoute) {
                                 (async () => {
                                     const routeRef = doc(this.db, "current", "currentRoute");
-                                    await updateDoc(routeRef, { routeId : selectedRoute, holdSetup: false });
+                                    await updateDoc(routeRef, { routeId : selectedRoute, holdSetup: null });
                                 })();
                             }
                             modalWindow.close()
@@ -314,8 +335,12 @@ class systemBoard {
             mother.append(modalWindow)
 
         }
+
         this.next = () => {}
 
+/**
+ * Clear route modal
+ */
         this.clear = () => {
             let clearDialog = dce({el:'div'});
             let confirm = dce({el: 'p', content: 'Confirm route clear'});
@@ -350,6 +375,9 @@ class systemBoard {
             mother.append(modalWindow)
         }
 
+/**
+ * Clear selected holds
+ */
         this.clearRoute = ( ) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
             let start = this.boardContainer.querySelectorAll('.start'); 
@@ -362,10 +390,12 @@ class systemBoard {
             globals.selectedRoute = null;
         }
 
+// Helper
         this.clearClassNames = ( elems, cssClass ) => {
             elems.forEach((el) => {el.classList.remove(cssClass)});
         }
 
+// Save modal
         this.save = ( params ) => {
             let saveDialog = dce({el:'FORM'});
 
@@ -408,6 +438,9 @@ class systemBoard {
             mother.append(modalWindow)
         }
 
+/**
+ * Validate save form and store into firebase
+ */
         this.validateAndSave = ( params) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
 
@@ -446,6 +479,18 @@ class systemBoard {
                 })();
             }
         }
+
+        this.tick = ( ) => {
+            ( async () => {
+                const routeReg = doc(this.db, "routes", globals.selectedRouteId);
+                updateDoc(routeReg, { 'ticks': arrayUnion(getAuth().currentUser.uid)}, {merge: true});
+    
+            })();
+            ( async () => {
+                const userRef = doc(this.db, "users", getAuth().currentUser.uid);
+                updateDoc(userRef, { 'ticks': arrayUnion(globals.selectedRouteId)}, {merge: true});
+        })();
+    }
 
         this.render = () => {
             return this.boardContainer;

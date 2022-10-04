@@ -122,10 +122,12 @@ label {
 .route-list-item {
     text-transform: uppercase;
     margin: 0 0 10px;
-    padding: 10px;
+    padding: var(--padding-base-half);
     color: var(--color-white);
     background: var(--color-theme-color1);
     border-radius: 4px;
+    position: relative;
+    overflow: hidden;
 }
 .route-list-item > DIV {
   display: flex;
@@ -137,10 +139,28 @@ label {
   font-weight: bold;
   margin-bottom: 8px;
 }
+
+.route-list-item.climbed.selected,
 .route-list-item.selected {
     background: var(--color-theme-color2);
     color: var(--color-black)
 }
+
+.route-list-item.climbed {
+  padding: var(--padding-base-half) var(--padding-base-half) var(--padding-base-half) var(--padding-base);
+  background: var(--color-theme-color3);
+}
+.route-list-item.climbed::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  height: 100%;
+  width: 8px;
+  background: var(--color-black-alpha60);
+}
+
 
 .route-list-item.selected > DIV {
   color: var(--color-black-dim);

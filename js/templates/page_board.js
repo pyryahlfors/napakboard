@@ -32,11 +32,10 @@ class viewBoard {
           tick: { 
             title: 'tick',
             icon: 'tick',
-            disabled: true,
-            link: () => {mySystemBoard.clear()}
+            link: () => {mySystemBoard.tick()}
             },
-            light: { 
-            title: 'light',
+          light: { 
+            title: 'light up',
             icon: 'light',
             disabled: true,
             link: () => {mySystemBoard.list()}
