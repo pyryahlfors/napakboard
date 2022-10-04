@@ -306,7 +306,6 @@ class systemBoard {
 
             updateRouteList(); 
 
-
             let mother = document.querySelector('.app');
             let modalWindow = new dsModal({
                 title: 'Route list',
@@ -333,7 +332,6 @@ class systemBoard {
                 }],
             });
             mother.append(modalWindow)
-
         }
 
         this.next = () => {}
@@ -481,16 +479,47 @@ class systemBoard {
         }
 
         this.tick = ( ) => {
-            ( async () => {
-                const routeReg = doc(this.db, "routes", globals.selectedRouteId);
-                updateDoc(routeReg, { 'ticks': arrayUnion(getAuth().currentUser.uid)}, {merge: true});
-    
-            })();
-            ( async () => {
-                const userRef = doc(this.db, "users", getAuth().currentUser.uid);
-                updateDoc(userRef, { 'ticks': arrayUnion(globals.selectedRouteId)}, {merge: true});
-        })();
-    }
+            let mother = document.querySelector('.app');
+
+            // check if user has already climbed selected route
+            let routeTicks = globals.boardRoutes.find(({ id }) => id === globals.selectedRouteId);
+            let climbed = routeTicks.ticks && routeTicks.ticks.includes(getAuth().currentUser.uid);
+                        
+            let tickDialog = dce({el:'div'});
+            let confirm = dce({el: 'p', content: climbed ? 'You have already ticked this route' : 'Tick route?'});
+            tickDialog.append(confirm);
+
+
+            let modalWindow = new dsModal({
+                title: 'Tick route',
+                content: tickDialog,
+                options: [{
+                    cancel: new dsButton({
+                        title: 'Cancel', 
+                        cssClass: 'btn btn_small', 
+                        thisOnClick: () => { modalWindow.close() }
+                    }),
+                    tick: new dsButton({
+                        title: 'Tick', 
+                        cssClass: 'btn btn_small preferred', 
+                        thisOnClick: () => {
+                            if(globals.selectedRouteId) {
+                                ( async () => {
+                                    const routeReg = doc(this.db, "routes", globals.selectedRouteId);
+                                    updateDoc(routeReg, { 'ticks': arrayUnion(getAuth().currentUser.uid)}, {merge: true});
+                                })();
+                                ( async () => {
+                                    const userRef = doc(this.db, "users", getAuth().currentUser.uid);
+                                    updateDoc(userRef, { 'ticks': arrayUnion(globals.selectedRouteId)}, {merge: true});
+                                })();
+                            }
+                            modalWindow.close()
+                        }
+                    })
+                }],
+            });
+            mother.append(modalWindow)
+        }
 
         this.render = () => {
             return this.boardContainer;
