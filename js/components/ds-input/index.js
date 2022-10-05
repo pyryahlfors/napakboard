@@ -1,4 +1,6 @@
-class dsButton extends HTMLElement {
+import { dce } from '../../shared/helpers.js';
+
+class dsInput extends HTMLElement {
   constructor( params ) {
     super();
     this.params = params || {};
@@ -12,23 +14,25 @@ class dsButton extends HTMLElement {
   disconnectedCallback() {}
 
   render() {
-    while (this.shadow.childNodes.length > 1) { this.shadow.removeChild(this.shadow.lastChild); } // do not remove stylesheet
+    let inputContainer = dce({el: 'div'});
+    inputContainer.className = this.params.cssClass || null;
 
-    let button = document.createElement("button");
-    button.className = this.params.cssClass || '';
+    // add label
+    inputContainer.appendChild(document.createTextNode(`${this.params.label || ''}`))
 
-    button.appendChild(document.createTextNode(`${this.params.title || ''}`))
-
-    if ( this.params.thisOnClick ) {
-      button.addEventListener('click', () => { 
-          this.params.thisOnClick();
-      })
+    let input = dce({el: 'input'})
+    if(this.params.attrbs) {
+      this.params.attrbs.forEach(attrb => {
+          input.setAttribute(attrb[0], attrb[1])
+      }); 
     }
 
-    this.append(button);
+    inputContainer.append(input)
+
+    this.append(inputContainer);
     }
 }
 
-window.customElements.define('ds-button', dsButton);
+window.customElements.define('ds-input', dsInput);
 
-export default dsButton;
+export default dsInput;

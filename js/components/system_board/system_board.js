@@ -1,9 +1,10 @@
 import { dce, svg, storeObserver} from '../../shared/helpers.js';
 import { globals } from '../../shared/globals.js';
-import { user } from '../../shared/user.js';
 import { handleDate } from '../../shared/date.js';
 import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
+import dsInput from '../../components/ds-input/index.js';
+import dsSelect from '../../components/ds-select/index.js';
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
 
@@ -397,14 +398,24 @@ class systemBoard {
         this.save = ( params ) => {
             let saveDialog = dce({el:'FORM'});
 
-            let routeName = dce({el: 'input', attrbs: [['name', 'routename'], ['placeholder', 'Route name']]});
-            let setter = dce({el: 'input', attrbs: [['placeholder', 'Setter'], ['value', getAuth().currentUser.displayName || '']]});
-            let grade = dce({el: 'select', attrbs: [['placeholder', 'Setter']]});
+            let routeName = new dsInput({label: 'Route name', attrbs: [
+                ['placeholder', ''],
+                ['name', 'routename']
+            ]});
 
+            let setter = new dsInput({label: 'Route setter', attrbs: [
+                ['placeholder', ''],
+                ['name', 'routesetter'],
+                ['value', getAuth().currentUser.displayName || '']
+            ]});
+
+            let gradeOptions = Array();
             for(let i=0, j=globals.grades.font.length; i<j; i++) {
-                let option = dce({el: 'option', content: globals.grades.font[i], attrbs: [['value', i]]})
-                grade.appendChild(option)
+                gradeOptions.push([globals.grades.font[i], i]);
             }
+
+            let grade = new dsSelect({label: 'Grade', options: gradeOptions})
+
 
             saveDialog.append(routeName, setter, grade);
 
@@ -483,6 +494,7 @@ class systemBoard {
 
             // check if user has already climbed selected route
             let routeTicks = globals.boardRoutes.find(({ id }) => id === globals.selectedRouteId);
+            if(!routeTicks) { return; }
             let climbed = routeTicks.ticks && routeTicks.ticks.includes(getAuth().currentUser.uid);
                         
             let tickDialog = dce({el:'div'});
@@ -490,13 +502,13 @@ class systemBoard {
             tickDialog.append(confirm);
 
             if(!climbed) {
-                let routeTickForm = dce({el: 'FORM'});
+                let routeTickForm = dce({el: 'FORM', attrbs: [['name', 'tick-form']]});
                 let tickTypeOptions = [['flash'], ['redpoint']];
                 let tickTypeMenu = dce({el: 'ul', cssClass: 'radio-menu'});
 
                 tickTypeOptions.forEach((tickOption, count) => {
                     let option = dce({el: 'li'});
-                    let radioButton = dce({el: 'input', attrbs: [["name", "sort"], ["value", tickOption[0]], ["type", "radio"], ["id", `tick-${tickOption[0]}`]]});
+                    let radioButton = dce({el: 'input', attrbs: [["name", "tick"], ["value", tickOption[0]], ["type", "radio"], ["id", `tick-${tickOption[0]}`]]});
                     radioButton.checked = ( count === 0 ) ? 'checked' : null;
                     option.appendChild(radioButton)
                     option.appendChild(dce({el: 'label', attrbs:[["for", `sort-${tickOption[0]}`]], content: tickOption[0]}))
@@ -532,7 +544,10 @@ class systemBoard {
                                     })();
                                     ( async () => {
                                         const userRef = doc(this.db, "users", getAuth().currentUser.uid);
-                                        updateDoc(userRef, { 'ticks': arrayRemove(globals.selectedRouteId)}, {merge: true});
+                                        const docSnap = await getDoc(userRef);
+
+                                        let ticks = docSnap.data().ticks.filter(route => route.routeId != globals.selectedRouteId);
+                                        updateDoc(userRef, { 'ticks': ticks}, {merge: true});
                                     })();
                                 }
 
@@ -544,7 +559,7 @@ class systemBoard {
                                     })();
                                     ( async () => {
                                         const userRef = doc(this.db, "users", getAuth().currentUser.uid);
-                                        updateDoc(userRef, { 'ticks': arrayUnion(globals.selectedRouteId)}, {merge: true});
+                                        updateDoc(userRef, { 'ticks': arrayUnion({'routeId': globals.selectedRouteId, 'type': document.forms['tick-form'].tick.value })}, {merge: true});
                                     })();
                                 }
                             }
