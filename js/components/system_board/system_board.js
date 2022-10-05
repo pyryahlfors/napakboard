@@ -4,7 +4,7 @@ import { user } from '../../shared/user.js';
 import { handleDate } from '../../shared/date.js';
 import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
-import { addDoc, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
 
 class systemBoard {
@@ -486,9 +486,28 @@ class systemBoard {
             let climbed = routeTicks.ticks && routeTicks.ticks.includes(getAuth().currentUser.uid);
                         
             let tickDialog = dce({el:'div'});
-            let confirm = dce({el: 'p', content: climbed ? 'You have already ticked this route' : 'Tick route?'});
+            let confirm = dce({el: 'p', content: climbed ? 'You have already ticked this route. Want to remove it?' : 'Tick route?'});
             tickDialog.append(confirm);
 
+            if(!climbed) {
+                let routeTickForm = dce({el: 'FORM'});
+                let tickTypeOptions = [['flash'], ['redpoint']];
+                let tickTypeMenu = dce({el: 'ul', cssClass: 'radio-menu'});
+
+                tickTypeOptions.forEach((tickOption, count) => {
+                    let option = dce({el: 'li'});
+                    let radioButton = dce({el: 'input', attrbs: [["name", "sort"], ["value", tickOption[0]], ["type", "radio"], ["id", `tick-${tickOption[0]}`]]});
+                    radioButton.checked = ( count === 0 ) ? 'checked' : null;
+                    option.appendChild(radioButton)
+                    option.appendChild(dce({el: 'label', attrbs:[["for", `sort-${tickOption[0]}`]], content: tickOption[0]}))
+                    tickTypeMenu.appendChild(option)
+                });
+    
+
+                routeTickForm.appendChild(tickTypeMenu)
+                tickDialog.appendChild(routeTickForm);
+    
+            }
 
             let modalWindow = new dsModal({
                 title: 'Tick route',
@@ -500,18 +519,34 @@ class systemBoard {
                         thisOnClick: () => { modalWindow.close() }
                     }),
                     tick: new dsButton({
-                        title: 'Tick', 
+                        title: climbed ? 'Remove tick' : 'Tick', 
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             if(globals.selectedRouteId) {
-                                ( async () => {
-                                    const routeReg = doc(this.db, "routes", globals.selectedRouteId);
-                                    updateDoc(routeReg, { 'ticks': arrayUnion(getAuth().currentUser.uid)}, {merge: true});
-                                })();
-                                ( async () => {
-                                    const userRef = doc(this.db, "users", getAuth().currentUser.uid);
-                                    updateDoc(userRef, { 'ticks': arrayUnion(globals.selectedRouteId)}, {merge: true});
-                                })();
+
+                                // remove tick
+                                if ( climbed ) {
+                                    ( async () => {
+                                        const routeReg = doc(this.db, "routes", globals.selectedRouteId);
+                                        updateDoc(routeReg, { 'ticks': arrayRemove(getAuth().currentUser.uid)}, {merge: true});
+                                    })();
+                                    ( async () => {
+                                        const userRef = doc(this.db, "users", getAuth().currentUser.uid);
+                                        updateDoc(userRef, { 'ticks': arrayRemove(globals.selectedRouteId)}, {merge: true});
+                                    })();
+                                }
+
+                                // Add tick
+                                else {
+                                    ( async () => {
+                                        const routeReg = doc(this.db, "routes", globals.selectedRouteId);
+                                        updateDoc(routeReg, { 'ticks': arrayUnion(getAuth().currentUser.uid)}, {merge: true});
+                                    })();
+                                    ( async () => {
+                                        const userRef = doc(this.db, "users", getAuth().currentUser.uid);
+                                        updateDoc(userRef, { 'ticks': arrayUnion(globals.selectedRouteId)}, {merge: true});
+                                    })();
+                                }
                             }
                             modalWindow.close()
                         }

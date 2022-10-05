@@ -29,7 +29,6 @@ select {
   color: var(--color-white);
   font-family: 'Roboto';
   line-height: 3em;
-  text-indent: var(--padding-base-half);
   margin: 0 auto var(--padding-base);
   width: 100%;
   user-select: auto;
@@ -38,6 +37,8 @@ select {
   font-size: var(--font-size-base);
   transition: box-shadow 300ms ease-in-out;
   -webkit-appearance: none;
+  text-indent: 0;
+  padding-left: var(--padding-base-half);
 }
 
 input:disabled {
