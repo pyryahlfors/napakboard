@@ -64,13 +64,17 @@ const napakBoard = {
              routeData.id = doc.id;
              routes.push(routeData);
          });
+
+         if(routes.length !== globals.boardRoutes.length) {
+          globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
+          globals.standardMessage = globals.standardMessage;
+         }
+
          globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-         globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
-         globals.standardMessage = globals.standardMessage;
          });
 
          const notify = () => {
-            globals.serverMessage.push({message : 'Fetching new data', timeout: 1, id : 'tick-sync'});
+            globals.serverMessage.push({message : 'Updating route data', timeout: 1, id : 'tick-sync'});
             globals.serverMessage = globals.serverMessage;
             globals.serverMessage[0].finished = true; 
             globals.serverMessage = globals.serverMessage;

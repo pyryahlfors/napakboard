@@ -60,7 +60,7 @@ input:invalid:not(:placeholder-shown):focus {
 
 
 
-.radio-menu {
+.radio-menu ul {
   display: flex;
   list-style-type:none;
   margin: 0;

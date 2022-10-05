@@ -5,6 +5,7 @@ import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
 import dsInput from '../../components/ds-input/index.js';
 import dsSelect from '../../components/ds-select/index.js';
+import dsRadio from '../ds-radio/index.js';
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
 
@@ -237,17 +238,30 @@ class systemBoard {
             let selectedRoute = null;
             let listDialog = dce({el:'div'});
             let sortOptionsContainer = dce({el: 'form', cssClass: 'sticky', content: 'Sort by:', attrbs: [["name", "routesort"]]});
-            let sortMenu = dce({el: 'ul', cssClass: 'radio-menu'});
-            let sortOptions = [['name'], ['grade'], ['date']];
-            sortOptions.forEach((sortOption) => {
-                let option = dce({el: 'li'});
-                let radioButton = dce({el: 'input', attrbs: [["name", "sort"], ["value", sortOption[0]], ["type", "radio"], ["id", `sort-${sortOption[0]}`]]});
-                radioButton.checked = globals.routeSorting == sortOption[0] ? "checked" : null;
-                option.appendChild(radioButton)
-                option.appendChild(dce({el: 'label', attrbs:[["for", `sort-${sortOption[0]}`]], content: sortOption[0]}))
-                option.addEventListener('change', () => { globals.routeSorting = document.forms['routesort'].sort.value; }, false);
-                sortMenu.appendChild(option)
-            })
+
+            let sortMenu = new dsRadio({
+                cssClass: 'radio-menu',
+                title: 'Tick type', 
+                name: 'sort',
+                options: [
+                    {
+                        title: "name", 
+                        value: "name", 
+                        checked: true
+                    }, 
+                    {
+                        title: "grade",
+                        value: "grade"
+                    },
+                    {
+                        title: "date",
+                        value: "date"
+                    }
+                ],
+                onchange: () => { globals.routeSorting = document.forms['routesort'].sort.value }
+            });
+
+
 
             sortOptionsContainer.append(sortMenu)
             listDialog.append(sortOptionsContainer);
@@ -324,7 +338,7 @@ class systemBoard {
                             if(selectedRoute) {
                                 (async () => {
                                     const routeRef = doc(this.db, "current", "currentRoute");
-                                    await updateDoc(routeRef, { routeId : selectedRoute, holdSetup: null });
+                                    await updateDoc(routeRef, { routeId : selectedRoute, routeData: null });
                                 })();
                             }
                             modalWindow.close()
@@ -503,20 +517,24 @@ class systemBoard {
 
             if(!climbed) {
                 let routeTickForm = dce({el: 'FORM', attrbs: [['name', 'tick-form']]});
-                let tickTypeOptions = [['flash'], ['redpoint']];
-                let tickTypeMenu = dce({el: 'ul', cssClass: 'radio-menu'});
 
-                tickTypeOptions.forEach((tickOption, count) => {
-                    let option = dce({el: 'li'});
-                    let radioButton = dce({el: 'input', attrbs: [["name", "tick"], ["value", tickOption[0]], ["type", "radio"], ["id", `tick-${tickOption[0]}`]]});
-                    radioButton.checked = ( count === 0 ) ? 'checked' : null;
-                    option.appendChild(radioButton)
-                    option.appendChild(dce({el: 'label', attrbs:[["for", `sort-${tickOption[0]}`]], content: tickOption[0]}))
-                    tickTypeMenu.appendChild(option)
-                });
-    
+                let tickType = new dsRadio({
+                    cssClass: 'radio-menu',
+                    title: 'Tick type', 
+                    name: 'tick',
+                    options: [
+                        {
+                            title: "flash", 
+                            value: "flash", 
+                            checked: true
+                        }, 
+                        {
+                            title: "redpoint",
+                            value: "redpoint"
+                        }
+                    ]});
 
-                routeTickForm.appendChild(tickTypeMenu)
+                routeTickForm.append(tickType);
                 tickDialog.appendChild(routeTickForm);
     
             }
@@ -549,6 +567,9 @@ class systemBoard {
                                         let ticks = docSnap.data().ticks.filter(route => route.routeId != globals.selectedRouteId);
                                         updateDoc(userRef, { 'ticks': ticks}, {merge: true});
                                     })();
+
+                                    globals.standardMessage.push({message : `Tick removed`, timeout: 1});
+                                    globals.standardMessage = globals.standardMessage;
                                 }
 
                                 // Add tick
@@ -561,6 +582,9 @@ class systemBoard {
                                         const userRef = doc(this.db, "users", getAuth().currentUser.uid);
                                         updateDoc(userRef, { 'ticks': arrayUnion({'routeId': globals.selectedRouteId, 'type': document.forms['tick-form'].tick.value })}, {merge: true});
                                     })();
+
+                                    globals.standardMessage.push({message : `${globals.selectedRoute} ticked`, timeout: 1});
+                                    globals.standardMessage = globals.standardMessage;
                                 }
                             }
                             modalWindow.close()

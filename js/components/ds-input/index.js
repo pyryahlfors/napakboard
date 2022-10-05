@@ -3,7 +3,8 @@ import { dce } from '../../shared/helpers.js';
 class dsInput extends HTMLElement {
   constructor( params ) {
     super();
-    this.params = params || {};
+    Object.assign( this, params );
+
     this.render = this.render.bind(this)
   }
 
@@ -15,14 +16,14 @@ class dsInput extends HTMLElement {
 
   render() {
     let inputContainer = dce({el: 'div'});
-    inputContainer.className = this.params.cssClass || null;
+    inputContainer.className = this.cssClass || null;
 
     // add label
-    inputContainer.appendChild(document.createTextNode(`${this.params.label || ''}`))
+    inputContainer.appendChild(document.createTextNode(`${this.label || ''}`))
 
-    let input = dce({el: 'input'})
-    if(this.params.attrbs) {
-      this.params.attrbs.forEach(attrb => {
+    let input = dce({el: 'input', attrbs: [["type", this.type || 'text']]})
+    if(this.attrbs) {
+      this.attrbs.forEach(attrb => {
           input.setAttribute(attrb[0], attrb[1])
       }); 
     }
