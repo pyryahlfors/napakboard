@@ -556,9 +556,7 @@ class systemBoard {
             mother.append(modalWindow)
         }
 
-        this.render = () => {
-            return this.boardContainer;
-        }
+        this.render = () => { return this.boardContainer; }
 
     }
 }
