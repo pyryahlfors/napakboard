@@ -232,6 +232,7 @@
 	"f20": {"holdColor": "#fff", "hold" : "moon-65", "rotation": 135},
 	"g20": {"holdColor": "#000"},
 	"h20": {"holdColor": "#000", "hold" : "moon-140", "rotation": 180},
+	"h21": {"holdColor": "#fff"},
 	"i20": {"holdColor": "#00f"},
 	"j20": {"holdColor": "#fff", "hold" : "moon-51", "rotation": -135},
 
