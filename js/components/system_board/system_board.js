@@ -6,14 +6,47 @@ import dsButton from '../../components/ds-button/index.js';
 import dsInput from '../../components/ds-input/index.js';
 import dsSelect from '../../components/ds-select/index.js';
 import dsRadio from '../ds-radio/index.js';
-import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
+import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 
 class systemBoard {
     constructor( params ) {
         this.boardData = params;
     
         this.boardContainer = dce({el: 'div', cssClass:'board-container' })
+
+
+        globals.boardRoutes = [];
+        const dbQuery = query(collection(getFirestore(), 'routes'));
+        onSnapshot(dbQuery, (querySnapshot) => {
+         const routes = [];
+         querySnapshot.forEach((doc) => {
+             let routeData = doc.data();
+             routeData.id = doc.id;
+             routes.push(routeData);
+         });
+
+         if(routes.length !== globals.boardRoutes.length) {
+          globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
+          globals.standardMessage = globals.standardMessage;
+         }
+
+         globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+         });
+
+         const notify = () => {
+            globals.serverMessage.push({message : 'Updating route data', timeout: 1, id : 'tick-sync'});
+            globals.serverMessage = globals.serverMessage;
+            globals.serverMessage[0].finished = true; 
+            globals.serverMessage = globals.serverMessage;
+        }
+
+        storeObserver.add({
+            store: globals,
+            key: 'boardRoutes',
+            id: 'routesUpdate',
+            callback: notify
+          });
 
         this.db = getFirestore();
         let boardCols = 'abcdefghijklmnopqrstuvwxyz';    

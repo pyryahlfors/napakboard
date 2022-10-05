@@ -2,7 +2,7 @@ import { dce } from '../shared/helpers.js';
 import { user } from '../shared/user.js';
 import { route } from '../shared/route.js';
 
-import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
+import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 
 class viewLogin {
   constructor() {
@@ -12,16 +12,14 @@ class viewLogin {
 
     let loginTitle = dce({el: 'h3', cssClass: 'mb', content: 'Login'});
     let loginForm = dce({el: 'FORM', attrbs: [['name', 'napak-login']]});
-    let userEmail = dce({el: 'INPUT', attrbs: [['placeholder', 'email'], ['name', 'email']]});
-    let password = dce({el: 'INPUT', attrbs: [['placeholder', 'Password'], ['type', 'password'], ['name', 'pass']]});
+    let userEmail = dce({el: 'INPUT', attrbs: [['placeholder', 'email'], ['name', 'email'], ['autocomplete', 'username']]});
+    let password = dce({el: 'INPUT', attrbs: [['placeholder', 'Password'], ['type', 'password'], ['name', 'pass'], ['autocomplete', 'current-password']]});
     let loginError = dce({el: 'DIV', cssClass : 'login-error'});
     let loginButton = dce({el: 'BUTTON', cssClass: 'mb btn_small preferred', content: 'Login'});
     let noAccount = dce({el: 'DIV', cssClass: '', content: 'No account? '});
     let createAccountLink = dce({el: 'A', cssClass: 'text-link', content: 'Create one!'});
     noAccount.appendChild(createAccountLink);
-    createAccountLink.addEventListener('click', ()=>{
-      route('signup');
-    }, false)
+    createAccountLink.addEventListener('click', () => { route('signup'); }, false)
 
     let forgotPasswordContainer = dce({el: 'DIV', cssClass: 'mt mb'});
     let forgotPasswordLink = dce({el: 'A', cssClass: 'mb mt text-link', content: 'Forgot password'})
@@ -35,10 +33,9 @@ class viewLogin {
 
 
     let doLogin = () => {
-      signInWithEmailAndPassword(getAuth(), userEmail.value, password.value)
+      signInWithEmailAndPassword(getAuth(app), userEmail.value, password.value)
         .then(function(result) {
           user.login.isLoggedIn = true;
-          user.name.email = result.user.email;
           user.name.id = result.user.uid;
           user.name.displayName = result.user.displayName;
           user.login = user.login;
@@ -60,9 +57,7 @@ class viewLogin {
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       doLogin();
-      return;
     }, false)
-
 
     loginForm.append(userEmail, password, loginError, loginButton)
     loginFormContainer.append(loginTitle, loginForm, noAccount, forgotPasswordContainer);

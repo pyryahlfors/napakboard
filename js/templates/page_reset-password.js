@@ -1,7 +1,7 @@
 import { dce } from '../shared/helpers.js';
 import { user } from '../shared/user.js';
 import { route } from '../shared/route.js';
-import { getAuth, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
+import { getAuth, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 
 
 class viewResetPassword {
