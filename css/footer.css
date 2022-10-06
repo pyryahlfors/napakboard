@@ -72,6 +72,7 @@ footer .nav-bottom-links .link-container.disabled {
 footer .nav-bottom-links .link-container svg {
   height: var(--padding-base);
   stroke: var(--color-white);
+  stroke-width: 1.5;
   fill: none;
 }
 
