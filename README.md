@@ -12,7 +12,7 @@ Led climbing wall
 3. Now find page_board.js file under js/templates. In here change your board size where it says `let mySystemBoard = new systemBoard({width: 11, height: 21});`
 
 4. Edit your board layout;  In the root there is a file called hold_setup.json. In here you can place whatever holds you have placed on your board.
-   If you wish ypu can just go with placeholder images for holds. Then only thing you have to do is to add all your holds like this;
+   If you wish you can just go with placeholder images for holds. Then only thing you have to do is to add all your holds like this;
 
 ```
    "a1": {"holdColor": "#000"},
