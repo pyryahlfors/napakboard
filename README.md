@@ -24,9 +24,10 @@ Led climbing wall
    You can also use hold images, needs to be and SVG 32x32px of size. There is some ready made hold images under images/holds.svg, check this so you can see how that works.
    Use them like this;
    `"f12": {"holdColor": "#fff", "hold" : "moon-99", "rotation": 25, "boltPlacement": [0, -10]},`
-   Also rotation and bolt placement can be changed in here
+   
+   Also rotation and bolt placement can be changed in here as seen above. But those are optional like everything else.
 
-5. Update your firebase config from 'js/shared/user.js'
+5. Update your firebase config from `js/shared/user.js`
 
 6. Launch it locally with python for example; 'python -m SimpleHTTPServer'
 
