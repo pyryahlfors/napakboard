@@ -28,6 +28,8 @@ class dsInput extends HTMLElement {
       }); 
     }
 
+    input.addEventListener('change', () => {console.log(this.value)}, false)
+
     inputContainer.append(input)
 
     this.append(inputContainer);

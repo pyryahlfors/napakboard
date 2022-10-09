@@ -30,7 +30,7 @@ BODY, HTML {
     color: #000;
     font-size: var(--font-size-base);
     -webkit-text-size-adjust: none;
-      overflow: hidden;
+    overflow: hidden;
 }
   
 h3,

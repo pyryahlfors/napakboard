@@ -332,9 +332,10 @@ class systemBoard {
 
 // Sorting options
             const updateRouteListSorting = ( ) => {
-                if(globals.routeSorting === 'name')  { globals.boardRoutes = globals.boardRoutes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)); }
+                if(globals.routeSorting === 'name')  { globals.boardRoutes = globals.boardRoutes.sort((a, b) => a.name.localeCompare(b.name)) }
                 if(globals.routeSorting === 'grade') { globals.boardRoutes = globals.boardRoutes.sort((a,b) => a.grade - b.grade)};
                 if(globals.routeSorting === 'date')  { globals.boardRoutes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)); }       
+                console.log(globals.boardRoutes)
             }
             
             storeObserver.add({
@@ -481,9 +482,9 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                              this.validateAndSave({
-                                routeName: routeName.value, 
-                                setter: setter.value, 
-                                grade: grade.value,
+                                routeName: routeName.querySelector('INPUT').value, 
+                                setter: setter.querySelector('INPUT').value, 
+                                grade: grade.querySelector('SELECT').value,
                                 callBack: () => { modalWindow.close() }
                             })
                         }
@@ -497,7 +498,7 @@ class systemBoard {
 /**
  * Validate save form and store into firebase
  */
-        this.validateAndSave = ( params) => {
+        this.validateAndSave = ( params ) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
 
             let holdSetup = {};
@@ -521,6 +522,7 @@ class systemBoard {
             }
 
             if(routeReady) {
+
                 // Add a new document in collection "cities"
                 ( async () => {
                     await addDoc(collection(this.db, "routes"), {
