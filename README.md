@@ -4,8 +4,9 @@ Led climbing wall
 # Setting up the front end
 1. Clone this repo
 
-2a. Create a new Firebase project at https://firebase.google.com/
-2b. You need firestore and authentication. 
+2.
+a. Create a new Firebase project at https://firebase.google.com/
+b. You need firestore and authentication. 
 
 3. Now find page_board.js file under js/templates. In here change your board size where it says let mySystemBoard = new systemBoard({width: 11, height: 21});
 
