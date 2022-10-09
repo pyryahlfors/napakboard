@@ -34,12 +34,12 @@ class viewBoard {
             icon: 'tick',
             link: () => {mySystemBoard.tick()}
             },
-          light: { 
+/*          light: { 
             title: 'light up',
             icon: 'light',
             disabled: true,
             link: () => {mySystemBoard.list()}
-            },
+            },*/
           }
     });
 
