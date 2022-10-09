@@ -29,6 +29,6 @@ Led climbing wall
 
 5. Update your firebase config from `js/shared/user.js`
 
-6. Launch it locally with python for example; 'python -m SimpleHTTPServer'
+6. Launch it locally with python for example; `python -m SimpleHTTPServer`
 
 7. Host it somewhere. I used netlify; https://kiinto.netlify.app/projects/napakboard 
