@@ -16,6 +16,42 @@ class systemBoard {
     
         this.boardContainer = dce({el: 'div', cssClass:'board-container' })
 
+        this.swipe = [0,0];
+        this.swipeDiffer = [0,0];
+
+        this.boardContainer.addEventListener('touchstart', (e) => {
+            this.swipe = [e.touches[0].clientX, e.touches[0].clientY]
+        }, false);
+
+        this.boardContainer.addEventListener('touchmove', (e) => {
+            this.swipeDiffer = [e.touches[0].clientX, e.touches[0].clientY]
+        }, false);
+
+
+        this.boardContainer.addEventListener('touchend', (e) => {
+            let doUpdate = false;
+            let selectedRouteOrder = globals.selectedRouteId ? globals.boardRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
+
+            if( this.swipeDiffer[0] - this.swipe[0] > 100 ) { 
+                doUpdate = true;
+                selectedRouteOrder -= 1;
+                if(selectedRouteOrder < 0) { selectedRouteOrder = globals.boardRoutes.length - 1}
+            }
+            
+            if( this.swipe[0] - this.swipeDiffer[0] > 100 ) { 
+                doUpdate = true;
+                selectedRouteOrder += 1;
+                if(selectedRouteOrder > globals.boardRoutes.length - 1) { selectedRouteOrder = 0}
+            }
+
+            if(doUpdate) {
+                (async () => {
+                    const routeRef = doc(this.db, "current", "currentRoute");
+                    await updateDoc(routeRef, { routeId : globals.boardRoutes[selectedRouteOrder].id, routeData: null });
+                })();
+            }
+     
+        }, false);
 
         globals.boardRoutes = [];
         const dbQuery = query(collection(getFirestore(), 'routes'));
@@ -189,7 +225,7 @@ class systemBoard {
                     // If route is selected - load it 
                     if(routeId) {
                         self.clearRoute();
-                        self.loadRoute(routeId, false)
+                        self.loadRoute(routeId)
                     }
 
                     // If holds are selected - show selected 
@@ -424,6 +460,7 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             globals.selectedRoute = null;
+                            globals.selectedRouteId = null;
                             // only update for authenticated users
                             (async () => {
                                 const routeRef = doc(this.db, "current", "currentRoute");
@@ -451,6 +488,7 @@ class systemBoard {
             this.clearClassNames(start, 'start');
             this.clearClassNames(intermediate, 'intermediate');
             globals.selectedRoute = null;
+            globals.selectedRouteId = null;
         }
 
 // Helper
