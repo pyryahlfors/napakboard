@@ -5,6 +5,7 @@ import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
 import dsInput from '../../components/ds-input/index.js';
 import dsSelect from '../../components/ds-select/index.js';
+import dsToggle from '../../components/ds-toggle/index.js';
 import dsRadio from '../ds-radio/index.js';
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
@@ -293,34 +294,50 @@ class systemBoard {
                 ],
                 onchange: () => { globals.routeSorting = document.forms['routesort'].sort.value }
             });
+            
+
+            sortOptionsContainer.append(sortMenu);
+            let toggleMyAscents = new dsToggle({
+                cssClass  : 'horizontal-menu full-width',
+                targetObj : 'excludeTicks',
+                options   : [
+                  {title: 'Include', value: false, selected: true},
+                  {title: 'Exclude', value: true}],
+                onToggle : () => { updateRouteListSorting() },
+              });
+
+            sortOptionsContainer.append(document.createTextNode('My ticks'), toggleMyAscents.render())
 
 
-
-            sortOptionsContainer.append(sortMenu)
             listDialog.append(sortOptionsContainer);
 
             const updateRouteList = ( ) => {
                 let routelistContainer = dce({el: 'div', cssClass : 'route-list-container'});
 
                 globals.boardRoutes.forEach((routeData) => {
-                    // doc.data() is never undefined for query doc snapshots
-                    let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
-                    if( globals.selectedRouteId === routeData.id ) { routeItem.classList.add('selected'); }
-                    if( routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid) ) { routeItem.classList.add('climbed'); }
-                    let routeName = dce({el: 'h3', content: routeData.name});
-                    let routeDetails = dce({el: 'div'});
-                    let routeGrade = dce({el: 'div', cssClass: `grade-legend ${globals.difficulty[routeData.grade]}`, content: globals.grades.font[routeData.grade]});
-                    let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
-                    let routeSetter = dce({el: 'div', content: routeData.setter});
-                    routeDetails.append(routeGrade, routeAdded, routeSetter);
-                    routeItem.append(routeName, routeDetails);
-                    routeItem.addEventListener('click', () => { 
-                        let toggleSelected = listDialog.querySelectorAll('.selected');
-                        toggleSelected.forEach( ( el) => {el.classList.remove('selected')});
-                        routeItem.classList.add('selected'); 
-                        selectedRoute = routeData.id;
-                    }, false);
-                    routelistContainer.appendChild(routeItem)
+                    // exclude user ticks (if selected)
+                    if( globals.excludeTicks && routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid)) {
+                    }
+                    else{
+                        // doc.data() is never undefined for query doc snapshots
+                        let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
+                        if( globals.selectedRouteId === routeData.id ) { routeItem.classList.add('selected'); }
+                        if( routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid) ) { routeItem.classList.add('climbed'); }
+                        let routeName = dce({el: 'h3', content: routeData.name});
+                        let routeDetails = dce({el: 'div'});
+                        let routeGrade = dce({el: 'div', cssClass: `grade-legend ${globals.difficulty[routeData.grade]}`, content: globals.grades.font[routeData.grade]});
+                        let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
+                        let routeSetter = dce({el: 'div', content: routeData.setter});
+                        routeDetails.append(routeGrade, routeAdded, routeSetter);
+                        routeItem.append(routeName, routeDetails);
+                        routeItem.addEventListener('click', () => { 
+                            let toggleSelected = listDialog.querySelectorAll('.selected');
+                            toggleSelected.forEach( ( el) => {el.classList.remove('selected')});
+                            routeItem.classList.add('selected'); 
+                            selectedRoute = routeData.id;
+                        }, false);
+                        routelistContainer.appendChild(routeItem);
+                    }
                 });
                 
                 if(listDialog.querySelector('.route-list-container')) {
@@ -333,9 +350,8 @@ class systemBoard {
 // Sorting options
             const updateRouteListSorting = ( ) => {
                 if(globals.routeSorting === 'name')  { globals.boardRoutes = globals.boardRoutes.sort((a, b) => a.name.localeCompare(b.name)) }
-                if(globals.routeSorting === 'grade') { globals.boardRoutes = globals.boardRoutes.sort((a,b) => a.grade - b.grade)};
-                if(globals.routeSorting === 'date')  { globals.boardRoutes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)); }       
-                console.log(globals.boardRoutes)
+                if(globals.routeSorting === 'grade') { globals.boardRoutes = globals.boardRoutes.sort((a,b) => a.grade - b.grade) }
+                if(globals.routeSorting === 'date')  { globals.boardRoutes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)) }
             }
             
             storeObserver.add({

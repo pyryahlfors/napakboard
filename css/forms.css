@@ -73,3 +73,65 @@ input:invalid:not(:placeholder-shown):focus {
   appearance: radio;
   -webkit-appearance: radio;
 }
+
+
+.on-off-selector {
+  display: flex;
+  font-family: 'IBM Plex Mono';
+  font-size: 12px;
+  text-transform: uppercase;
+  margin: 0;
+  font-weight: 100;
+  white-space: nowrap;
+  position: relative;
+  font-weight: 300;
+}
+
+.on-off-selector:not(:last-of-type) {
+  margin-bottom: 10px;
+}
+
+.on-off-selector span {
+  color: var(--color-white);
+  text-align: right;
+  padding-right: var(--padding-base-half)
+}
+
+.on-off-selector span:last-of-type {
+  color: var(--color-white);
+  text-align: right;
+  padding-left: var(--padding-base-half)
+}
+
+
+.on-off-selector span:last-of-type {
+  text-align: left;
+}
+
+.on-off-switch {
+  position: relative;
+  width: 40px;
+  background: var(--color-black-alpha40);
+  border-radius: 9px;
+  height: 9px;
+  align-self: center;
+}
+
+.on-off-switch::after {
+  position: absolute;
+  top: 4.5px;
+  left: 4.5px;
+  content: '';
+  transform: translate3d(-50%, -50%, 0);
+  font-size: 0;
+  background: var(--color-theme-color2);
+  width: 19px;
+  height: 19px;
+  border-radius: 19px;
+  display: block;
+  transition: all 60ms ease-in-out;
+}
+
+.on-off-switch.switched-off::after {
+  left: calc(100% - 4.5px);
+}
