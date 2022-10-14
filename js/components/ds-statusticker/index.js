@@ -30,7 +30,7 @@ class statusTicker {
         if(selectedRoute) {
           let climbed = selectedRoute.ticks && selectedRoute.ticks.includes(getAuth().currentUser.uid);
           currentTitleContent.innerHTML = `${selectedRoute.name} `
-          let routeGrade = dce({el: 'div', cssStyle: 'margin: 0 var(--padding-base-half)', cssClass: `grade-legend ${globals.difficulty[selectedRoute.grade]}`, content: globals.grades.font[selectedRoute.grade]});
+          let routeGrade = dce({el: 'div', cssStyle: 'margin: 0 var(--padding-base-half); display: inline-flex', cssClass: `grade-legend ${globals.difficulty[selectedRoute.grade]}`, content: globals.grades.font[selectedRoute.grade]});
           currentTitleContent.appendChild(routeGrade)
 
           if ( climbed ) {
