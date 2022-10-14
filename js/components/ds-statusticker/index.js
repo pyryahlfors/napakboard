@@ -29,9 +29,12 @@ class statusTicker {
         let selectedRoute = globals.boardRoutes.find(({ id }) => id === globals.selectedRouteId);
         if(selectedRoute) {
           let climbed = selectedRoute.ticks && selectedRoute.ticks.includes(getAuth().currentUser.uid);
-          currentTitleContent.innerHTML = `${selectedRoute.name} - ${globals.grades.font[selectedRoute.grade]}`
+          currentTitleContent.innerHTML = `${selectedRoute.name} `
+          let routeGrade = dce({el: 'div', cssStyle: 'margin: 0 var(--padding-base-half)', cssClass: `grade-legend ${globals.difficulty[selectedRoute.grade]}`, content: globals.grades.font[selectedRoute.grade]});
+          currentTitleContent.appendChild(routeGrade)
+
           if ( climbed ) {
-            let climbedIcon = dce({el: 'SPAN', cssStyle: 'background: var(--color-theme-color2); color: var(--color-black); display: inline-block; width: 1.25em; height: 1.25em; border-radius: 100%; text-align: center; margin-left: var(--padding-base-half)', content: '✔'});
+            let climbedIcon = dce({el: 'SPAN', cssStyle: 'background: var(--color-theme-color2); color: var(--color-black); display: inline-block; width: 1.25em; height: 1.25em; border-radius: 100%; text-align: center;', content: '✔'});
             currentTitleContent.appendChild(climbedIcon)
           }
         }

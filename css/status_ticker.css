@@ -30,7 +30,7 @@
   animation : 0.3s scrollToTop ease-in-out forwards;
 }
 
-.status-ticker .status-ticker-content div {
+.status-ticker .status-ticker-content > div {
     width: 100%;
     margin: 0 auto 0;
     display: flex;
@@ -86,3 +86,7 @@
   right: 0;
   }
   
+
+.status-ticker H3 {
+  display: flex;
+}
