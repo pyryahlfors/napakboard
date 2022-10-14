@@ -16,18 +16,13 @@ class systemBoard {
     
         this.boardContainer = dce({el: 'div', cssClass:'board-container' })
 
+        /** 
+         * Swipe to next/prev route
+         */
         this.swipe = [0,0];
         this.swipeDiffer = [0,0];
-
-        this.boardContainer.addEventListener('touchstart', (e) => {
-            this.swipe = [e.touches[0].clientX, e.touches[0].clientY]
-        }, false);
-
-        this.boardContainer.addEventListener('touchmove', (e) => {
-            this.swipeDiffer = [e.touches[0].clientX, e.touches[0].clientY]
-        }, false);
-
-
+        this.boardContainer.addEventListener('touchstart', (e) => { this.swipe = [e.touches[0].clientX, e.touches[0].clientY] }, false);
+        this.boardContainer.addEventListener('touchmove', (e) => { this.swipeDiffer = [e.touches[0].clientX, e.touches[0].clientY] }, false);
         this.boardContainer.addEventListener('touchend', (e) => {
             let doUpdate = false;
             let selectedRouteOrder = globals.selectedRouteId ? globals.boardRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
@@ -53,6 +48,7 @@ class systemBoard {
      
         }, false);
 
+        // get routes from DB
         globals.boardRoutes = [];
         const dbQuery = query(collection(getFirestore(), 'routes'));
         onSnapshot(dbQuery, (querySnapshot) => {
@@ -64,7 +60,7 @@ class systemBoard {
          });
 
          if(routes.length !== globals.boardRoutes.length) {
-          globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
+          globals.standardMessage.push({message : `Routses updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
           globals.standardMessage = globals.standardMessage;
          }
 
@@ -337,8 +333,8 @@ class systemBoard {
                 cssClass  : 'horizontal-menu full-width',
                 targetObj : 'excludeTicks',
                 options   : [
-                  {title: 'Include', value: false, selected: true},
-                  {title: 'Exclude', value: true}],
+                  {title: 'Include', value: false, selected: globals.excludeTicks === false},
+                  {title: 'Exclude', value: true, selected: globals.excludeTicks === true}],
                 onToggle : () => { updateRouteListSorting() },
               });
 
@@ -518,7 +514,6 @@ class systemBoard {
 
             let grade = new dsSelect({label: 'Grade', options: gradeOptions})
 
-
             saveDialog.append(routeName, setter, grade);
 
             let mother = document.querySelector('.app');
@@ -536,9 +531,9 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                              this.validateAndSave({
-                                routeName: routeName.querySelector('INPUT').value, 
-                                setter: setter.querySelector('INPUT').value, 
-                                grade: grade.querySelector('SELECT').value,
+                                routeName: routeName.value, 
+                                setter: setter.value, 
+                                grade: grade.value,
                                 callBack: () => { modalWindow.close() }
                             })
                         }

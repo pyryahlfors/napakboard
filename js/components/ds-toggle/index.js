@@ -12,9 +12,7 @@ class dsToggle {
 
     let switchStatus = params.options[0].selected ? false : true;
     globals[params.targetObj] = ( switchStatus ) ? params.options[1].value : params.options[0].value;
-    if(switchStatus) {
-        switchEl.classList.add('switched-off')
-    };
+    if(switchStatus) { switchEl.classList.add('switched-off') };
 
     let toggle = () => {
       switchStatus = !switchStatus;

@@ -35,6 +35,12 @@ class dsSelect extends HTMLElement {
       })
     }
 
+    this.value = select.value;
+    
+    select.addEventListener('change', () => {
+      this.value = select.value;
+    }, false)
+
     selectContainer.append(select)
 
     this.append(selectContainer);

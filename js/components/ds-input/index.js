@@ -28,8 +28,12 @@ class dsInput extends HTMLElement {
       }); 
     }
 
-    input.addEventListener('change', () => {console.log(this.value)}, false)
+    input.addEventListener('keyup', () => {
+      this.value = input.value;
+    }, false);
 
+
+    this.value = input.value;
     inputContainer.append(input)
 
     this.append(inputContainer);
