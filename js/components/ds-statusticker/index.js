@@ -17,7 +17,7 @@ class statusTicker {
   
     let currentTitle = dce({el: 'DIV', cssClass: 'current'});
 
-    let currentTitleContent = dce({el: 'H3', content: globals.selectedRoute || 'No route selected'});
+    let currentTitleContent = dce({el: 'H3', cssStyle: 'display: flex', content: globals.selectedRoute || 'No route selected'});
     currentTitle.appendChild(currentTitleContent);
     messageContainer.appendChild(currentTitle);
 
