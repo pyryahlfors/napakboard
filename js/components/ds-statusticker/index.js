@@ -1,6 +1,7 @@
 import { dce, storeObserver } from '../../shared/helpers.js';
 import { animate } from '../../shared/animate.js';
 import { globals } from '../../shared/globals.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 
 class statusTicker {
   constructor(params) {
@@ -22,10 +23,21 @@ class statusTicker {
 
     storeObserver.add({
       store: globals,
-      key: 'selectedRoute',
+      key: 'selectedRouteId',
       id: 'selectedRoute',
       callback: () => {
-        currentTitleContent.innerHTML = globals.selectedRoute || 'No route selected';
+        let selectedRoute = globals.boardRoutes.find(({ id }) => id === globals.selectedRouteId);
+        if(selectedRoute) {
+          let climbed = selectedRoute.ticks && selectedRoute.ticks.includes(getAuth().currentUser.uid);
+          currentTitleContent.innerHTML = `${selectedRoute.name} - ${globals.grades.font[selectedRoute.grade]}`
+          if ( climbed ) {
+            let climbedIcon = dce({el: 'SPAN', cssStyle: 'background: var(--color-theme-color2); color: var(--color-black); display: inline-block; width: 1.25em; height: 1.25em; border-radius: 100%; text-align: center; margin-left: var(--padding-base-half)', content: '✔'});
+            currentTitleContent.appendChild(climbedIcon)
+          }
+        }
+        else {
+          currentTitleContent.innerHTML = 'No route selected';
+        }
       }
     });
 
