@@ -19,14 +19,21 @@ class systemBoard {
         /** 
          * Swipe to next/prev route
          */
-        this.swipe = [0,0];
-        this.swipeDiffer = [0,0];
-        this.boardContainer.addEventListener('touchstart', (e) => { this.swipe = [e.touches[0].clientX, e.touches[0].clientY] }, false);
+        this.swipe = [null,null];
+        this.swipeDiffer = [null,null];
+        this.swipeTimer =  null;
+        this.boardContainer.addEventListener('touchstart', (e) => { 
+            this.swipeTimer = new Date(); 
+            this.swipe = [e.touches[0].clientX, e.touches[0].clientY] 
+        }, false);
         this.boardContainer.addEventListener('touchmove', (e) => { this.swipeDiffer = [e.touches[0].clientX, e.touches[0].clientY] }, false);
         this.boardContainer.addEventListener('touchend', (e) => {
+            // check swipe travel - exit if null
+            if(!this.swipeDiffer[0] && this.swipeDiffer[0] !== 0) { return }
             let doUpdate = false;
             let selectedRouteOrder = globals.selectedRouteId ? globals.boardRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
 
+            console.log(this.swipeDiffer[0] - this.swipe[0])
             if( this.swipeDiffer[0] - this.swipe[0] > 100 ) { 
                 doUpdate = true;
                 selectedRouteOrder -= 1;
@@ -45,7 +52,7 @@ class systemBoard {
                     await updateDoc(routeRef, { routeId : globals.boardRoutes[selectedRouteOrder].id, routeData: null });
                 })();
             }
-     
+        this.swipeDiffer = [null, null];
         }, false);
 
         // get routes from DB
