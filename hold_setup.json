@@ -196,7 +196,7 @@
 	"c17": {"holdColor": "#000"},
 	"d17": {"holdColor": "#f80"},
 	"e17": {"holdColor": "#fff", "hold" : "moon-74", "rotation": 210},
-	"f17": {"holdColor": "#080"},
+	"f17": {"holdColor": "#000"},
 	"g17": {"holdColor": "#00f"},
 	"h17": {"holdColor": "#080"},
 	"i17": {"holdColor": "#fff"},
