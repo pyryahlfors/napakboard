@@ -43,7 +43,8 @@ const napakBoard = {
         }
 
         user.storeObservers.push({key: 'login', callback: loginStatus})
-              
+        
+        // call ones for autologin
         loginStatus();
 
         getAuth().onAuthStateChanged(function(authUser) {
@@ -56,8 +57,6 @@ const napakBoard = {
             user.login = user.login;
           }
         })
-
-
     }   
 }
 

@@ -22,6 +22,7 @@ class bottomNavi {
             let linksContainer = dce({el: 'div', cssClass: 'nav-bottom-links'});
             for( let navigationItems in params.options ) {
                 let naviItem = dce({el: 'a', cssClass: `link-container`});
+                naviItem.id = `footer-${navigationItems}`
                 if(params.options[navigationItems].disabled) {naviItem.classList.add('disabled')}
                 naviItem.addEventListener('click', () => {
                     if(params.options[navigationItems].disabled) {
@@ -36,6 +37,11 @@ class bottomNavi {
                 linksContainer.appendChild(naviItem)
             }
             navContainer.append(linksContainer)    
+        }
+
+        this.toggle = ( item, onoff ) => {
+            if(onoff) {document.querySelector(`#footer-${item}`).classList.add('keep-selected')}
+            else {document.querySelector(`#footer-${item}`).classList.remove('keep-selected')}
         }
 
         let toggleOtc = dce({el: 'A', cssClass: 'more'});

@@ -44,10 +44,6 @@ class statusTicker {
       }
     });
 
-
-    let toggleMenu = dce({el: 'DIV', cssClass: 'toggle'});
-    currentTitle.appendChild(toggleMenu)
-
     let serverMessage = dce({el: 'DIV', cssClass: 'network'});
     let serverMessageContent = dce({el: 'H3', content: ''});
     let blink = dce({el: 'SPAN', cssClass: 'spinner spin360'});
@@ -62,11 +58,9 @@ class statusTicker {
         container.classList.add('show-message', 'standard');
         container.classList.remove('from-bottom');
 
-        if(tickerMessage.timeout) {
-          if(messageContainer.timeout) {
-            clearTimeout(messageContainer.timeout)
-          }
-          messageContainer.timeout = setTimeout(function(){
+        if( tickerMessage.timeout ) {
+          if( messageContainer.timeout ) { clearTimeout(messageContainer.timeout) }
+          messageContainer.timeout = setTimeout(function() {
             animate.watch({
               el: messageContainer,
               execute: () => { 
@@ -85,10 +79,8 @@ class statusTicker {
         serverMessageContent.innerHTML = tickerMessage.message;
         container.classList.add('show-message', 'network');
         container.classList.remove('standard');
-        if(tickerMessage.finished) {
-          if(messageContainer.timeout) {
-            clearTimeout(messageContainer.timeout)
-          }
+        if( tickerMessage.timeout ) {
+          if( messageContainer.timeout ) { clearTimeout(messageContainer.timeout) }
           messageContainer.timeout = setTimeout(function(){
             animate.watch({
               el: messageContainer,

@@ -3,6 +3,7 @@ import { dce } from '../shared/helpers.js';
 import systemBoard  from '../components/system_board/system_board.js';
 import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
 import statusTicker from '../components/ds-statusticker/index.js';
+import { globals } from '../shared/globals.js';
 
 class viewBoard {
   constructor() {
@@ -34,12 +35,14 @@ class viewBoard {
             icon: 'tick',
             link: () => {mySystemBoard.tick()}
             },
-/*          light: { 
+          light: { 
             title: 'light up',
             icon: 'light',
-            disabled: true,
-            link: () => {mySystemBoard.list()}
-            },*/
+            link: () => {
+              globals.lightsOn =! globals.lightsOn;
+              footerNavi.toggle('light', globals.lightsOn);
+              }
+            },
           }
     });
 

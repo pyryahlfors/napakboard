@@ -19,6 +19,7 @@ class systemBoard {
         /** 
          * Swipe to next/prev route
          */
+
         this.swipe = [null,null];
         this.swipeDiffer = [null,null];
         this.swipeTimer =  null;
@@ -33,7 +34,6 @@ class systemBoard {
             let doUpdate = false;
             let selectedRouteOrder = globals.selectedRouteId ? globals.boardRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
 
-            console.log(this.swipeDiffer[0] - this.swipe[0])
             if( this.swipeDiffer[0] - this.swipe[0] > 100 ) { 
                 doUpdate = true;
                 selectedRouteOrder -= 1;
@@ -46,11 +46,8 @@ class systemBoard {
                 if(selectedRouteOrder > globals.boardRoutes.length - 1) { selectedRouteOrder = 0}
             }
 
-            if(doUpdate) {
-                (async () => {
-                    const routeRef = doc(this.db, "current", "currentRoute");
-                    await updateDoc(routeRef, { routeId : globals.boardRoutes[selectedRouteOrder].id, routeData: null });
-                })();
+            if( doUpdate ) {
+                this.loadRoute(globals.boardRoutes[selectedRouteOrder].id)
             }
         this.swipeDiffer = [null, null];
         }, false);
@@ -149,12 +146,9 @@ class systemBoard {
                                 }
                             }
 
-                            else {
-                                hold.classList.add('selected');
-                            }
-
-                            // update leds and firestore
-                            this.updateLeds();
+                            else { hold.classList.add('selected'); }
+                            
+                            this.updateBoard( )
                         }, false)
                     }
                 }
@@ -188,15 +182,15 @@ class systemBoard {
                         parent.style.color = data[holds].holdColor ? data[holds].holdColor : 'transparent';
                         let holdContainer = dce({el: 'div', cssClass: 'hold'});
 
-                        let nakki = svg({el: 'svg', attrbs: [['viewBox', '0 0 30 30']]});
+                        let hold = svg({el: 'svg', attrbs: [['viewBox', '0 0 30 30']]});
 
                         if(this.holdImages.querySelector(`.${data[holds].hold}`)) {
-                            nakki.append(this.holdImages.querySelector(`.${data[holds].hold}`).cloneNode(true));
+                            hold.append(this.holdImages.querySelector(`.${data[holds].hold}`).cloneNode(true));
                         }
                         else {
-                            nakki.append(this.holdImages.querySelector(`.placeholder`).cloneNode(true));
+                            hold.append(this.holdImages.querySelector(`.placeholder`).cloneNode(true));
                         }
-                        holdContainer.append(nakki);
+                        holdContainer.append(hold);
                         parent.append(holdContainer)
 
                         let holdTransform = "";
@@ -208,80 +202,25 @@ class systemBoard {
                             holdContainer.style['transformOrigin'] = `${50 + data[holds].boltPlacement[0]}% ${50 + (data[holds].boltPlacement[1] * -1)}%`;
                         }
                         holdContainer.style.transform = holdTransform;
-                        }
-                    })
-                }
-
-/**
- * Listen changes in DB and act
- */
-            let self = this;
-            const dbQuery = query(collection(this.db, 'current'));
-            onSnapshot(dbQuery, (querySnapshot) => {
-                const routes = [];
-                querySnapshot.forEach((doc) => {
-                    let queryData = doc.data();
-                    // clear route - do not update DB
-                    let routeId = queryData.routeId;
-                    let routeData = queryData.routeData;
-
-                    // If route is selected - load it 
-                    if(routeId) {
-                        self.clearRoute();
-                        self.loadRoute(routeId)
                     }
-
-                    // If holds are selected - show selected 
-                    else if(routeData) {
-                        globals.selectedRoute = null;
-                        globals.selectedRouteId = null;
-                        self.clearRoute();
-                        self.updateRoute(routeData.holdSetup);
-                    }
-                    
-                    else {
-                        globals.selectedRoute = null;
-                        globals.selectedRouteId = null;
-                        self.clearRoute();
-                    }
-                });
-            });
+                })
+            }
         }
 
 /**
  * Update route (show selected holds)
  */
-        this.updateRoute = ( holdSetup )=>  {
+        this.updateRoute = ( holdSetup ) =>  {
             for ( let hold in holdSetup ) {
                 this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
                 }
-        }
-
-/** 
- * Update firestore to light up the leds
- */
-        this.updateLeds = ( ) => {
-            let selected = this.boardContainer.querySelectorAll('.selected'); 
-
-            let holdSetup = {};
-            selected.forEach( (hold) => {
-                let holdType = 'intermediate';
-                if(hold.classList.contains('top')) {holdType = 'top'}
-                if(hold.classList.contains('start')) {holdType = 'start'}
-                holdSetup[hold.id] = holdType;
-            });
-
-            const routeData = {holdSetup : holdSetup};
-            // Update currentRoute to firestore - server will read this and update leds
-
-            const routeRef = doc(this.db, "current", "currentRoute");
-            updateDoc(routeRef, { routeData: routeData });
         }
 
 /**
  * Load route from firebase
  */
         this.loadRoute = ( routeId ) => {
+            this.clearRoute();
             ( async () => {
                 const docRef = doc(this.db, "routes", routeId);
                 const docSnap = await getDoc(docRef);
@@ -292,17 +231,20 @@ class systemBoard {
 
                     globals.selectedRoute = routeData['name'];
                     globals.selectedRouteId = routeId;
-
         
                     for ( let hold in holdSetup ) {
                         this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
                         }
-                    } else {
+
+                    this.updateBoard( { routeId : routeId, routeData: null } );
+
+                    } 
+                else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");
-                    }
-                })();
-            }
+                }
+            })();
+        }
         
 /**
  * Get list of routes
@@ -425,10 +367,7 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred', 
                         thisOnClick: () => {
                             if(selectedRoute) {
-                                (async () => {
-                                    const routeRef = doc(this.db, "current", "currentRoute");
-                                    await updateDoc(routeRef, { routeId : selectedRoute, routeData: null });
-                                })();
+                                this.loadRoute(selectedRoute)
                             }
                             modalWindow.close()
                         }
@@ -465,10 +404,8 @@ class systemBoard {
                             globals.selectedRoute = null;
                             globals.selectedRouteId = null;
                             // only update for authenticated users
-                            (async () => {
-                                const routeRef = doc(this.db, "current", "currentRoute");
-                                await updateDoc(routeRef, { routeId : false, routeData: false });
-                            })();
+                            this.clearRoute();
+                            this.updateBoard({routeData: null});
 
                             modalWindow.close()
                         }
@@ -483,20 +420,7 @@ class systemBoard {
  */
         this.clearRoute = ( ) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
-            let start = this.boardContainer.querySelectorAll('.start'); 
-            let intermediate = this.boardContainer.querySelectorAll('.intermediate'); 
-            let top = this.boardContainer.querySelectorAll('.top'); 
-            this.clearClassNames(selected, 'selected');
-            this.clearClassNames(top, 'top');
-            this.clearClassNames(start, 'start');
-            this.clearClassNames(intermediate, 'intermediate');
-            globals.selectedRoute = null;
-            globals.selectedRouteId = null;
-        }
-
-// Helper
-        this.clearClassNames = ( elems, cssClass ) => {
-            elems.forEach((el) => {el.classList.remove(cssClass)});
+            selected.forEach((el) => {el.classList.remove('selected', 'top', 'start', 'intermediate')});
         }
 
 // Save modal
@@ -578,7 +502,6 @@ class systemBoard {
             }
 
             if(routeReady) {
-
                 // Add a new document in collection "cities"
                 ( async () => {
                     await addDoc(collection(this.db, "routes"), {
@@ -685,6 +608,35 @@ class systemBoard {
             });
             mother.append(modalWindow)
         }
+
+        this.updateBoard = ( ) => {
+            if( globals.lightsOn ) {
+
+                    let selected = this.boardContainer.querySelectorAll('.selected'); 
+
+                    let holdSetup = {};
+                    selected.forEach( (hold) => {
+                        let holdType = 'intermediate';
+                        if(hold.classList.contains('top')) {holdType = 'top'}
+                        if(hold.classList.contains('start')) {holdType = 'start'}
+                        holdSetup[hold.id] = holdType;
+                    });
+
+                    (async () => {
+                        const routeRef = doc(this.db, "current", "currentRoute");
+                        await updateDoc( routeRef, {routeData: {holdSetup: holdSetup} } );
+                    })();
+                
+            }
+        }
+
+        storeObserver.add({
+            store: globals,
+            key: 'lightsOn',
+            id: 'lightsToggle',
+            callback: this.updateBoard
+          });
+
 
         this.render = () => { return this.boardContainer; }
 

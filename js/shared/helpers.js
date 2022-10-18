@@ -41,27 +41,12 @@ let storeObserver = {
 let dce = (params) => {
   let element = document.createElement(params.el);
 
-  if (params.cssClass) {
-    element.className = params.cssClass;
-  }
-
-  if (params.source) {
-    element.setAttribute('src', params.source);
-  }
-
-  if (params.cssStyle) {
-    element.setAttribute('style', params.cssStyle);
-  }
-
-  if (params.id) {
-    element.setAttribute('id', params.id);
-  }
-
-  if (params.content) {
-    element.appendChild(document.createTextNode(params.content));
-  }
-
-  if (params.attrbs) {
+  if( params.cssClass )   { element.className = params.cssClass; }
+  if( params.source )     { element.setAttribute('src', params.source);}
+  if( params.cssStyle )   { element.setAttribute('style', params.cssStyle); }
+  if( params.id )         { element.setAttribute('id', params.id); }
+  if(params.content )     { element.appendChild(document.createTextNode(params.content)); }
+  if( params.attrbs ) {
     for (let i = 0, j = params.attrbs.length; i < j; i++) {
       element.setAttribute(params.attrbs[i][0], params.attrbs[i][1]);
     }
@@ -103,6 +88,21 @@ let triggerCustomEvent = (params) => {
   }
 }
 
+let eightaNuScore = (data) => {
+  let score = 0;
+  let bonusgrade = 0;
+  let ontop = 0;
+
+  if (data.ascentType === 'flash') {
+    bonusgrade = 1;
+    ontop = 3;
+  }
+
+  let grade = Number(data.grade) + bonusgrade;
+  score = (grade + ((grade >= 5) ? 3 : 1)) * 50 + ontop;
+  return score;
+}
+
 
 
 export {
@@ -110,5 +110,6 @@ export {
   dce,
   svg,
   triggerCustomEvent,
-  parseDate
+  parseDate,
+  eightaNuScore
 }

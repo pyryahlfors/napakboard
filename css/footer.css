@@ -81,3 +81,9 @@ footer .nav-bottom-links .link-container:focus svg,
 footer .nav-bottom-links .link-container.active svg {
   stroke: var(--color-theme-color2);
 }
+
+footer .nav-bottom-links .keep-selected,
+footer .nav-bottom-links .link-container.keep-selected svg {
+  color: var(--color-theme-color2);
+  stroke: var(--color-theme-color2);
+}

@@ -23,6 +23,7 @@ const handler = {
 let globalObjects = {
   routes: {},
   storeObservers : [],
+  lightsOn: false,
   selectedRoute: null,
   routeSorting: 'name',
 
