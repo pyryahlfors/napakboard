@@ -87,7 +87,7 @@
 	"b8": {"holdColor": "#00f"},
 	"c8": {"holdColor": "#fff", "hold" : "moon-82"},
 	"d8": {"holdColor": "#080"},
-	"e8": {"holdColor": "#000", "hold": "euroholds-thinnies-1"},
+	"e8": {"holdColor": "#000", "hold": "euroholds-thinnies-1", "boltPlacement": [0, -10], "rotation": 90},
 	"f8": {"holdColor": "#fff"},
 	"g8": {"holdColor": "#00f", "hold" : "euroholds-utter-6"},
 	"h8": {"holdColor": "#000", "hold" : "moon-137"},

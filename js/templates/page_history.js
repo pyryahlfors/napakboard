@@ -12,7 +12,7 @@ class viewHistory {
 
     let ticker = new statusTicker();
 
-    let historyContainer = dce({el: 'DIV'})
+    let historyContainer = dce({el: 'DIV', cssStyle: 'overflow: auto'})
 
     let nakki = ( async () => {
       let berse = getAuth().currentUser.uid;

@@ -29,6 +29,7 @@
     max-width: 6ch;
     text-transform: uppercase;
     line-height: 1rem;
+    height: 1.25rem;
   }
   
   .grade-legend.gray {
@@ -115,7 +116,6 @@
   .session-tick > .tick-grade {
     display: flex;
     flex-direction: row;
-    width: 110px;
     gap: 15px;
   }
   

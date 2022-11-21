@@ -63,8 +63,9 @@ class otc {
 
     let sideNavLinks = dce({el: 'SECTION', cssClass: 'sidenav-links'});
 
-    let btnProfile = dce({el: 'A', content: 'Profile' })
-    let btnHistory = dce({el: 'A', content: 'History' })
+    let btnProfile = dce({el: 'A', content: 'Profile' });
+    let btnHistory = dce({el: 'A', content: 'History' });
+    let btnBoard = dce({el: 'A', content: 'Board'})
 
     btnProfile.addEventListener('click', () => {
       route('profile');
@@ -76,7 +77,12 @@ class otc {
       document.body.classList.remove('otc')
     }, false);
 
-    sideNavLinks.append(btnProfile, btnHistory);
+    btnBoard.addEventListener('click', () => {
+      route('board');
+      document.body.classList.remove('otc')
+    }, false);
+
+    sideNavLinks.append(btnProfile, btnHistory, btnBoard);
 
     otcLinksContainer.append(loginInfo, sideNavLinks);
 
