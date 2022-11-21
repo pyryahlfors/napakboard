@@ -8,6 +8,7 @@ import viewLogin from './templates/page_login.js';
 import viewSignup from './templates/page_signup.js';
 import viewResetPassword from './templates/page_reset-password.js';
 import viewProfile from './templates/page_profile.js';
+import viewHistory from './templates/page_history.js';
 
 import otc from './templates/partials/section_otc.js';
 
@@ -19,6 +20,7 @@ const napakBoard = {
         globals.routes.board = viewBoard;
         globals.routes.login = viewLogin;
         globals.routes.profile = viewProfile;
+        globals.routes.history = viewHistory;
         globals.routes.resetPassword = viewResetPassword
         globals.routes.signup = viewSignup;
            
