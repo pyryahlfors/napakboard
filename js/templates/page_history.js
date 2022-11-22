@@ -12,10 +12,11 @@ class viewHistory {
 
     let ticker = new statusTicker();
 
-    let historyContainer = dce({el: 'DIV', cssStyle: 'overflow: auto'})
+    let historyContainer = dce({el: 'DIV', cssClass: 'history-container'})
 
     let nakki = ( async () => {
       let userScore = 0;
+      let routeCount = 0;
       let userID = getAuth().currentUser.uid;
       const docRef = doc(getFirestore(), "users", userID);
       const docSnap = await getDoc(docRef);
@@ -27,13 +28,15 @@ class viewHistory {
             if(selectedRoute) {
               let routeScore = eightaNuScore({ascentType: route.type, grade: selectedRoute.grade});
               userScore+=routeScore;
+              routeCount+=1;
 
               let tickContainer = dce({el: 'DIV', cssClass: 'session-tick'});
 
-              let tickGrade = dce({el: 'DIV', cssClass: 'tick-grade'});
-              let gradeLegend = dce({el: 'DIV', cssClass: `grade-legend ${globals.difficulty[selectedRoute.grade]}`, content: globals.grades.font[selectedRoute.grade]})
-              tickGrade.append(gradeLegend, document.createTextNode(selectedRoute.name))
-              tickContainer.append(tickGrade)
+              let gradeLegend = dce({el: 'DIV', cssClass: `tick-grade grade-legend ${globals.difficulty[selectedRoute.grade]}`, content: globals.grades.font[selectedRoute.grade]})
+              let routeName = dce({el: 'DIV', cssClass: `tick-routename`, content: selectedRoute.name})
+              let ascentType = dce({el: 'DIV', cssClass: `tick-ascenttype`, content: route.type})
+              let tickScore = dce({el: 'DIV', cssClass: `tick-ascentscore`, content: routeScore})
+              tickContainer.append(gradeLegend, routeName, ascentType, tickScore);
       
               historyContainer.append(tickContainer)
 
@@ -41,7 +44,9 @@ class viewHistory {
             }
           })
 
-          historyContainer.append(document.createTextNode(`User score: ${userScore}`))
+          historyContainer.append(document.createTextNode(`User score: ${userScore}`));
+          historyContainer.append(document.createElement('br'));
+          historyContainer.append(document.createTextNode(`Total routes climbed: ${routeCount}`));
           } 
       else {
           console.log("No such document!");
