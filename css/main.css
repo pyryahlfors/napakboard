@@ -79,7 +79,8 @@ label {
 }
 
 .page-board,
-.page-profile {
+.page-profile,
+.page-history {
     height: 100%;
     display: grid;
     grid-template-rows: 40px minmax(100%, 1fr) 40px;
@@ -87,16 +88,23 @@ label {
       "board"
       "footer";
     background: rgba(0,0,0,.3);
+    z-index: 2;
+    position: relative;
   }
 
+.page-profile,
+.page-history {
+  grid-template-rows: 40px 1fr 40px;
+
+}
+
 .page-login,
-.page-signup,
-.page-profile {
+.page-signup {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,.6);
   position: relative;
-  z-index: 1;
+  z-index: 2;
   padding: var(--padding-base);
   display: flex;
   align-items: center;

@@ -76,8 +76,7 @@ footer .nav-bottom-links .link-container svg {
   fill: none;
 }
 
-footer .nav-bottom-links .link-container:hover svg,
-footer .nav-bottom-links .link-container:focus svg,
+footer .nav-bottom-links .link-container:active svg,
 footer .nav-bottom-links .link-container.active svg {
   stroke: var(--color-theme-color2);
 }

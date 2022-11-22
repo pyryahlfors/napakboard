@@ -4,9 +4,14 @@ import { route } from '../shared/route.js';
 
 import { getAuth, updateProfile } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 
+import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
+import statusTicker from '../components/ds-statusticker/index.js';
+
+
 class viewProfile {
   constructor() {
 
+    let ticker = new statusTicker();
     document.body.classList.remove('otc');
     let container = dce({el: 'DIV', cssClass: 'page-profile'});
     let loginFormContainer = dce({el: 'SECTION', cssClass: 'profile-form'});
@@ -34,7 +39,9 @@ class viewProfile {
 
     loginFormContainer.append(userProfileForm);
 
-    container.append(loginFormContainer);
+    const footerNavi = new bottomNavi({options :  {} });
+
+    container.append(ticker.render(), loginFormContainer, footerNavi.render());
 
     let updateUserProfile = () => {
       updateProfile(getAuth().currentUser, {
