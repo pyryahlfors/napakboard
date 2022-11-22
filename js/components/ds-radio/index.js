@@ -24,7 +24,10 @@ class dsRadio extends HTMLElement {
     
     this.params.options.forEach(option => {
         let radioItemContainer = dce({el: 'li'});
-        let item = dce({el: 'input', id: `${this.params.name}-${option.title}`, attrbs: [['type', 'radio'], ['checked', option.checked ? 'checked' : null], ['value', option.value], ['name', this.params.name]]});
+        let item = dce({el: 'input', id: `${this.params.name}-${option.title}`, attrbs: [['type', 'radio'], ['value', option.value], ['name', this.params.name]]});
+        if( option.checked) {
+          item.checked = true;
+        }
         let itemLabel = dce({el: 'label', attrbs: [['for', `${this.params.name}-${option.title}`]], content: option.title})
         radioItemContainer.append(item, itemLabel);
         radioGroupContainer.appendChild(radioItemContainer);

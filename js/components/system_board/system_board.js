@@ -261,16 +261,18 @@ class systemBoard {
                 options: [
                     {
                         title: "name", 
-                        value: "name", 
-                        checked: true
+                        value: "name",
+                        checked: globals.routeSorting === 'name' ? true : false
                     }, 
                     {
                         title: "grade",
-                        value: "grade"
+                        value: "grade",
+                        checked: globals.routeSorting === 'grade' ? true : false
                     },
                     {
                         title: "date",
-                        value: "date"
+                        value: "date",
+                        checked: globals.routeSorting === 'date' ? true : false
                     }
                 ],
                 onchange: () => { globals.routeSorting = document.forms['routesort'].sort.value }
