@@ -17,55 +17,6 @@
   font-weight: bold;
 }
 
-.grade-legend {
-  background: #0f8;
-  color: #fff;
-  width: 25px;
-  display: inline-flex;
-  border-radius: var(--padding-base);
-  justify-content: center;
-  align-items: center;
-  font-size: var(--font-size-small);
-  max-width: 6ch;
-  text-transform: uppercase;
-  line-height: 1rem;
-  height: 1.25rem;
-}
-
-.grade-legend.gray {
-  background: rgb(128, 128, 128);
-  color: #fff;
-}
-.grade-legend.yellow {
-  background: rgb(255, 222, 0);
-  color: #000;
-}
-.grade-legend.green {
-  background: rgb(64, 222, 61);
-}
-.grade-legend.orange {
-  background: rgb(255, 128, 0);
-}
-.grade-legend.red {
-  background: rgb(255, 0, 0);
-}
-.grade-legend.blue {
-  background: rgb(32, 64, 222);
-}
-.grade-legend.purple {
-  background: rgb(255, 0, 255);
-}
-.grade-legend.pink {
-  background: rgb(255, 0, 128);
-}
-.grade-legend.black {
-  background: rgb(32, 32, 32);
-}
-.grade-legend.white {
-  background: rgb(2555, 32255, 255);
-  color: #000;
-}
-
 .page-history {
   height: 100%;
   display: grid;
@@ -102,10 +53,13 @@
 .session-tick {
   display: flex;
   justify-content: space-between;
-  margin: 7.5px 0;
-  padding: 0 var(--padding-base-half)
+  padding: var(--padding-base-half);
 }
-  
+
+.session-tick:nth-of-type(even) {
+  background: var(--color-theme-color1-accent);
+}
+
 .session-tick > .tick-grade {
   display: flex;
   flex-direction: row;
