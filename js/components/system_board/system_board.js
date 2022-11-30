@@ -614,7 +614,6 @@ class systemBoard {
         this.updateBoard = ( ) => {
             if( globals.lightsOn ) {
                 let selected = this.boardContainer.querySelectorAll('.selected'); 
-
                 let holdSetup = {};
                 selected.forEach( (hold) => {
                     let holdType = 'intermediate';
@@ -625,7 +624,11 @@ class systemBoard {
 
                 (async () => {
                     const routeRef = doc(this.db, "current", "currentRoute");
-                    await updateDoc( routeRef, {routeData: {holdSetup: holdSetup,} } );
+                    await updateDoc( routeRef, {
+                        routeData: {holdSetup: holdSetup}, 
+                        routeName: globals.selectedRoute || 'Unsaved route',
+                        routeId: globals.selectedRouteId || 'No id'
+                    } );
                 })();                
             }
         }
