@@ -48,7 +48,7 @@ footer > nav a.more :focus {
 
 footer .nav-bottom-links {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   flex-direction: row;
   align-self: center;
   width: 80%;

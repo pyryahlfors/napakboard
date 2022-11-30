@@ -6,6 +6,9 @@ import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth
 import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
 import statusTicker from '../components/ds-statusticker/index.js';
 
+import { route } from '../shared/route.js';
+
+
 class viewHistory {
   constructor() {
     let tickPage = dce({el: 'DIV', cssClass: 'page-history'});
@@ -45,9 +48,12 @@ class viewHistory {
             }
         })
 
-        historyContainer.append(document.createTextNode(`User score: ${userScore}`));
+        let historyTitle = dce({el: 'H2', content: 'History'});
+        historyContainer.append(historyTitle)
+        historyContainer.append(document.createTextNode(`User score: `), dce({el: 'h3', cssClass: 'inline bold', content: userScore}));
+        
         historyContainer.append(document.createElement('br'));
-        historyContainer.append(document.createTextNode(`Total routes climbed: ${routeCount}`));
+        historyContainer.append(document.createTextNode(`Total routes climbed: `), dce({el: 'h3', cssClass: 'inline bold', content: routeCount}));
         historyContainer.append(document.createElement('br'));
         historyContainer.append(document.createTextNode(`Routes:`));
         historyContainer.append(tempContainer)
@@ -57,27 +63,14 @@ class viewHistory {
       }
   })();
 
-  /*
 
-    // Get uer ticks 
-    let userTicks = [];
-    globals.boardRoutes.forEach( route => { 
-      if( route.ticks && route.ticks.includes(getAuth().currentUser.uid) ) {
-        userTicks.push(route)
-        let tickContainer = dce({el: 'DIV', cssClass: 'session-tick'});
-
-        let tickGrade = dce({el: 'DIV', cssClass: 'tick-grade'});
-        let gradeLegend = dce({el: 'DIV', cssClass: `grade-legend ${globals.difficulty[route.grade]}`, content: globals.grades.font[route.grade]})
-        tickGrade.append(gradeLegend, document.createTextNode(route.name))
-        tickContainer.append(tickGrade)
-
-        historyContainer.append(tickContainer)
-      } 
-    })
-
-    console.log(userTicks)
-*/
-    const footerNavi = new bottomNavi({options :  {} });
+    const footerNavi = new bottomNavi({options :  {
+      list: { 
+        title: 'Climb',
+        icon: 'climb',
+        link: () => {route('board')}
+        }
+    } });
 
     tickPage.append(ticker.render(), historyContainer, footerNavi.render());
 

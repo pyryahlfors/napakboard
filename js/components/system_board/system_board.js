@@ -613,22 +613,20 @@ class systemBoard {
 
         this.updateBoard = ( ) => {
             if( globals.lightsOn ) {
+                let selected = this.boardContainer.querySelectorAll('.selected'); 
 
-                    let selected = this.boardContainer.querySelectorAll('.selected'); 
+                let holdSetup = {};
+                selected.forEach( (hold) => {
+                    let holdType = 'intermediate';
+                    if(hold.classList.contains('top')) {holdType = 'top'}
+                    if(hold.classList.contains('start')) {holdType = 'start'}
+                    holdSetup[hold.id] = holdType;
+                });
 
-                    let holdSetup = {};
-                    selected.forEach( (hold) => {
-                        let holdType = 'intermediate';
-                        if(hold.classList.contains('top')) {holdType = 'top'}
-                        if(hold.classList.contains('start')) {holdType = 'start'}
-                        holdSetup[hold.id] = holdType;
-                    });
-
-                    (async () => {
-                        const routeRef = doc(this.db, "current", "currentRoute");
-                        await updateDoc( routeRef, {routeData: {holdSetup: holdSetup} } );
-                    })();
-                
+                (async () => {
+                    const routeRef = doc(this.db, "current", "currentRoute");
+                    await updateDoc( routeRef, {routeData: {holdSetup: holdSetup,} } );
+                })();                
             }
         }
 

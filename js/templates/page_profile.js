@@ -8,6 +8,7 @@ import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
 import statusTicker from '../components/ds-statusticker/index.js';
 
 
+
 class viewProfile {
   constructor() {
 
@@ -39,7 +40,14 @@ class viewProfile {
 
     loginFormContainer.append(userProfileForm);
 
-    const footerNavi = new bottomNavi({options :  {} });
+    const footerNavi = new bottomNavi({options :  {
+      list: { 
+        title: 'Climb',
+        icon: 'climb',
+        link: () => {route('board')}
+        }
+      }
+    });
 
     container.append(ticker.render(), loginFormContainer, footerNavi.render());
 
