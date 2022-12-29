@@ -7,7 +7,7 @@ import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
 import statusTicker from '../components/ds-statusticker/index.js';
 
 import { route } from '../shared/route.js';
-
+import dsLegend from '../components/ds-legend/index.js';
 
 class viewHistory {
   constructor() {
@@ -36,10 +36,10 @@ class viewHistory {
 
             let tickContainer = dce({el: 'DIV', cssClass: 'session-tick'});
 
-            let gradeLegend = dce({el: 'DIV', cssClass: `tick-grade grade-legend ${globals.difficulty[selectedRoute.grade]}`, content: globals.grades.font[selectedRoute.grade]})
+            let gradeLegend = new dsLegend({title: globals.grades.font[selectedRoute.grade], type: 'grade', cssClass: globals.difficulty[selectedRoute.grade]})
             let routeName = dce({el: 'DIV', cssClass: `tick-routename`, content: selectedRoute.name})
             let ascentType = dce({el: 'DIV', cssClass: `tick-ascenttype`})
-            let ascentLegend = dce({el: 'DIV', cssClass: `legend legend-${route.type}`, content: route.type});
+            let ascentLegend = new dsLegend({title: route.type, type: 'ascent', cssClass: route.type})
             ascentType.appendChild(ascentLegend)
             let tickScore = dce({el: 'DIV', cssClass: `tick-ascentscore`, content: routeScore})
             tickContainer.append(gradeLegend, routeName, ascentType, tickScore);

@@ -1,0 +1,68 @@
+button { 
+/*    width: 100%;*/
+    padding: 0 var(--padding-base);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Roboto';
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    color: var(--theme-white);
+    background: var(--theme-blue);
+    -webkit-tap-highlight-color: var(--theme-blue);
+    line-height: 2rem;
+    border-radius: var(--base-btn-border-radius);
+    position: relative;
+    transition: all 300ms ease-in-out;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+  }
+
+button:hover {
+  filter: brightness(90%);
+}
+
+button:focus {
+  box-shadow: 0 0 4px var(--color-focus);
+}
+
+.small {
+  font-size: var(--font-size-small);
+  line-height: 1.5rem;
+}
+
+.tiny {
+  display: inline-flex;
+  border-radius: 2px;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  line-height: 1rem;
+  width: auto;
+  padding: 0 var(--padding-base-half);
+}
+
+button.transparent {
+  color: var(--text-color-base); 
+  background: transparent
+}
+
+button.clicked {
+  background : var(--theme-blue-alpha);
+}
+
+button.disabled {
+  opacity: 0.5;
+}
+
+button.theme-orange {
+  background: #f80;
+}
+
+button.bordered {
+  box-shadow: inset 0 0 0 2px var(--theme-blue);
+  color: var(--theme-blue);
+  background: transparent;
+}

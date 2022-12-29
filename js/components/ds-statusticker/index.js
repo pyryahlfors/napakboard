@@ -3,6 +3,8 @@ import { animate } from '../../shared/animate.js';
 import { globals } from '../../shared/globals.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 
+import dsLegend from '../ds-legend/index.js';
+
 class statusTicker {
   constructor(params) {
     let container = dce({el: 'DIV', cssClass: 'current status-ticker'});
@@ -29,8 +31,9 @@ class statusTicker {
         let selectedRoute = globals.boardRoutes.find(({ id }) => id === globals.selectedRouteId);
         if(selectedRoute) {
           let climbed = selectedRoute.ticks && selectedRoute.ticks.includes(getAuth().currentUser.uid);
-          currentTitleContent.innerHTML = `${selectedRoute.name} `
-          let routeGrade = dce({el: 'div', cssStyle: 'margin: 0 var(--padding-base-half); display: inline-flex', cssClass: `grade-legend ${globals.difficulty[selectedRoute.grade]}`, content: globals.grades.font[selectedRoute.grade]});
+          currentTitleContent.innerHTML = `${selectedRoute.name}&nbsp;`
+          let routeGrade = new dsLegend({title: globals.grades.font[selectedRoute.grade], type: 'grade', cssClass: globals.difficulty[selectedRoute.grade]})
+
           currentTitleContent.appendChild(routeGrade)
 
           if ( climbed ) {

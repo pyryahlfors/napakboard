@@ -13,6 +13,7 @@ import viewHistory from './templates/page_history.js';
 import otc from './templates/partials/section_otc.js';
 
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
+import { collection, doc, getFirestore, onSnapshot, query } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 
 const napakBoard = {
     initialize : () => {
@@ -40,7 +41,30 @@ const napakBoard = {
         document.body.appendChild(appContainer);
 
         let loginStatus = () => {
-          if(user.login.isLoggedIn) { route('board') }
+          let redirect = document.location.hash.slice(2);
+          
+          if(user.login.isLoggedIn) { 
+            // get routes from DB
+            const dbQuery = query(collection(getFirestore(), 'routes'));
+            onSnapshot(dbQuery, (querySnapshot) => {
+            const routes = [];
+            querySnapshot.forEach((doc) => {
+                let routeData = doc.data();
+                routeData.id = doc.id;
+                routes.push(routeData);
+            });
+
+            if(routes.length !== globals.boardRoutes.length) {
+              globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
+              globals.standardMessage = globals.standardMessage;
+            }
+
+            globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+            });
+
+            route(globals.routes[redirect] ? redirect : 'board') 
+            }
+
           else { route('login'); }
         }
 

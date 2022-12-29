@@ -90,7 +90,7 @@
 	"e8": {"holdColor": "#000", "hold": "euroholds-thinnies-1", "boltPlacement": [0, -10], "rotation": 90},
 	"f8": {"holdColor": "#fff"},
 	"g8": {"holdColor": "#00f", "hold" : "euroholds-utter-6"},
-	"h8": {"holdColor": "#000", "hold" : "moon-137"},
+	"h8": {"holdColor": "#000", "hold" : "moon-137", "rotation": -45},
 	"i8": {"holdColor": "#f80"},
 	"j8": {"holdColor": "#000"},
 	"k8": {"holdColor": "#080"},
@@ -151,7 +151,7 @@
 	"f13": {"holdColor": "#f80"},
 	"g13": {"holdColor": "#000", "hold" : "moon-138", "rotation": 45},
 	"h13": {"holdColor": "#00f"},
-	"i13": {"holdColor": "#080", "hold" : "hrt-schimanek-2", "rotation": 180},
+	"i13": {"holdColor": "#080", "hold" : "hrt-schimanek-2"},
 	"j13": {"holdColor": "#fff"},
 	"k13": {"holdColor": "#f80"},
 
@@ -237,8 +237,10 @@
 	"j20": {"holdColor": "#fff", "hold" : "moon-51", "rotation": -135},
 
     "a21": {"holdColor": "#fff", "hold" : "moon-81", "rotation": -195},
-	"d21": {"holdColor": "#000", "hold" : "moon-99", "rotation": -135, "boltPlacement": [0, -10]},
+	"c21": {"holdColor": "#000", "hold" : "moon-99", "rotation": -135, "boltPlacement": [0, -10]},
+	"d21": {"holdColor": "#00f"},
 	"e21": {"holdColor": "#fff", "hold" : "moon-61", "rotation": -140},
+	"g21": {"holdColor": "#00f"},
 	"i21": {"holdColor": "#000", "hold" : "moon-115", "rotation": 135},
 	"k21": {"holdColor": "#080"}
 }

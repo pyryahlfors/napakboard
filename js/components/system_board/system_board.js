@@ -10,6 +10,8 @@ import dsRadio from '../ds-radio/index.js';
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 
+import dsLegend from '../ds-legend/index.js';
+
 class systemBoard {
     constructor( params ) {
         this.boardData = params;
@@ -52,26 +54,7 @@ class systemBoard {
         this.swipeDiffer = [null, null];
         }, false);
 
-        // get routes from DB
-        globals.boardRoutes = [];
-        const dbQuery = query(collection(getFirestore(), 'routes'));
-        onSnapshot(dbQuery, (querySnapshot) => {
-         const routes = [];
-         querySnapshot.forEach((doc) => {
-             let routeData = doc.data();
-             routeData.id = doc.id;
-             routes.push(routeData);
-         });
-
-         if(routes.length !== globals.boardRoutes.length) {
-          globals.standardMessage.push({message : `Routses updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
-          globals.standardMessage = globals.standardMessage;
-         }
-
-         globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-         });
-
-         const notify = () => {
+        const notify = () => {
             globals.serverMessage.push({message : 'Updating route data', timeout: 1, id : 'tick-sync'});
             globals.serverMessage = globals.serverMessage;
             globals.serverMessage[0].finished = true; 
@@ -174,7 +157,7 @@ class systemBoard {
     
             const loadHoldSetup = () => {
                 // fetch hold setup
-                fetch(`/projects/napakboard/hold_setup.json`)
+                fetch(`/projects/napakboard/hold_setup.json?akaaaaaa`)
                 .then(response => response.json())
                 .then(data => {
                     for( let holds in data) {
@@ -308,7 +291,8 @@ class systemBoard {
                         if( routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid) ) { routeItem.classList.add('climbed'); }
                         let routeName = dce({el: 'h3', content: routeData.name});
                         let routeDetails = dce({el: 'div'});
-                        let routeGrade = dce({el: 'div', cssClass: `grade-legend ${globals.difficulty[routeData.grade]}`, content: globals.grades.font[routeData.grade]});
+                        let routeGrade = new dsLegend({title: globals.grades.font[routeData.grade], type: 'grade', cssClass: globals.difficulty[routeData.grade]})
+
                         let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
                         let routeSetter = dce({el: 'div', content: routeData.setter});
                         routeDetails.append(routeGrade, routeAdded, routeSetter);

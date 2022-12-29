@@ -15,6 +15,7 @@ class viewProfile {
     let ticker = new statusTicker();
     document.body.classList.remove('otc');
     let container = dce({el: 'DIV', cssClass: 'page-profile'});
+    let profileContainer = dce({el: 'DIV', cssClass: 'profile-container'});
     let loginFormContainer = dce({el: 'SECTION', cssClass: 'profile-form'});
 
     let userProfileForm = dce({el: 'FORM', attrbs: [['name', 'napak-profile']]});
@@ -49,7 +50,9 @@ class viewProfile {
       }
     });
 
-    container.append(ticker.render(), loginFormContainer, footerNavi.render());
+    profileContainer.append(loginFormContainer);
+
+    container.append(ticker.render(), profileContainer, footerNavi.render());
 
     let updateUserProfile = () => {
       updateProfile(getAuth().currentUser, {
