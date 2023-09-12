@@ -59,7 +59,24 @@
     line-height: 100%;
     position: sticky;
     text-transform: uppercase;
+    background: #fff;
+    z-index: 1;
   }
+
+.board-container .grid-cell.row-name.row-letter {
+    top: 0;
+}
+
+
+.board-container .grid-cell.row-name.row-number {
+    left: 0;
+}
+
+.board-container .grid-cell.top-corner {
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
   .board-container .grid-cell.row-name span {
     text-transform: uppercase;
     font-size: var(--font-size-small);

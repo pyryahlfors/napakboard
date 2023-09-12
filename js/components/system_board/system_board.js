@@ -94,7 +94,10 @@ class systemBoard {
     
                     gridCell.innerHTML = (k >= 0 ) ? boardCols[k] : '';
     
-                    gridCell.classList.add('row-name')
+                    gridCell.classList.add('row-name', 'row-letter')
+                    if ( k < 0 ) {
+                        gridCell.classList.add('top-corner')
+                    }
               //      gridCell.style['gridArea'] = `header-${k < 0 ? 0  : k+1 }`;
                 }
     
@@ -102,7 +105,7 @@ class systemBoard {
                     if(k<0) {
                         gridRowAreas.push(`row-order-${i+1}`);
                         gridCell.innerHTML = i+1;
-                        gridCell.classList.add('row-name');
+                        gridCell.classList.add('row-name', 'row-number');
              //           gridCell.style['gridArea'] = `row-order-${i+1}`;
     
                     }
