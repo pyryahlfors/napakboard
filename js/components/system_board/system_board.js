@@ -95,7 +95,7 @@ class systemBoard {
                     gridCell.innerHTML = (k >= 0 ) ? boardCols[k] : '';
     
                     gridCell.classList.add('row-name')
-                    gridCell.style['gridArea'] = `header-${k < 0 ? 0  : k+1 }`;
+              //      gridCell.style['gridArea'] = `header-${k < 0 ? 0  : k+1 }`;
                 }
     
                 else{
@@ -103,12 +103,12 @@ class systemBoard {
                         gridRowAreas.push(`row-order-${i+1}`);
                         gridCell.innerHTML = i+1;
                         gridCell.classList.add('row-name');
-                        gridCell.style['gridArea'] = `row-order-${i+1}`;
+             //           gridCell.style['gridArea'] = `row-order-${i+1}`;
     
                     }
                     else {
                         gridRowAreas.push(`grid-cell-${boardCols[k]}${i+1}`);
-                        gridCell.style['gridArea'] = `grid-cell-${boardCols[k]}${i+1}`;
+                //        gridCell.style['gridArea'] = `grid-cell-${boardCols[k]}${i+1}`;
                         gridCell.id = `${boardCols[k]}${i+1}`
                         gridCell.addEventListener('click', (e) => {
                             // prevent adding holds to route
@@ -139,8 +139,10 @@ class systemBoard {
             }
             gridTemplateAreas+= `"${gridRowAreas.join(' ')}"`;
         }
-        sheet.insertRule(`.board-container {grid-template-areas: ${gridTemplateAreas}}`);
-
+//        sheet.insertRule(`.board-container {grid-template-areas: ${gridTemplateAreas}}`);
+        sheet.insertRule(`.board-container {grid-template-columns: repeat(${params.width+1}, 1fr)}`);
+        sheet.insertRule(`.board-container {grid-template-rows: repeat(${params.height+1}, 1fr)}`);
+        sheet.insertRule(`.board-container {aspect-ratio: ${params.height}/${params.width}}`);
 /**
  * Get hold setup
  */
