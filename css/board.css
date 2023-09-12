@@ -2,7 +2,7 @@
 */
 .board-container {
     background-color: #fff;
-    background-image: linear-gradient(to bottom, rgba(188, 231, 240, 0) 0, rgb(188, 231, 240) 100%);
+    background-image: linear-gradient(to bottom, rgba(216, 216, 216, 0) 0, rgb(255, 255, 255) 100%);
     margin: 0 auto 0;
     display: grid;
     line-height: 0;
@@ -31,10 +31,8 @@
   }
   .board-container .grid-cell {
     aspect-ratio: 1/1;
-    /*
-            opacity: 0.5;
-            filter: grayscale(0.2);
-    */
+    opacity: 0.5;
+    filter: grayscale(0.2);
     min-width: 3em;
     position: relative;
   }
@@ -108,4 +106,13 @@
     height: 100%;
     filter: drop-shadow(1px 1px 4px rgba(0, 0, 0, 0.25)) url("#inset-shadow");
   }
+
+.board-container .grid-cell.selected,
+.board-container .grid-cell.start,
+.board-container .grid-cell.top,
+.board-container .grid-cell.intermediate  {
+    opacity: 1;
+    filter: grayscale(0);
+}
+
   
