@@ -41,6 +41,8 @@ class viewSignup {
             await setDoc(doc(getFirestore(), "users", user.name.id), {
               email: user.name.email
             });
+            alert('new user added. You can now log in');
+            route('login');
         })();
       })
       .catch((error) => {
