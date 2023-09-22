@@ -25,6 +25,7 @@ class systemBoard {
         this.swipe = [null,null];
         this.swipeDiffer = [null,null];
         this.swipeTimer =  null;
+/*
         this.boardContainer.addEventListener('touchstart', (e) => { 
             this.swipeTimer = new Date(); 
             this.swipe = [e.touches[0].clientX, e.touches[0].clientY] 
@@ -53,7 +54,7 @@ class systemBoard {
             }
         this.swipeDiffer = [null, null];
         }, false);
-
+*/
         const notify = () => {
             globals.serverMessage.push({message : 'Updating route data', timeout: 1, id : 'tick-sync'});
             globals.serverMessage = globals.serverMessage;
