@@ -105,7 +105,7 @@ class systemBoard {
                 else{
                     if(k<0) {
                         gridRowAreas.push(`row-order-${i+1}`);
-                        gridCell.innerHTML = i+1;
+                        gridCell.innerHTML = boardHeight - i;
                         gridCell.classList.add('row-name', 'row-number');
              //           gridCell.style['gridArea'] = `row-order-${i+1}`;
     
@@ -163,7 +163,7 @@ class systemBoard {
     
             const loadHoldSetup = () => {
                 // fetch hold setup
-                fetch(`/projects/napakboard/hold_setup.json?akaaaaaa`)
+                fetch(`/projects/napakboard/hold_setup.json?${new Date().getTime}`)
                 .then(response => response.json())
                 .then(data => {
                     for( let holds in data) {
