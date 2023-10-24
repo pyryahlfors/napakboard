@@ -77,7 +77,7 @@ class systemBoard {
                 else{
                     if(k<0) {
                         gridRowAreas.push(`row-order-${i+1}`);
-                        gridCell.innerHTML = boardHeight - i;
+                        gridCell.innerHTML = boardHeight - i; //i+1; //boardHeight - i;
                         gridCell.classList.add('row-name', 'row-number');
              //           gridCell.style['gridArea'] = `row-order-${i+1}`;
     
