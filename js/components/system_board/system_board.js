@@ -25,36 +25,8 @@ class systemBoard {
         this.swipe = [null,null];
         this.swipeDiffer = [null,null];
         this.swipeTimer =  null;
-/*
-        this.boardContainer.addEventListener('touchstart', (e) => { 
-            this.swipeTimer = new Date(); 
-            this.swipe = [e.touches[0].clientX, e.touches[0].clientY] 
-        }, false);
-        this.boardContainer.addEventListener('touchmove', (e) => { this.swipeDiffer = [e.touches[0].clientX, e.touches[0].clientY] }, false);
-        this.boardContainer.addEventListener('touchend', (e) => {
-            // check swipe travel - exit if null
-            if(!this.swipeDiffer[0] && this.swipeDiffer[0] !== 0) { return }
-            let doUpdate = false;
-            let selectedRouteOrder = globals.selectedRouteId ? globals.boardRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
 
-            if( this.swipeDiffer[0] - this.swipe[0] > 100 ) { 
-                doUpdate = true;
-                selectedRouteOrder -= 1;
-                if(selectedRouteOrder < 0) { selectedRouteOrder = globals.boardRoutes.length - 1}
-            }
-            
-            if( this.swipe[0] - this.swipeDiffer[0] > 100 ) { 
-                doUpdate = true;
-                selectedRouteOrder += 1;
-                if(selectedRouteOrder > globals.boardRoutes.length - 1) { selectedRouteOrder = 0}
-            }
-
-            if( doUpdate ) {
-                this.loadRoute(globals.boardRoutes[selectedRouteOrder].id)
-            }
-        this.swipeDiffer = [null, null];
-        }, false);
-*/
+        
         const notify = () => {
             globals.serverMessage.push({message : 'Updating route data', timeout: 1, id : 'tick-sync'});
             globals.serverMessage = globals.serverMessage;
@@ -163,7 +135,7 @@ class systemBoard {
     
             const loadHoldSetup = () => {
                 // fetch hold setup
-                fetch(`/projects/napakboard/hold_setup.json?${new Date().getTime}`)
+                fetch(`/projects/napakboard/hold_setup.json?kakka=${new Date().getTime}`)
                 .then(response => response.json())
                 .then(data => {
                     for( let holds in data) {
@@ -267,8 +239,27 @@ class systemBoard {
                 onchange: () => { globals.routeSorting = document.forms['routesort'].sort.value }
             });
             
+            let boardSelect = new dsRadio({
+                cssClass: 'radio-menu',
+                title: 'Board', 
+                name: 'board',
+                options: [
+                    {
+                        title: "Kantti", 
+                        value: "Kantti",
+                        checked: globals.board === 'Kantti' ? true : false
+                    }, 
+                    {
+                        title: "PCB",
+                        value: "PCB",
+                        checked: globals.routeSorting === 'PCB' ? true : false
+                    }
+                ],
+                onchange: () => { globals.board = document.forms['routesort'].board.value;}
+            });
 
-            sortOptionsContainer.append(sortMenu);
+
+            sortOptionsContainer.append(sortMenu, document.createElement("BR"), document.createTextNode('Select board:'), boardSelect);
             let toggleMyAscents = new dsToggle({
                 cssClass  : 'horizontal-menu full-width',
                 targetObj : 'excludeTicks',
@@ -291,6 +282,7 @@ class systemBoard {
                     if( globals.excludeTicks && routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid)) {
                     }
                     else{
+                        if(routeData.napakboard === globals.board) {
                         // doc.data() is never undefined for query doc snapshots
                         let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
                         if( globals.selectedRouteId === routeData.id ) { routeItem.classList.add('selected'); }
@@ -310,6 +302,7 @@ class systemBoard {
                             selectedRoute = routeData.id;
                         }, false);
                         routelistContainer.appendChild(routeItem);
+                        }
                     }
                 });
                 
@@ -331,6 +324,13 @@ class systemBoard {
                 store: globals,
                 key: 'boardRoutes',
                 id: 'systemBoardRoutesUpdate',
+                callback: () => {updateRouteList()}
+            });
+
+            storeObserver.add({
+                store: globals,
+                key: 'board',
+                id: 'systemBoardSelect',
                 callback: () => {updateRouteList()}
             });
 
@@ -501,7 +501,8 @@ class systemBoard {
                         "name": `${params.routeName}`,
                         "grade": params.grade,
                         "setter": `${params.setter}`,
-                        "holdSetup": holdSetup                   
+                        "holdSetup": holdSetup,
+                        "napakboard": globals.board,                   
                     });
                     alert('Route saved!')
                     if( params.callBack ) { params.callBack() } 

@@ -12,7 +12,9 @@
     position: relative;
     overflow: auto;
     touch-action: auto;
+    will-change: scroll-position;
   }
+  
   .board-container .shadow:after {
     position: absolute;
     background: rgba(0, 0, 0, 0.8);

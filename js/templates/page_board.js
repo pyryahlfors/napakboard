@@ -11,7 +11,7 @@ class viewBoard {
 
     let ticker = new statusTicker();
 
-    let mySystemBoard = new systemBoard({width: 17, height: 23});
+    let mySystemBoard = new systemBoard({width: 11, height: 19});
 
     const footerNavi = new bottomNavi({options : 
         {
