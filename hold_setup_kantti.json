@@ -1,0 +1,76 @@
+{
+    "characteristics":
+        {
+            "width": 11,
+            "height": 19
+        },
+    "holdSetup" : { 
+        "c1": {"holdColor": "#000"},
+        "e1": {"holdColor": "#fff"},
+        "g1": {"holdColor": "#000"},
+        "h1": {"holdColor": "#fff"},
+        "i1": {"holdColor": "#fff"},
+        "j1": {"holdColor": "#aaa"},
+
+        "b2": {"holdColor": "#432"},
+        "d2": {"holdColor": "#dca"},
+        "e2": {"holdColor": "#aaa"},
+        "g2": {"holdColor": "#432"},
+        "i2": {"holdColor": "#dca"},
+
+        "f3": {"holdColor": "#dca"},
+        "i4": {"holdColor": "#000"},
+        "j4": {"holdColor": "#fff"},
+        "e4": {"holdColor": "#dca"},
+        "c5": {"holdColor": "#dca"},
+        "d5": {"holdColor": "#000"},
+        "i5": {"holdColor": "#dca"},
+        "g6": {"holdColor": "#dca"},
+        "a7": {"holdColor": "#dca"},
+        "b7": {"holdColor": "#dca"},
+        "c7": {"holdColor": "#dca"},
+        "e7": {"holdColor": "#000"},
+        "f7": {"holdColor": "#dca"},
+        "h7": {"holdColor": "#000"},
+
+        "e8": {"holdColor": "#000"},
+
+        "d9": {"holdColor": "#dca"},
+        "e9": {"holdColor": "#dca"},
+
+
+        "a10": {"holdColor": "#432"},
+        "c10": {"holdColor": "#dca"},
+        "d10": {"holdColor": "#432"},
+        "h10": {"holdColor": "#dca"},
+
+        "a11": {"holdColor": "#aaa"},
+        "b11": {"holdColor": "#432"},
+        "c11": {"holdColor": "#dca"},
+        "f11": {"holdColor": "#111"},
+        "h11": {"holdColor": "#dca"},
+        "k11": {"holdColor": "#aaa"},
+
+        "a13": {"holdColor": "#aaa"},
+        "c13": {"holdColor": "#dca"},
+        "k13": {"holdColor": "#432"},
+
+        "b14": {"holdColor": "#fff"},
+        "d14": {"holdColor": "#dca"},
+
+        "c15": {"holdColor": "#000"},
+        "e15": {"holdColor": "#dca"},
+        "f15": {"holdColor": "#dca"},
+        "k15": {"holdColor": "#432"},
+
+        "d16": {"holdColor": "#fff"},
+        "i16": {"holdColor": "#dca"},
+
+        "a17": {"holdColor": "#fff"},
+
+        "b18": {"holdColor": "#aaa"},
+        "k18": {"holdColor": "#dca"},
+        "j19": {"holdColor": "#432"}
+
+    }
+}

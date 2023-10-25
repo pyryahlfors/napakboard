@@ -14,19 +14,8 @@ import dsLegend from '../ds-legend/index.js';
 
 class systemBoard {
     constructor( params ) {
-        this.boardData = params;
-    
-        this.boardContainer = dce({el: 'div', cssClass:'board-container' })
+        this.boardContainer = dce({el: 'div', cssClass:'board-container' });
 
-        /** 
-         * Swipe to next/prev route
-         */
-
-        this.swipe = [null,null];
-        this.swipeDiffer = [null,null];
-        this.swipeTimer =  null;
-
-        
         const notify = () => {
             globals.serverMessage.push({message : 'Updating route data', timeout: 1, id : 'tick-sync'});
             globals.serverMessage = globals.serverMessage;
@@ -42,85 +31,15 @@ class systemBoard {
           });
 
         this.db = getFirestore();
-        let boardCols = 'abcdefghijklmnopqrstuvwxyz';    
-        let boardWidth = params.width;
-        let boardHeight = params.height;
-    
-        // create css for board
-        let style = document.createElement("style");    
-        document.body.appendChild(style);
-        let sheet = style.sheet;
-    
-        // Generate grid cells
-        let gridTemplateAreas = '';
-        for(let i=-1, j=boardHeight; i<j;i++) {
-            let gridRowAreas = [];
-    
-            let gridCell = dce({el: 'div'});
-                gridCell.className = "grid-cell"
-    
-            for(let k=-1, l=boardWidth; k<l;k++) {
-                let gridCell = dce({el: 'div'})
-                gridCell.className = "grid-cell"
-                if(i<0) {
-                    gridRowAreas.push(`header-${k < 0 ? 0  : k+1 }`)
-    
-                    gridCell.innerHTML = (k >= 0 ) ? boardCols[k] : '';
-    
-                    gridCell.classList.add('row-name', 'row-letter')
-                    if ( k < 0 ) {
-                        gridCell.classList.add('top-corner')
-                    }
-              //      gridCell.style['gridArea'] = `header-${k < 0 ? 0  : k+1 }`;
-                }
-    
-                else{
-                    if(k<0) {
-                        gridRowAreas.push(`row-order-${i+1}`);
-                        gridCell.innerHTML = boardHeight - i; //i+1; //boardHeight - i;
-                        gridCell.classList.add('row-name', 'row-number');
-             //           gridCell.style['gridArea'] = `row-order-${i+1}`;
-    
-                    }
-                    else {
-                        gridRowAreas.push(`grid-cell-${boardCols[k]}${i+1}`);
-                //        gridCell.style['gridArea'] = `grid-cell-${boardCols[k]}${i+1}`;
-                        gridCell.id = `${boardCols[k]}${i+1}`
-                        gridCell.addEventListener('click', (e) => {
-                            // prevent adding holds to route
-                            if(globals.selectedRoute !== null) return;
-                            let hold = e.target;
 
-                            if(hold.classList.contains('selected')) {
-                                if(!hold.classList.contains('top') && !hold.classList.contains('start')){
-                                    hold.classList.add('start');
-                                }
-                            else if(hold.classList.contains('start') && !hold.classList.contains('top')) {
-                                    hold.classList.remove('start');
-                                    hold.classList.add('top')
-                                }
-
-                            else if(hold.classList.contains('top') && !hold.classList.contains('start')) {
-                                    hold.classList.remove('top', 'selected')
-                                }
-                            }
-
-                            else { hold.classList.add('selected'); }
-                            
-                            this.updateBoard( )
-                        }, false)
-                    }
-                }
-                this.boardContainer.appendChild(gridCell);
-            }
-            gridTemplateAreas+= `"${gridRowAreas.join(' ')}"`;
-        }
-//        sheet.insertRule(`.board-container {grid-template-areas: ${gridTemplateAreas}}`);
-        sheet.insertRule(`.board-container {grid-template-columns: repeat(${params.width+1}, 1fr)}`);
-        sheet.insertRule(`.board-container {grid-template-rows: repeat(${params.height+1}, 1fr)}`);
-        sheet.insertRule(`.board-container {aspect-ratio: ${params.height}/${params.width}}`);
 /**
- * Get hold setup
+ * 
+ */
+        this.changeBoard = () => {
+            this.loadBoardSetup();
+        }
+/**
+ * Get holds
  */
         this.getHoldSetup = () => {
             this.holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
@@ -129,43 +48,129 @@ class systemBoard {
                 .then(r => r.text())
                 .then(text => {
                     this.holdImages.innerHTML = text;
-                    loadHoldSetup();
+                    this.loadBoardSetup();
                 })
                 .catch(console.error.bind(console));
-    
-            const loadHoldSetup = () => {
-                // fetch hold setup
-                fetch(`/projects/napakboard/hold_setup.json?kakka=${new Date().getTime}`)
-                .then(response => response.json())
-                .then(data => {
-                    for( let holds in data) {
-                        let parent = document.querySelector(`#${holds}`);
-                        parent.style.color = data[holds].holdColor ? data[holds].holdColor : 'transparent';
-                        let holdContainer = dce({el: 'div', cssClass: 'hold'});
-
-                        let hold = svg({el: 'svg', attrbs: [['viewBox', '0 0 30 30']]});
-
-                        if(this.holdImages.querySelector(`.${data[holds].hold}`)) {
-                            hold.append(this.holdImages.querySelector(`.${data[holds].hold}`).cloneNode(true));
-                        }
-                        else {
-                            hold.append(this.holdImages.querySelector(`.placeholder`).cloneNode(true));
-                        }
-                        holdContainer.append(hold);
-                        parent.append(holdContainer)
-
-                        let holdTransform = "";
-                        if( data[holds].rotation ) {
-                            holdTransform =  `rotate(${data[holds].rotation}deg) `;
-                        }
-                        if( data[holds].boltPlacement ) {
-                            holdTransform+= `translate3d(${data[holds].boltPlacement[0]}%, ${data[holds].boltPlacement[1]}%, 0)`;
-                            holdContainer.style['transformOrigin'] = `${50 + data[holds].boltPlacement[0]}% ${50 + (data[holds].boltPlacement[1] * -1)}%`;
-                        }
-                        holdContainer.style.transform = holdTransform;
-                    }
-                })
             }
+
+/**
+ * Get hold setup
+ */
+
+        this.loadBoardSetup = () => {
+            this.boardContainer.innerHTML = "";
+            let boardCols = 'abcdefghijklmnopqrstuvwxyz';
+        
+            // fetch hold setup
+            fetch(`/projects/napakboard/hold_setup_${globals.board}.json?kakka=${new Date().getTime}`)
+            .then(response => response.json())
+            .then(data => {
+
+                let oldSheet = document.body.querySelector("#napakgrid");
+                if(oldSheet) {
+                    oldSheet.parentNode.removeChild(oldSheet);
+                }
+                // create css for board
+                let style = document.createElement("style");
+                style.id = "napakgrid";
+                document.body.appendChild(style);
+                let sheet = style.sheet;
+            
+                let boardHeight = data.characteristics.height;
+                let boardWidth = data.characteristics.width;
+                // Generate grid cells
+
+                let gridTemplateAreas = '';
+                for(let i=-1, j=boardHeight; i<j;i++) {
+                    let gridRowAreas = [];
+            
+                    let gridCell = dce({el: 'div'});
+                        gridCell.className = "grid-cell"
+            
+                    for(let k=-1, l=boardWidth; k<l;k++) {
+                        let gridCell = dce({el: 'div'})
+                        gridCell.className = "grid-cell"
+                        if(i<0) {
+                            gridRowAreas.push(`header-${k < 0 ? 0  : k+1 }`)
+            
+                            gridCell.innerHTML = (k >= 0 ) ? boardCols[k] : '';
+            
+                            gridCell.classList.add('row-name', 'row-letter')
+                            if ( k < 0 ) {
+                                gridCell.classList.add('top-corner')
+                            }
+                        }
+            
+                        else{
+                            if(k<0) {
+                                gridRowAreas.push(`row-order-${i+1}`);
+                                gridCell.innerHTML = boardHeight - i; //i+1; //boardHeight - i;
+                                gridCell.classList.add('row-name', 'row-number');
+            
+                            }
+                            else {
+                                gridRowAreas.push(`grid-cell-${boardCols[k]}${i+1}`);
+                                gridCell.id = `${boardCols[k]}${i+1}`
+                                gridCell.addEventListener('click', (e) => {
+                                    // prevent adding holds to route
+                                    if(globals.selectedRoute !== null) return;
+                                    let hold = e.target;
+
+                                    if(hold.classList.contains('selected')) {
+                                        if(!hold.classList.contains('top') && !hold.classList.contains('start')){
+                                            hold.classList.add('start');
+                                        }
+                                    else if(hold.classList.contains('start') && !hold.classList.contains('top')) {
+                                            hold.classList.remove('start');
+                                            hold.classList.add('top')
+                                        }
+
+                                    else if(hold.classList.contains('top') && !hold.classList.contains('start')) {
+                                            hold.classList.remove('top', 'selected')
+                                        }
+                                    }
+
+                                    else { hold.classList.add('selected'); }
+                                    
+                                    this.updateBoard( )
+                                }, false)
+                            }
+                        }
+                        this.boardContainer.appendChild(gridCell);
+                    }
+                    gridTemplateAreas+= `"${gridRowAreas.join(' ')}"`;
+                }
+                sheet.insertRule(`.board-container {grid-template-columns: repeat(${boardWidth+1}, 1fr)}`);
+                sheet.insertRule(`.board-container {grid-template-rows: repeat(${boardHeight+1}, 1fr)}`);
+                sheet.insertRule(`.board-container {aspect-ratio: ${boardHeight}/${boardHeight}}`);
+
+                for( let holds in data.holdSetup) {
+                    let parent = this.boardContainer.querySelector(`#${holds}`);
+                    parent.style.color = data.holdSetup[holds].holdColor ? data.holdSetup[holds].holdColor : 'transparent';
+                    let holdContainer = dce({el: 'div', cssClass: 'hold'});
+
+                    let hold = svg({el: 'svg', attrbs: [['viewBox', '0 0 30 30']]});
+
+                    if(this.holdImages.querySelector(`.${data.holdSetup[holds].hold}`)) {
+                        hold.append(this.holdImages.querySelector(`.${data.holdSetup[holds].hold}`).cloneNode(true));
+                    }
+                    else {
+                        hold.append(this.holdImages.querySelector(`.placeholder`).cloneNode(true));
+                    }
+                    holdContainer.append(hold);
+                    parent.append(holdContainer)
+
+                    let holdTransform = "";
+                    if( data.holdSetup[holds].rotation ) {
+                        holdTransform =  `rotate(${data.holdSetup[holds].rotation}deg) `;
+                    }
+                    if( data.holdSetup[holds].boltPlacement ) {
+                        holdTransform+= `translate3d(${data.holdSetup[holds].boltPlacement[0]}%, ${data.holdSetup[holds].boltPlacement[1]}%, 0)`;
+                        holdContainer.style['transformOrigin'] = `${50 + data.holdSetup[holds].boltPlacement[0]}% ${50 + (data.holdSetup[holds].boltPlacement[1] * -1)}%`;
+                    }
+                    holdContainer.style.transform = holdTransform;
+                }
+            })
         }
 
 /**
@@ -252,14 +257,14 @@ class systemBoard {
                     {
                         title: "PCB",
                         value: "PCB",
-                        checked: globals.routeSorting === 'PCB' ? true : false
+                        checked: globals.board === 'PCB' ? true : false
                     }
                 ],
                 onchange: () => { globals.board = document.forms['routesort'].board.value;}
             });
 
 
-            sortOptionsContainer.append(sortMenu, document.createElement("BR"), document.createTextNode('Select board:'), boardSelect);
+            sortOptionsContainer.append(sortMenu, document.createElement("hr"), document.createTextNode('Select board:'), boardSelect, document.createElement("hr"));
             let toggleMyAscents = new dsToggle({
                 cssClass  : 'horizontal-menu full-width',
                 targetObj : 'excludeTicks',
@@ -331,7 +336,10 @@ class systemBoard {
                 store: globals,
                 key: 'board',
                 id: 'systemBoardSelect',
-                callback: () => {updateRouteList()}
+                callback: () => {
+                    this.changeBoard();
+                    updateRouteList();
+                }
             });
 
             // Sort listener
