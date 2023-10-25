@@ -622,12 +622,11 @@ class systemBoard {
                 });
 
                 (async () => {
-                    const routeRef = doc(this.db, "current", "currentRoute");
+                    const routeRef = doc(this.db, "current", `currentRoute_${globals.board}`);
                     await updateDoc( routeRef, {
                         routeData: {holdSetup: holdSetup}, 
                         routeName: globals.selectedRoute || 'Unsaved route',
-                        routeId: globals.selectedRouteId || 'No id',
-                        boardId: globals.board
+                        routeId: globals.selectedRouteId || 'No id'
                     } );
                 })();                
             }
