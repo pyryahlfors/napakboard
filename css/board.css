@@ -33,8 +33,6 @@
   }
   .board-container .grid-cell {
     aspect-ratio: 1/1;
-    opacity: 0.5;
-    filter: grayscale(0.2);
     min-width: 3em;
     position: relative;
   }
@@ -96,7 +94,10 @@
     opacity: 1;
     filter: grayscale(0);
   }
-  .board-container .grid-cell.start:after, .board-container .grid-cell.start:before, .board-container .grid-cell.intermediate:after, .board-container .grid-cell.intermediate:before, .board-container .grid-cell.top:after, .board-container .grid-cell.top:before, .board-container .grid-cell.selected:after, .board-container .grid-cell.selected:before {
+  .board-container .grid-cell.start:after, 
+  .board-container .grid-cell.intermediate:after, 
+  .board-container .grid-cell.top:after, 
+  .board-container .grid-cell.selected:after {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -111,29 +112,17 @@
     font-size: 0;
     background: transparent;
   }
-  .board-container .grid-cell.grid-cell.top:before, .board-container .grid-cell.grid-cell.intermediate:before, .board-container .grid-cell.grid-cell.start:before, .board-container .grid-cell.grid-cell.selected:before {
-    animation: _ripple_n8hbm_1 2s ease-in-out infinite forwards;
-  }
-  .board-container .grid-cell.start:after, .board-container .grid-cell.start:before {
+
+  .board-container .grid-cell.start:after {
     box-shadow: 0 0 0 2px var(--color-start);
   }
-  .board-container .grid-cell.top:after, .board-container .grid-cell.top:before {
+  .board-container .grid-cell.top:after {
     box-shadow: 0 0 0 2px var(--color-top);
   }
+
   .board-container svg {
     fill: currentColor;
     width: 100%;
     height: 100%;
-    filter: drop-shadow(1px 1px 4px rgba(0, 0, 0, 0.25)) url("#inset-shadow");
     stroke: rgba(0,0,0,.3);
   }
-
-.board-container .grid-cell.selected,
-.board-container .grid-cell.start,
-.board-container .grid-cell.top,
-.board-container .grid-cell.intermediate  {
-    opacity: 1;
-    filter: grayscale(0);
-}
-
-  
