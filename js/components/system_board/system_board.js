@@ -626,7 +626,8 @@ class systemBoard {
                     await updateDoc( routeRef, {
                         routeData: {holdSetup: holdSetup}, 
                         routeName: globals.selectedRoute || 'Unsaved route',
-                        routeId: globals.selectedRouteId || 'No id'
+                        routeId: globals.selectedRouteId || 'No id',
+                        boardId: globals.board
                     } );
                 })();                
             }
