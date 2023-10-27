@@ -5,9 +5,9 @@
             "height": 19
         },
     "holdSetup" : { 
-        "c1": {"holdColor": "#000"},
+        "c1": {"holdColor": "#333"},
         "e1": {"holdColor": "#fff"},
-        "g1": {"holdColor": "#000"},
+        "g1": {"holdColor": "#333"},
         "h1": {"holdColor": "#fff"},
         "i1": {"holdColor": "#fff"},
         "j1": {"holdColor": "#aaa"},
@@ -19,48 +19,75 @@
         "i2": {"holdColor": "#dca"},
 
         "f3": {"holdColor": "#dca"},
-        "i4": {"holdColor": "#000"},
+
+        "a4": {"holdColor": "#aaa", "hold": "toni-kirves", "rotation": 110},
+        "d4": {"holdColor": "#dca", "hold": "toni-peruna"},
+        "f4": {"holdColor": "#432", "hold": "toni-peruna", "rotation": -20},
+        "g4": {"holdColor": "#dca", "hold": "toni-kirves", "rotation": 40},
+        "i4": {"holdColor": "#333"},
         "j4": {"holdColor": "#fff"},
         "e4": {"holdColor": "#dca"},
+
+        "b5": {"holdColor": "#fff", "hold": "toni-kahva", "rotation": -20},
         "c5": {"holdColor": "#dca"},
-        "d5": {"holdColor": "#000"},
+        "d5": {"holdColor": "#333", "hold": "toni-kahva", "rotation": 35},
+        "f5": {"holdColor": "#aaa", "hold": "toni-kahva", "rotation": 20},
         "i5": {"holdColor": "#dca"},
+        "k5": {"holdColor": "#aaa", "hold": "toni-kirves", "rotation": 45},
+
+        "d6": {"holdColor": "#dca", "hold": "toni-peruna", "rotation": -10},
         "g6": {"holdColor": "#dca"},
+
         "a7": {"holdColor": "#dca"},
         "b7": {"holdColor": "#dca"},
         "c7": {"holdColor": "#dca"},
-        "e7": {"holdColor": "#000"},
+        "d7": {"holdColor": "#aaa", "hold": "toni-kahva", "rotation": 35},
+        "e7": {"holdColor": "#333"},
         "f7": {"holdColor": "#dca"},
-        "h7": {"holdColor": "#000"},
+        "h7": {"holdColor": "#333"},
+        "j7": {"holdColor": "#432", "hold": "toni-kahva", "rotation": 180},
+        "k7": {"holdColor": "#432", "hold": "toni-kahva", "rotation": 10},
 
-        "e8": {"holdColor": "#000"},
+        "e8": {"holdColor": "#333"},
 
+        "a9": {"holdColor": "#fff", "hold": "toni-kahva", "rotation": -20},
         "d9": {"holdColor": "#dca"},
         "e9": {"holdColor": "#dca"},
 
 
         "a10": {"holdColor": "#432"},
-        "c10": {"holdColor": "#dca"},
+        "c10": {"holdColor": "#dca", "hold": "toni-peruna", "rotation": -80},
         "d10": {"holdColor": "#432"},
+        "f10": {"holdColor": "#333", "hold": "toni-kahva", "rotation": 30},
+        "g10": {"holdColor": "#333", "hold": "toni-kahva", "rotation": -30},
+
         "h10": {"holdColor": "#dca"},
 
-        "a11": {"holdColor": "#aaa"},
+        "a11": {"holdColor": "#aaa", "hold": "toni-kahva", "rotation": -20},
         "b11": {"holdColor": "#432"},
-        "c11": {"holdColor": "#dca"},
-        "f11": {"holdColor": "#111"},
-        "h11": {"holdColor": "#dca"},
-        "k11": {"holdColor": "#aaa"},
+        "c11": {"holdColor": "#dca", "hold": "toni-kirves", "rotation": 110},
+        "f11": {"holdColor": "#333", "hold": "toni-kirves", "rotation": 90},
+        "h11": {"holdColor": "#dca", "hold": "toni-peruna", "rotation": 110},
+        "k11": {"holdColor": "#aaa", "hold": "toni-kahva", "rotation": 30},
 
-        "a13": {"holdColor": "#aaa"},
+        "d12": {"holdColor": "#aaa", "hold": "toni-kahva"},
+
+        "a13": {"holdColor": "#aaa", "hold": "toni-kirves", "rotation": 130},
         "c13": {"holdColor": "#dca"},
-        "k13": {"holdColor": "#432"},
+        "d13": {"holdColor": "#432", "hold": "toni-kahva", "rotation": -155},
+        "k13": {"holdColor": "#432", "hold": "toni-kahva", "rotation": 90},
 
+        "a14": {"holdColor": "#dca", "hold": "toni-kahva"},
         "b14": {"holdColor": "#fff"},
         "d14": {"holdColor": "#dca"},
+        "e14": {"holdColor": "#dca", "hold": "toni-peruna", "rotation": 110},
 
-        "c15": {"holdColor": "#000"},
+        "a15": {"holdColor": "#333", "hold": "toni-kahva", "rotation": -20},
+        "c15": {"holdColor": "#dca", "hold": "toni-kahva", "rotation": -20},
         "e15": {"holdColor": "#dca"},
-        "f15": {"holdColor": "#dca"},
+        "f15": {"holdColor": "#dca", "hold": "toni-kahva", "rotation": -30},
+        "g15": {"holdColor": "#333", "hold": "toni-kahva", "rotation": 30},
+        "h15": {"holdColor": "#aaa", "hold": "toni-kahva", "rotation": -30},
         "k15": {"holdColor": "#432"},
 
         "d16": {"holdColor": "#fff"},
