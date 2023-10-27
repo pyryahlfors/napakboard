@@ -13,8 +13,7 @@
         "j1": {"holdColor": "#aaa"},
         "k1": {"holdColor": "#762", "hold": "toni-6", "rotation": -5},
 
-        "a2": {"holdColor": "#762", "hold": "toni-6", "rotation": 45},
-        "b2": {"holdColor": "#762"},
+        "b2": {"holdColor": "#762", "hold": "toni-6", "rotation": 45},
         "d2": {"holdColor": "#dca"},
         "e2": {"holdColor": "#aaa"},
         "g2": {"holdColor": "#762"},
@@ -100,10 +99,10 @@
         "a14": {"holdColor": "#dca", "hold": "toni-kahva"},
         "b14": {"holdColor": "#fff"},
         "d14": {"holdColor": "#dca"},
-        "e14": {"holdColor": "#dca", "hold": "toni-peruna", "rotation": 110},
+        "e14": {"holdColor": "#dca", "hold": "toni-peruna", "rotation": 10},
 
         "a15": {"holdColor": "#333", "hold": "toni-kahva", "rotation": -20},
-        "c15": {"holdColor": "#dca", "hold": "toni-kahva", "rotation": -20},
+        "c15": {"holdColor": "#333", "hold": "toni-kahva", "rotation": -20},
         "e15": {"holdColor": "#dca"},
         "f15": {"holdColor": "#dca", "hold": "toni-kahva", "rotation": -30},
         "g15": {"holdColor": "#333", "hold": "toni-kahva", "rotation": 30},
@@ -111,6 +110,8 @@
         "j16": {"holdColor": "#333", "hold": "toni-kahva", "rotation": 80},
         "k15": {"holdColor": "#762"},
 
+
+        "a16": {"holdColor": "#762"},
         "d16": {"holdColor": "#fff"},
         "i16": {"holdColor": "#dca"},
 
