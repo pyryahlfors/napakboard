@@ -313,7 +313,14 @@ class systemBoard {
             const updateRouteList = ( ) => {
                 let routelistContainer = dce({el: 'div', cssClass : 'route-list-container'});
 
-                globals.boardRoutes.forEach((routeData) => {
+                let routes = globals.boardRoutes;
+
+                if(globals.routeSorting === 'name')  { routes = globals.boardRoutes.sort((a, b) => a.name.localeCompare(b.name)) }
+                if(globals.routeSorting === 'grade') { routes = globals.boardRoutes.sort((a,b) => a.grade - b.grade) }
+                if(globals.routeSorting === 'date')  { routes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)) }
+
+
+                routes.forEach((routeData) => {
                     // exclude user ticks (if selected)
                     if( globals.excludeTicks && routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid)) {
                     }
@@ -341,6 +348,8 @@ class systemBoard {
                         }
                     }
                 });
+
+                
                 
                 if(listDialog.querySelector('.route-list-container')) {
                     let clearList = listDialog.querySelector('.route-list-container');
