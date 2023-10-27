@@ -16,6 +16,37 @@ class systemBoard {
     constructor( params ) {
         this.boardContainer = dce({el: 'div', cssClass:'board-container' });
 
+        this.boardContainer.addEventListener('touchstart', (e) => { 
+            this.swipeTimer = new Date(); 
+            this.swipe = [e.touches[0].clientX, e.touches[0].clientY] 
+        }, false);
+        this.boardContainer.addEventListener('touchmove', (e) => { this.swipeDiffer = [e.touches[0].clientX, e.touches[0].clientY] }, false);
+        this.boardContainer.addEventListener('touchend', (e) => {
+            if(document.querySelector('.board-container').scrollWidth > window.innerWidth) return;
+            // check swipe travel - exit if null
+            if(!this.swipeDiffer[0] && this.swipeDiffer[0] !== 0) { return }
+            let doUpdate = false;
+            let selectedRouteOrder = globals.selectedRouteId ? globals.boardRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
+
+            if( this.swipeDiffer[0] - this.swipe[0] > 100 ) {
+                doUpdate = true;
+                selectedRouteOrder -= 1;
+                if(selectedRouteOrder < 0) { selectedRouteOrder = globals.boardRoutes.length - 1}
+            }
+            
+            if( this.swipe[0] - this.swipeDiffer[0] > 100 ) { 
+                doUpdate = true;
+                selectedRouteOrder += 1;
+                if(selectedRouteOrder > globals.boardRoutes.length - 1) { selectedRouteOrder = 0}
+            }
+
+            if( doUpdate ) {
+                this.loadRoute(globals.boardRoutes[selectedRouteOrder].id)
+            }
+        this.swipeDiffer = [null, null];
+        }, false);
+
+
         const notify = () => {
             globals.serverMessage.push({message : 'Updating route data', timeout: 1, id : 'tick-sync'});
             globals.serverMessage = globals.serverMessage;
