@@ -135,13 +135,13 @@ class systemBoard {
                         else{
                             if(k<0) {
                                 gridRowAreas.push(`row-order-${i+1}`);
-                                gridCell.innerHTML = i+1; //boardHeight - i;
+                                gridCell.innerHTML = boardHeight - i;
                                 gridCell.classList.add('row-name', 'row-number');
             
                             }
                             else {
                                 gridRowAreas.push(`grid-cell-${boardCols[k]}${i+1}`);
-                                gridCell.id = `${boardCols[k]}${i+1}`
+                                gridCell.id = `${boardCols[k]}${boardHeight - i}`
                                 gridCell.addEventListener('click', (e) => {
                                     // prevent adding holds to route
                                     if(globals.selectedRoute !== null) return;
