@@ -141,7 +141,7 @@ class systemBoard {
                             }
                             else {
                                 gridRowAreas.push(`grid-cell-${boardCols[k]}${i+1}`);
-                                gridCell.id = `${boardCols[k]}${boardHeight - i}`
+                                gridCell.id = `${boardCols[k]}${i+1}`
                                 gridCell.addEventListener('click', (e) => {
                                     // prevent adding holds to route
                                     if(globals.selectedRoute !== null) return;
