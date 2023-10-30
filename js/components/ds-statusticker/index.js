@@ -11,6 +11,13 @@ class statusTicker {
     let messageContainer = dce({el: 'DIV', cssClass: 'status-ticker-content'});
     container.appendChild(messageContainer);
 
+    const nextPrev = (dir) => {
+      let selectedRouteOrder = globals.selectedRouteId ? globals.boardRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
+      selectedRouteOrder += dir;
+      if(selectedRouteOrder < 0) { selectedRouteOrder = globals.boardRoutes.length - 1}
+      if(selectedRouteOrder > globals.boardRoutes.length - 1) { selectedRouteOrder = 0}
+      window.mySystemBoard.loadRoute(globals.boardRoutes[selectedRouteOrder].id)
+    }
 
     let standardMessage = dce({el: 'DIV', cssClass: 'standard'});
     let standardMessageContent = dce({el: 'H3', content: ''});
@@ -18,9 +25,15 @@ class statusTicker {
     messageContainer.appendChild(standardMessage);
   
     let currentTitle = dce({el: 'DIV', cssClass: 'current'});
+    let prevButton = dce({el: 'DIV', cssClass: 'prevnext', content : "﹤"});
+    prevButton.addEventListener('click', ()=>{nextPrev(-1)}, false);
 
     let currentTitleContent = dce({el: 'H3', cssStyle: 'display: flex', content: globals.selectedRoute || 'No route selected'});
-    currentTitle.appendChild(currentTitleContent);
+
+    let nextButton = dce({el: 'DIV', cssClass: 'prevnext', content : ">"});
+    nextButton.addEventListener('click', ()=>{nextPrev(1)}, false);
+
+    currentTitle.append(prevButton, currentTitleContent, nextButton);
     messageContainer.appendChild(currentTitle);
 
     storeObserver.add({

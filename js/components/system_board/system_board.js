@@ -75,7 +75,7 @@ class systemBoard {
         this.getHoldSetup = () => {
             this.holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 
-            fetch('/projects/napakboard/images/holds.svg')
+            fetch('/projects/napakboard/images/holds.svg?upate=treu')
                 .then(r => r.text())
                 .then(text => {
                     this.holdImages.innerHTML = text;
@@ -93,7 +93,7 @@ class systemBoard {
             let boardCols = 'abcdefghijklmnopqrstuvwxyz';
         
             // fetch hold setup
-            fetch(`/projects/napakboard/hold_setup_${globals.board}.json?kakka=${new Date().getTime}`)
+            fetch(`/projects/napakboard/hold_setup_${globals.board}.json?update=${new Date().getTime}`)
             .then(response => response.json())
             .then(data => {
 

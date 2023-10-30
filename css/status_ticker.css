@@ -33,7 +33,7 @@
 .status-ticker .status-ticker-content .standard,
 .status-ticker .status-ticker-content .current,
 .status-ticker .status-ticker-content .network {
-    width: 100%;
+    width: 100vw;
     margin: 0 auto 0;
     display: flex;
     height: 40px;
@@ -56,6 +56,21 @@
 .status-ticker div.standard H3 {
   font-weight: 300;
 }
+
+.status-ticker .status-ticker-content .current {
+  justify-content: space-between;
+}
+
+.status-ticker .status-ticker-content .current h3 {
+  width: 100%;
+  justify-content: center;
+}
+.status-ticker .status-ticker-content .current .prevnext{
+  display: flex;
+  width: 40px;
+  justify-content: center;
+}
+
 
 @keyframes scrollToBottom {
   100% {transform: translateY(-80px);}

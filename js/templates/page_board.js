@@ -48,6 +48,7 @@ class viewBoard {
 
     tickPage.append(ticker.render(), mySystemBoard.render(),footerNavi.render());
     mySystemBoard.getHoldSetup();
+    window.mySystemBoard = mySystemBoard;
 
     this.render = () => {
       return tickPage;
