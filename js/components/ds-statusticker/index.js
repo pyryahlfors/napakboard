@@ -28,7 +28,9 @@ class statusTicker {
     let prevButton = dce({el: 'DIV', cssClass: 'prevnext', content : "﹤"});
     prevButton.addEventListener('click', ()=>{nextPrev(-1)}, false);
 
-    let currentTitleContent = dce({el: 'H3', cssStyle: 'display: flex', content: globals.selectedRoute || 'No route selected'});
+    let currentTitleContent = dce({el: 'H3', cssStyle: 'display: flex; height: 100%; align-items: center;', content: globals.selectedRoute || 'No route selected'});
+
+    currentTitleContent.addEventListener('click', () => { window.mySystemBoard.list()}, false);
 
     let nextButton = dce({el: 'DIV', cssClass: 'prevnext', content : ">"});
     nextButton.addEventListener('click', ()=>{nextPrev(1)}, false);

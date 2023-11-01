@@ -12,14 +12,10 @@ class viewBoard {
     let ticker = new statusTicker();
 
     let mySystemBoard = new systemBoard();
+    window.mySystemBoard = mySystemBoard;
 
     const footerNavi = new bottomNavi({options : 
         {
-          list: { 
-            title: 'list',
-            icon: 'list',
-            link: () => {mySystemBoard.list()}
-            },
           save: { 
             title: 'save',
             icon: 'save',
@@ -48,7 +44,6 @@ class viewBoard {
 
     tickPage.append(ticker.render(), mySystemBoard.render(),footerNavi.render());
     mySystemBoard.getHoldSetup();
-    window.mySystemBoard = mySystemBoard;
 
     this.render = () => {
       return tickPage;

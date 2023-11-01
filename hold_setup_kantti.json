@@ -8,7 +8,7 @@
         "j1": {"holdColor": "#333"},
         "l1": {"holdColor": "#fff"},
         "n1": {"holdColor": "#333"},
-        "o1": {"holdColor": "#fff", "hold": "moon-94", "boltPlacement": [0, -10], "rotation": -150},
+        "o1": {"holdColor": "#fff", "hold": "moon-94", "boltPlacement": [-3, -7.5], "rotation": -150},
 
         "p1": {"holdColor": "#fff"},
         "q1": {"holdColor": "#aaa"},
@@ -99,14 +99,14 @@
         "j13": {"holdColor": "#dca"},
         "k13": {"holdColor": "#762", "hold": "toni-kahva", "rotation": -155},
         "n13": {"holdColor": "#762", "hold": "toni-6"},
-        "q13": {"holdColor": "#fff", "hold": "moon-94", "boltPlacement": [0, -10], "rotation": 180},
+        "q13": {"holdColor": "#fff", "hold": "moon-94", "boltPlacement": [-3, -7.5], "rotation": 180},
         "r13": {"holdColor": "#762", "hold": "toni-kahva", "rotation": 90},
 
         "h14": {"holdColor": "#dca", "hold": "toni-kahva"},
         "i14": {"holdColor": "#fff"},
         "k14": {"holdColor": "#dca", "hold": "toni-pamppu", "rotation": 135},
         "l14": {"holdColor": "#dca", "hold": "toni-peruna", "rotation": 10},
-        "m14": {"holdColor": "#fff", "hold": "moon-94", "boltPlacement": [0, -10], "rotation": 165},
+        "m14": {"holdColor": "#fff", "hold": "moon-94", "boltPlacement": [-3, -7.5], "rotation": 165},
         
         "h15": {"holdColor": "#333", "hold": "toni-kahva", "rotation": -20},
         "j15": {"holdColor": "#333", "hold": "toni-kahva", "rotation": -20},

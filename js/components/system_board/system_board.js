@@ -93,7 +93,7 @@ class systemBoard {
             let boardCols = 'abcdefghijklmnopqrstuvwxyz';
         
             // fetch hold setup
-            fetch(`/projects/napakboard/hold_setup_${globals.board}.json?update=${new Date().getTime}`)
+            fetch(`/projects/napakboard/hold_setup_${globals.board}.json?doUpdate=${new Date().getTime}`)
             .then(response => response.json())
             .then(data => {
 
@@ -202,6 +202,10 @@ class systemBoard {
                     holdContainer.style.transform = holdTransform;
                 }
             })
+
+            if(globals.selectedRouteId) {
+                this.loadRoute(globals.selectedRouteId)
+            }
         }
 
 /**
