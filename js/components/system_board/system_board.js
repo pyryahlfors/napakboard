@@ -75,7 +75,7 @@ class systemBoard {
         this.getHoldSetup = () => {
             this.holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 
-            fetch('/projects/napakboard/images/holds.svg?upate=treu')
+            fetch('/projects/napakboard/images/holds.svg?update=true')
                 .then(r => r.text())
                 .then(text => {
                     this.holdImages.innerHTML = text;
@@ -135,7 +135,7 @@ class systemBoard {
                         else{
                             if(k<0) {
                                 gridRowAreas.push(`row-order-${i+1}`);
-                                gridCell.innerHTML = boardHeight - i;
+                                gridCell.innerHTML = boardHeight - i; //i+1;//
                                 gridCell.classList.add('row-name', 'row-number');
             
                             }
