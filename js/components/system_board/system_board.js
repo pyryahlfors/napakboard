@@ -15,6 +15,7 @@ import dsLegend from '../ds-legend/index.js';
 class systemBoard {
     constructor( params ) {
         this.boardContainer = dce({el: 'div', cssClass:'board-container' });
+        this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
 
         this.boardContainer.addEventListener('touchstart', (e) => { 
             this.swipeTimer = new Date(); 
@@ -147,22 +148,46 @@ class systemBoard {
                                     if(globals.selectedRoute !== null) return;
                                     let hold = e.target;
 
-                                    if(hold.classList.contains('selected')) {
-                                        if(!hold.classList.contains('top') && !hold.classList.contains('start')){
-                                            hold.classList.add('start');
-                                        }
-                                    else if(hold.classList.contains('start') && !hold.classList.contains('top')) {
-                                            hold.classList.remove('start');
-                                            hold.classList.add('top')
-                                        }
+                                    let currentHoldType;
+                                    let currentHoldOrder;
 
-                                    else if(hold.classList.contains('top') && !hold.classList.contains('start')) {
-                                            hold.classList.remove('top', 'selected')
+                                    if(globals.board == 'Kantti') {
+                                        this.holdTypes = ['intermediate', 'start', 'top'];
+                                    }
+                                    else {
+                                        this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
+                                    }
+                            
+                               
+                                    if(hold.classList.contains('selected')) {
+                                        this.holdTypes.forEach((el, count) => {
+                                            if(hold.classList.contains(el)) {
+                                                currentHoldType = el;
+                                                currentHoldOrder = count;
+                                            }
+                                        })
+
+                                        hold.classList.remove(currentHoldType);
+                          
+                                        hold.classList.add(this.holdTypes[currentHoldOrder+1]);
+                                        if(currentHoldOrder +1 == this.holdTypes.length) {
+                                            hold.classList.remove('selected', 'undefined');                                            
+                                        } 
+                                        else {
+//                                            globals.standardMessage({message : `Added - ${this.holdTypes[currentHoldOrder+1]} hold`, timeout: 1, id : 'route-hold-added'});
+//                                            globals.standardMessage = globals.standardMessage;
+    
                                         }
                                     }
 
-                                    else { hold.classList.add('selected'); }
-                                    
+                                    else { 
+                                        hold.classList.add('selected', this.holdTypes[0]); 
+  //                                      globals.standardMessage.push({message : `Added - ${this.holdTypes[0]} hold`, timeout: 1, id : 'route-hold-added'});
+  //                                      globals.standardMessage = globals.standardMessage;
+
+                                    }
+
+
                                     this.updateBoard( )
                                 }, false)
                             }
@@ -464,7 +489,7 @@ class systemBoard {
  */
         this.clearRoute = ( ) => {
             let selected = this.boardContainer.querySelectorAll('.selected'); 
-            selected.forEach((el) => {el.classList.remove('selected', 'top', 'start', 'intermediate')});
+            selected.forEach((el) => {el.classList.remove('selected', 'top', 'start', 'intermediate', 'foot')});
         }
 
 // Save modal
@@ -530,6 +555,7 @@ class systemBoard {
                 let holdType = 'intermediate';
                 if(hold.classList.contains('top')) {holdType = 'top'}
                 if(hold.classList.contains('start')) {holdType = 'start'}
+                if(hold.classList.contains('foot')) {holdType = 'foot'}
                 holdSetup[hold.id] = holdType;
             });
 
@@ -662,6 +688,7 @@ class systemBoard {
                     let holdType = 'intermediate';
                     if(hold.classList.contains('top')) {holdType = 'top'}
                     if(hold.classList.contains('start')) {holdType = 'start'}
+                    if(hold.classList.contains('foot')) {holdType = 'foot'}
                     holdSetup[hold.id] = holdType;
                 });
 

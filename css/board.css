@@ -103,7 +103,8 @@
   .board-container .grid-cell.start:after, 
   .board-container .grid-cell.intermediate:after, 
   .board-container .grid-cell.top:after, 
-  .board-container .grid-cell.selected:after {
+  .board-container .grid-cell.selected:after,
+  .board-container .grid-cell.foot:after {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -126,6 +127,9 @@
     box-shadow: 0 0 0 2px var(--color-top);
   }
 
+  .board-container .grid-cell.foot:after {
+    box-shadow: 0 0 0 2px var(--color-foot);
+  }
   .board-container svg {
     fill: currentColor;
     width: 100%;

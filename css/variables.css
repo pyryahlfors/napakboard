@@ -12,7 +12,8 @@
     --color-top: #0f0;
     --color-intermediate:  #00f;
     --color-start: #f00;
-    
+    --color-foot: #f5ac00;
+
     --color-black-alpha40: rgba(0, 0, 0, 0.4);
     --color-black-alpha60: rgba(0, 0, 0, 0.6);
     --color-black: rgba(0, 0, 0, 0.8);
