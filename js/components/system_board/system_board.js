@@ -172,18 +172,16 @@ class systemBoard {
                                         hold.classList.add(this.holdTypes[currentHoldOrder+1]);
                                         if(currentHoldOrder +1 == this.holdTypes.length) {
                                             hold.classList.remove('selected', 'undefined');                                            
+                                            document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';        
                                         } 
                                         else {
-//                                            globals.standardMessage({message : `Added - ${this.holdTypes[currentHoldOrder+1]} hold`, timeout: 1, id : 'route-hold-added'});
-//                                            globals.standardMessage = globals.standardMessage;
-    
+                                            document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold`;        
                                         }
                                     }
 
                                     else { 
                                         hold.classList.add('selected', this.holdTypes[0]); 
-  //                                      globals.standardMessage.push({message : `Added - ${this.holdTypes[0]} hold`, timeout: 1, id : 'route-hold-added'});
-  //                                      globals.standardMessage = globals.standardMessage;
+                                        document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold`;
 
                                     }
 
