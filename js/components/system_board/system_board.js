@@ -322,6 +322,7 @@ class systemBoard {
                     globals.selectedRoute = null;
                     globals.selectedRouteId = null;
                     globals.board = document.forms['routesort'].board.value;
+                    this.boardContainer.classList.add(`${globals.board.toLowerCase()}`);
                 }
             });
 
