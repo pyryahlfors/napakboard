@@ -60,6 +60,7 @@ const napakBoard = {
             }
 
             globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+            globals.sortedRoutes = globals.boardRoutes;
             });
 
             route(globals.routes[redirect] ? redirect : 'board') 

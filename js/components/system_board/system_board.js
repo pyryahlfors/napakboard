@@ -318,7 +318,11 @@ class systemBoard {
                         checked: globals.board === 'PCB' ? true : false
                     }
                 ],
-                onchange: () => { globals.board = document.forms['routesort'].board.value;}
+                onchange: () => { 
+                    globals.selectedRoute = null;
+                    globals.selectedRouteId = null;
+                    globals.board = document.forms['routesort'].board.value;
+                }
             });
 
 
@@ -341,11 +345,10 @@ class systemBoard {
                 let routelistContainer = dce({el: 'div', cssClass : 'route-list-container'});
 
                 let routes = globals.boardRoutes;
-
+                globals.sortedRoutes = [];
                 if(globals.routeSorting === 'name')  { routes = globals.boardRoutes.sort((a, b) => a.name.localeCompare(b.name)) }
                 if(globals.routeSorting === 'grade') { routes = globals.boardRoutes.sort((a,b) => a.grade - b.grade) }
                 if(globals.routeSorting === 'date')  { routes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)) }
-
 
                 routes.forEach((routeData) => {
                     // exclude user ticks (if selected)
@@ -353,30 +356,30 @@ class systemBoard {
                     }
                     else{
                         if(routeData.napakboard === globals.board) {
-                        // doc.data() is never undefined for query doc snapshots
-                        let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
-                        if( globals.selectedRouteId === routeData.id ) { routeItem.classList.add('selected'); }
-                        if( routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid) ) { routeItem.classList.add('climbed'); }
-                        let routeName = dce({el: 'h3', content: routeData.name});
-                        let routeDetails = dce({el: 'div'});
-                        let routeGrade = new dsLegend({title: globals.grades.font[routeData.grade], type: 'grade', cssClass: globals.difficulty[routeData.grade]})
+                            // doc.data() is never undefined for query doc snapshots
+                            let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
+                            if( globals.selectedRouteId === routeData.id ) { routeItem.classList.add('selected'); }
+                            if( routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid) ) { routeItem.classList.add('climbed'); }
+                            let routeName = dce({el: 'h3', content: routeData.name});
+                            let routeDetails = dce({el: 'div'});
+                            let routeGrade = new dsLegend({title: globals.grades.font[routeData.grade], type: 'grade', cssClass: globals.difficulty[routeData.grade]})
 
-                        let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
-                        let routeSetter = dce({el: 'div', content: routeData.setter});
-                        routeDetails.append(routeGrade, routeAdded, routeSetter);
-                        routeItem.append(routeName, routeDetails);
-                        routeItem.addEventListener('click', () => { 
-                            let toggleSelected = listDialog.querySelectorAll('.selected');
-                            toggleSelected.forEach( ( el) => {el.classList.remove('selected')});
-                            routeItem.classList.add('selected'); 
-                            selectedRoute = routeData.id;
-                        }, false);
+                            let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
+                            let routeSetter = dce({el: 'div', content: routeData.setter});
+                            routeDetails.append(routeGrade, routeAdded, routeSetter);
+                            routeItem.append(routeName, routeDetails);
+                            routeItem.addEventListener('click', () => { 
+                                let toggleSelected = listDialog.querySelectorAll('.selected');
+                                toggleSelected.forEach( ( el) => {el.classList.remove('selected')});
+                                routeItem.classList.add('selected'); 
+                                selectedRoute = routeData.id;
+                            }, false);
                         routelistContainer.appendChild(routeItem);
+
+                        globals.sortedRoutes.push(routeData)
                         }
                     }
-                });
-
-                
+                });                
                 
                 if(listDialog.querySelector('.route-list-container')) {
                     let clearList = listDialog.querySelector('.route-list-container');

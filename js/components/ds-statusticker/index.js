@@ -12,18 +12,18 @@ class statusTicker {
     container.appendChild(messageContainer);
 
     const nextPrev = (dir) => {
-      let selectedRouteOrder = globals.selectedRouteId ? globals.boardRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
+      let selectedRouteOrder = globals.selectedRouteId ? globals.sortedRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
       selectedRouteOrder += dir;
-      if(selectedRouteOrder < 0) { selectedRouteOrder = globals.boardRoutes.length - 1}
-      if(selectedRouteOrder > globals.boardRoutes.length - 1) { selectedRouteOrder = 0}
-      window.mySystemBoard.loadRoute(globals.boardRoutes[selectedRouteOrder].id)
+      if(selectedRouteOrder < 0) { selectedRouteOrder = globals.sortedRoutes.length - 1}
+      if(selectedRouteOrder > globals.sortedRoutes.length - 1) { selectedRouteOrder = 0}
+      window.mySystemBoard.loadRoute(globals.sortedRoutes[selectedRouteOrder].id)
     }
 
     let standardMessage = dce({el: 'DIV', cssClass: 'standard'});
     let standardMessageContent = dce({el: 'H3', content: ''});
     standardMessage.appendChild(standardMessageContent);
     messageContainer.appendChild(standardMessage);
-  
+//    console.log()
     let currentTitle = dce({el: 'DIV', cssClass: 'current'});
     let prevButton = dce({el: 'DIV', cssClass: 'prevnext', content : "﹤"});
     prevButton.addEventListener('click', ()=>{nextPrev(-1)}, false);

@@ -27,6 +27,7 @@ let globalObjects = {
   selectedRoute: null,
   routeSorting: 'name',
   boardRoutes: [],
+  sortedRoutes: [],
   board: 'Kantti',
 
   grades : {
