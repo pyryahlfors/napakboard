@@ -15,7 +15,7 @@ import dsLegend from '../ds-legend/index.js';
 class systemBoard {
     constructor( params ) {
         this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper' });
-        this.boardContainer = dce({el: 'div', cssClass:'board-container' });
+        this.boardContainer = dce({el: 'div', cssClass:'board-container kantti' });
         this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
 
         this.boardContainer.addEventListener('touchstart', (e) => { 
