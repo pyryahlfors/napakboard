@@ -10,6 +10,7 @@ class viewLogin {
     let container = dce({el: 'DIV', cssClass: 'page-login'});
     let loginFormContainer = dce({el: 'SECTION', cssClass: 'login-form'});
 
+    let napakLogo = dce({el: 'IMG', source: 'images/n_black_on_white.svg', cssStyle: 'width: 50%; max-width: 175px;'});
     let loginTitle = dce({el: 'h3', cssClass: 'mb', content: 'Login'});
     let loginForm = dce({el: 'FORM', attrbs: [['name', 'napak-login']]});
     let userEmail = dce({el: 'INPUT', attrbs: [['placeholder', 'email'], ['name', 'email'], ['autocomplete', 'username']]});
@@ -62,7 +63,7 @@ class viewLogin {
     loginForm.append(userEmail, password, loginError, loginButton)
     loginFormContainer.append(loginTitle, loginForm, noAccount, forgotPasswordContainer);
 
-    container.append(loginFormContainer);
+    container.append(napakLogo, loginFormContainer);
 
     this.render = () => {
       return container

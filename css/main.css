@@ -111,6 +111,8 @@ h3.bold {font-weight: 600;}
   padding: var(--padding-base);
   display: flex;
   align-items: center;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
 .page-profile:before,
@@ -122,10 +124,33 @@ h3.bold {font-weight: 600;}
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('../images/bgr_login.jpeg');
+  background-image: url('../images/bgr_board_select.jpg');
   background-size: cover;
-  z-index: -1
+  z-index: -1;
+  background-position: 0% 50%;
+  opacity: 5;
+  background-attachment: fixed;
+  animation-fill-mode: forwards;
+  animation: scrollLeftRight 60s ease alternate infinite
 }
+
+.page-login:after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 0%, rgba(0,212,255,1) 100%);
+  z-index: -1;
+  background-position: 50% 50%;
+  opacity: 0.5;
+  background-attachment: fixed;
+  mix-blend-mode: exclusion
+}
+
+@keyframes scrollLeftRight {to {background-position: 100% 50%;}}
+
 
 .page-tick .status-ticker {grid-area: header;}
 .page-tick .board-container {grid-area: board;}
@@ -188,7 +213,8 @@ h3.bold {font-weight: 600;}
   align-items: center;
   width: 100%;
   padding: var(--padding-base);
-  background: rgba(0,0,0,.5);
+  background: rgba(0,0,0,.25);
+  border-radius: 4px;
 }
 
 .profile-form form,

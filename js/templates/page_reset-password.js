@@ -19,11 +19,13 @@ class viewResetPassword {
     let resetButton = dce({el: 'BUTTON', cssClass: 'mb btn_small preferred', content: 'RESET'});
 
     let goBack = dce({el: 'DIV', cssClass: 'mb mt', content: 'Go back to '});
-    let goBackLink = dce({el: 'A', cssClass: 'text-link', content: 'login page'});
+    let goBackLink = dce({el: 'A', cssClass: 'text-link', content: 'login page', attrbs: [['href', '#perse']]});
     goBack.appendChild(goBackLink);
 
     goBackLink.addEventListener('click', ()=>{
-      route('login');
+//      route('login');
+alert('faf')
+      document.location = '';
     }, false)
 
 

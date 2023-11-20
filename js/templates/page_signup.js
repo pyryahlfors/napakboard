@@ -19,11 +19,11 @@ class viewSignup {
     let signupError = dce({el: 'DIV', cssClass : 'api-message-error'});
     let signupButton = dce({el: 'BUTTON', cssClass: 'mb btn_small preferred', content: 'Create account'});
     let goBack = dce({el: 'DIV', cssClass: 'mb mt', content: 'Go back to '});
-    let goBackLink = dce({el: 'A', cssClass: 'text-link', content: 'login page'});
+    let goBackLink = dce({el: 'A', cssClass: 'text-link', content: 'login page', attrbs: [['href', '#']]});
     goBack.appendChild(goBackLink);
 
     goBackLink.addEventListener('click', ()=>{
-      route('login');
+      document.location = '';
     }, false)
 
     let doSignup = () => {
@@ -42,7 +42,8 @@ class viewSignup {
               email: user.name.email
             });
             alert('new user added. You can now log in');
-            route('login');
+//            route('login');
+            document.location = '';
         })();
       })
       .catch((error) => {
