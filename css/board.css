@@ -1,78 +1,112 @@
 /**
 */
-.board-container {
+
+.board-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  position: relative;
   background-color: #fff;
-  background-image: linear-gradient(to bottom, rgba(188, 231, 240, 0) 0, rgba(203, 245, 255, .5) 100%);
+  background-image: linear-gradient(to bottom, rgba(188, 231, 240, 0) 0, rgba(188, 231, 240, 1) 100%);
+  scroll-behavior: smooth;
+  will-change: scroll-position;
+}
+
+.board-container {
   margin: 0 auto 0;
   display: grid;
   line-height: 0;
   transform: translate3d(0, 0, 0);
-  max-width: 100%;
-  height: calc( 100% - 40px - 40px ); /* - header 40px and footer 40px*/
-  position: relative;
-  overflow: auto;
-  touch-action: auto;
+  min-height: 100%;
+  font-size: var(--pinch-to-zoom);
+  scroll-behavior: smooth;
   will-change: scroll-position;
   }
 
-  .board-container.pcb {
-    background-color: #fff;
-  }
-  
-  .board-container .shadow:after {
-    position: absolute;
-    background: rgba(0, 0, 0, 0.8);
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    content: "";
-    z-index: 1;
-  }
-  
-  .board-container .hold {
-    position: relative;
-    pointer-events: none;
-    width: 100%;
-    height: 100%;
-  }
-  .board-container .grid-cell {
-    aspect-ratio: 1/1;
-    min-width: 3em;
-    position: relative;
-  }
-  .board-container .grid-cell::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-50%,-50%,0);
-    width: 2px;
-    height: 2px;
-    background: rgba(0,0,0,.5);
-    box-shadow: 0 0 1px 1px #ffffff4d;
-    border-radius: 100%;
-    z-index: 1;
-  }
+.board-container.pcb {
+  background-image: url("../images/bgr_pcb.jpg");
+  background-size: cover;
+  position: relative;
+}   
 
-  .board-container .grid-cell.row-name::before {
-    display: none;
-  }
-  .board-container .grid-cell.row-name {
-    color: #222;
-    opacity: 1;
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-    line-height: 100%;
-    position: sticky;
-    text-transform: uppercase;
-    background: #fff;
-    z-index: 1;
-    font-family: 'Allerta Stencil', sans-serif;
-    box-shadow: 0 0 0 2px #fff;
-  }
+.board-container.pcb:after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: linear-gradient(to bottom, 
+  rgba(0,0,0,0) 0, 
+  rgba(0,0,0,0.02) 20.5%, 
+  rgba(0,0,0,.05) 20.6%, 
+  rgba(0,0,0,.05) 41.5%, 
+  rgba(0,0,0,.08) 41.5%, 
+  rgba(0,0,0,.1));
+  pointer-events: none;
+  z-index: -1;
+}
+  
+.board-container .shadow:after {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  content: "";
+  z-index: 1;
+}
+  
+.board-container .hold {
+  position: relative;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+.board-container .grid-cell {
+  aspect-ratio: 1 / 1;
+  height: 100%;
+  position: relative;
+  filter: grayscale(0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.board-container .grid-cell::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%,-50%,0);
+  width: 2px;
+  height: 2px;
+  background: rgba(0,0,0,.5);
+  box-shadow: 0 0 1px 1px #ffffff4d;
+  border-radius: 100%;
+  z-index: 1;
+}
+
+.board-container .grid-cell.row-name::before {
+  display: none;
+}
+
+.board-container .grid-cell.row-name {
+  color: #222;
+  opacity: 1;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  line-height: 100%;
+  position: sticky;
+  text-transform: uppercase;
+  background: #fff;
+  z-index: 1;
+  font-family: 'Allerta Stencil', sans-serif;
+  box-shadow: 0 0 0 2px #fff;
+}
 
 .board-container .grid-cell.row-name.row-letter {
     top: 0;
@@ -138,6 +172,12 @@
     fill: currentColor;
     width: 100%;
     height: 100%;
+    filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, .25));
     stroke: rgba(0,0,0,.3);
-    filter: drop-shadow(1px 1px 4px rgba(0 0 0 / 0.15)) url('#inset-shadow')
+    position: absolute;
+    stroke-width: 0.5px;
   }
+
+ .board-container svg path {
+        vector-effect: non-scaling-stroke;
+    }

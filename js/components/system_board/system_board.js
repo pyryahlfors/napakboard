@@ -14,6 +14,7 @@ import dsLegend from '../ds-legend/index.js';
 
 class systemBoard {
     constructor( params ) {
+        this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper' });
         this.boardContainer = dce({el: 'div', cssClass:'board-container' });
         this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
 
@@ -91,6 +92,7 @@ class systemBoard {
 
         this.loadBoardSetup = () => {
             this.boardContainer.innerHTML = "";
+            this.boardContainerWrapper.append(this.boardContainer);
             let boardCols = 'abcdefghijklmnopqrstuvwxyz';
         
             // fetch hold setup
@@ -196,7 +198,7 @@ class systemBoard {
                 }
                 sheet.insertRule(`.board-container {grid-template-columns: repeat(${boardWidth+1}, 1fr)}`);
                 sheet.insertRule(`.board-container {grid-template-rows: repeat(${boardHeight+1}, 1fr)}`);
-                sheet.insertRule(`.board-container {aspect-ratio: ${boardHeight}/${boardHeight}}`);
+                sheet.insertRule(`.board-container {aspect-ratio: ${boardWidth}/${boardHeight}}`);
 
                 for( let holds in data.holdSetup) {
                     let parent = this.boardContainer.querySelector(`#${holds}`);
@@ -322,7 +324,7 @@ class systemBoard {
                     globals.selectedRoute = null;
                     globals.selectedRouteId = null;
                     globals.board = document.forms['routesort'].board.value;
-                    this.boardContainer.classList.add(`${globals.board.toLowerCase()}`);
+                    this.boardContainer.className = `board-container ${globals.board.toLowerCase()}`;
                 }
             });
 
@@ -714,7 +716,7 @@ class systemBoard {
           });
 
 
-        this.render = () => { return this.boardContainer; }
+        this.render = () => { return this.boardContainerWrapper; }
 
     }
 }
