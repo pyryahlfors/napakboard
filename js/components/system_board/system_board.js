@@ -203,23 +203,13 @@ class systemBoard {
                 this.setupCanvas.width = this.holdSize * ( this.boardWidth + 1 ) * window.devicePixelRatio;
                 this.setupCanvas.height = this.holdSize * (this.boardHeight + 1 )* window.devicePixelRatio;
 
-                /*
-                for(let i=0, j=this.boardWidth; i<j;i++) {
-                    if(i%2 == 0) {
+                for(let x=0, i=this.boardWidth; x<i;x++) {
+                    for(let y=0, j=this.boardHeight; y<j;y++) {
                         this.ctx.fillStyle = "rgba(0,0,0,.01)";
-                        this.ctx.rect(i*30*window.devicePixelRatio, 0, 30*window.devicePixelRatio, this.setupCanvas.height)
+                        this.ctx.rect(x*this.holdSize*window.devicePixelRatio + (0.5*this.holdSize*window.devicePixelRatio), y*this.holdSize*window.devicePixelRatio  + (0.5*this.holdSize*window.devicePixelRatio), 2, 2)
                         this.ctx.fill();
                     }
                 }
-
-                for(let i=0, j=this.boardHeight; i<j;i++) {
-                    if(i%2 == 0) {
-                        this.ctx.fillStyle = "rgba(0,0,0,.01)";
-                        this.ctx.rect(0, i*30*window.devicePixelRatio, this.setupCanvas.width, 30*window.devicePixelRatio)
-                        this.ctx.fill();
-                    }
-                }
-*/
 
                 this.setupCanvas.style.width = this.boardContainerWrapper.scrollWidth + "px";
 
@@ -236,13 +226,16 @@ class systemBoard {
                     holdCanvas.height = this.holdSize * 2 * window.devicePixelRatio;
 
                     let holdCanvasctx = holdCanvas.getContext("2d");
-
-                    let newHold = new Path2D(this.holdImages.querySelector(`.${hold || 'placeholder'}`).cloneNode(true).getAttribute("d"));
-
+                    let cloneHold = this.holdImages.querySelector(`.${hold || 'placeholder'}`) 
+                    if(!this.holdImages.querySelector(`.${hold}`)) {
+                        cloneHold = this.holdImages.querySelector('.placeholder');
+                    }
+                    let newHold = new Path2D(cloneHold.cloneNode(true).getAttribute("d"));
+                    
                     let scaleHold  = new Path2D();
                     let scaleX = ( (scale) ? scale[0] : 1 ) * window.devicePixelRatio;
                     let scaleY = ( (scale) ? scale[1] : 1 ) * window.devicePixelRatio;
-                    let scalePosX = holdCanvas.width  / 2 - ((this.holdSize * scaleX) / 2) ; //( holdCanvas.width - this.holdSize * scaleX) / 2; 
+                    let scalePosX = holdCanvas.width  / 2 - ((this.holdSize * scaleX) / 2) ; 
                     let scalePosY = holdCanvas.height / 2 - ((this.holdSize * scaleY) / 2) ; 
 
                     let boltOffsetX = boltPlacement ? (this.holdSize / 100) * boltPlacement[0] : 0;

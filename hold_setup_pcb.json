@@ -149,7 +149,7 @@
         "l9": {"holdColor": "#00c", "hold": "euroholds-utter-4"},
         "m9": {"holdColor": "#f80"},
         "n9": {"holdColor": "#0c0"},
-        "o9": {"holdColor": "#fff", "hold": "moon-50"},
+        "o9": {"holdColor": "#fff"},
         "p9": {"holdColor": "#fff", "hold": "moon-66"},
         "q9": {"holdColor": "#00c", "hold": "euroholds-utter-1"},
 
@@ -201,7 +201,7 @@
         "j12": {"holdColor": "#fff", "hold" : "moon-99", "rotation": 40, "boltPlacement": [0, -10]},
         "k12": {"holdColor": "#00c"},
         "l12": {"holdColor": "#f80"},
-        "m12": {"holdColor": "#fff", "hold": "moon-50"},
+        "m12": {"holdColor": "#fff"},
         "n12": {"holdColor": "#000"},
         "o12": {"holdColor": "#f80"},
         "p12": {"holdColor": "#f08"},
