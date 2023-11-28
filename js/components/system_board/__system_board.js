@@ -91,111 +91,17 @@ class systemBoard {
  */
 
         this.loadBoardSetup = () => {
-            this.boardContainerWrapper.innerHTML = "";
             this.boardContainer.innerHTML = "";
-            this.boardContainerWrapper.append(this.boardContainer);
             this.boardCols = 'abcdefghijklmnopqrstuvwxyz';
         
             // fetch hold setup
             fetch(`/projects/napakboard/hold_setup_${globals.board}.json?doUpdate=${new Date().getTime}`)
             .then(response => response.json())
             .then(data => {
-                
                 this.boardHeight = data.characteristics.height;
                 this.boardWidth = data.characteristics.width;
 
-                let oldSheet = document.body.querySelector("#napakgrid");
-                if(oldSheet) {
-                    oldSheet.parentNode.removeChild(oldSheet);
-                }
-                // create css for board
-                let style = document.createElement("style");
-                style.id = "napakgrid";
-                document.body.appendChild(style);
-                let sheet = style.sheet;
-
-                // Generate grid cells
-                let gridTemplateAreas = '';
-                for(let i=-1, j=this.boardHeight; i<j;i++) {
-                    let gridRowAreas = [];
-            
-                    let gridCell = dce({el: 'div'});
-                        gridCell.className = "grid-cell"
-            
-                    for(let k=-1, l=this.boardWidth; k<l;k++) {
-                        let gridCell = dce({el: 'div'})
-                        gridCell.className = "grid-cell"
-                        if(i<0) {
-                            gridRowAreas.push(`header-${k < 0 ? 0  : k+1 }`)
-            
-                            gridCell.innerHTML = (k >= 0 ) ? this.boardCols[k] : '';
-            
-                            gridCell.classList.add('row-name', 'row-letter')
-                            if ( k < 0 ) {
-                                gridCell.classList.add('top-corner')
-                            }
-                        }
-            
-                        else{
-                            if(k<0) {
-                                gridRowAreas.push(`row-order-${i+1}`);
-                                gridCell.innerHTML = this.boardHeight - i; //i+1;//
-                                gridCell.classList.add('row-name', 'row-number');
-            
-                            }
-                            else {
-                                gridRowAreas.push(`grid-cell-${this.boardCols[k]}${i+1}`);
-                                gridCell.id = `${this.boardCols[k]}${i+1}`
-                                gridCell.addEventListener('click', (e) => {
-                                    // prevent adding holds to route
-                                    if(globals.selectedRoute !== null) return;
-                                    let hold = e.target;
-
-                                    let currentHoldType;
-                                    let currentHoldOrder;
-
-                                    if(globals.board == 'Kantti') { this.holdTypes = ['intermediate', 'start', 'top'];}
-                                    else { this.holdTypes = ['intermediate', 'foot', 'start', 'top']; }
-                            
-                               
-                                    if(hold.classList.contains('selected')) {
-                                        this.holdTypes.forEach((el, count) => {
-                                            if(hold.classList.contains(el)) {
-                                                currentHoldType = el;
-                                                currentHoldOrder = count;
-                                            }
-                                        })
-
-                                        hold.classList.remove(currentHoldType);
-                          
-                                        hold.classList.add(this.holdTypes[currentHoldOrder+1]);
-                                        if(currentHoldOrder +1 == this.holdTypes.length) {
-                                            hold.classList.remove('selected', 'undefined');                                            
-                                            document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';        
-                                        } 
-                                        else {
-                                            document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold`;        
-                                        }
-                                    }
-
-                                    else { 
-                                        hold.classList.add('selected', this.holdTypes[0]); 
-                                        document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold`;
-
-                                    }   
-                                    this.updateBoard( )
-                                }, false)
-                            }
-                        }
-                        this.boardContainer.appendChild(gridCell);
-                    }
-                    gridTemplateAreas+= `"${gridRowAreas.join(' ')}"`;
-                }
-                sheet.insertRule(`.board-container {grid-template-columns: repeat(${this.boardWidth+1}, 1fr)}`);
-                sheet.insertRule(`.board-container {grid-template-rows: repeat(${this.boardHeight+1}, 1fr)}`);
-                sheet.insertRule(`.board-container {aspect-ratio: ${this.boardWidth}/${this.boardHeight}}`);
-
-                /* SETUP CANVAS */
+/* SETUP CANVAS */
                 this.setupCanvas = document.createElement("canvas");
                 this.ctx = this.setupCanvas.getContext("2d");
 
@@ -203,30 +109,30 @@ class systemBoard {
                 this.setupCanvas.width = this.holdSize * ( this.boardWidth + 1 ) * window.devicePixelRatio;
                 this.setupCanvas.height = this.holdSize * (this.boardHeight + 1 )* window.devicePixelRatio;
 
-                /*
-                for(let i=0, j=this.boardWidth; i<j;i++) {
-                    if(i%2 == 0) {
-                        this.ctx.fillStyle = "rgba(0,0,0,.01)";
-                        this.ctx.rect(i*30*window.devicePixelRatio, 0, 30*window.devicePixelRatio, this.setupCanvas.height)
-                        this.ctx.fill();
-                    }
-                }
-
-                for(let i=0, j=this.boardHeight; i<j;i++) {
-                    if(i%2 == 0) {
-                        this.ctx.fillStyle = "rgba(0,0,0,.01)";
-                        this.ctx.rect(0, i*30*window.devicePixelRatio, this.setupCanvas.width, 30*window.devicePixelRatio)
-                        this.ctx.fill();
-                    }
-                }
+/*
+                this.setupCanvas.style.width = this.holdSize * ( this.boardWidth + 1 ) + "px";
+                this.setupCanvas.style.height = this.holdSize * ( this.boardHeight + 1 ) + "px";
 */
-
-                this.setupCanvas.style.width = this.boardContainerWrapper.scrollWidth + "px";
-
-                let margin = document.querySelector(".grid-cell.row-name.row-letter.top-corner").getBoundingClientRect();
-                this.setupCanvas.style.top = margin.height+"px";
-                this.setupCanvas.style.left = margin.width+"px";
                 this.boardContainerWrapper.appendChild(this.setupCanvas);
+
+                this.ctx.font = "bold 24px IBM Plex Mono";
+
+                // Cell names
+                for(let x=1, xx=this.boardWidth; x<xx+1;x++) {
+                    let cellText = this.boardCols[x-1].toUpperCase(),
+                        textWidth = this.ctx.measureText(cellText ).width;
+
+                    this.ctx.fillText(cellText, x*this.holdSize*window.devicePixelRatio - textWidth / 2, 30);
+                }
+
+                // Row numbers
+                for(let y=1, yy=this.boardHeight; y<yy+1;y++) {
+                    let cellText = y,
+                        textHeight = this.ctx.measureText(cellText ).height;
+
+                    this.ctx.fillText(cellText, 10, ( y * this.holdSize*window.devicePixelRatio ) + 16) ;
+                }
+                
 
                 for( let holds in data.holdSetup) {
                     const { rotation, scale, hold, holdColor, boltPlacement } = data.holdSetup[holds];
@@ -282,8 +188,8 @@ class systemBoard {
                     let x = Number( this.boardCols.indexOf( holds.toString()[0] ) );
                     let y = holds.replace(/\D/g,'');
                     this.ctx.drawImage(holdCanvas, 
-                        ( x - 1 ) * this.holdSize * window.devicePixelRatio + ( this.holdSize / 2 * window.devicePixelRatio), 
-                        ( y - 1 ) * this.holdSize * window.devicePixelRatio - ( this.holdSize / 2 * window.devicePixelRatio)
+                        ( x ) * this.holdSize * window.devicePixelRatio, 
+                        ( y - 1 ) * this.holdSize * window.devicePixelRatio
                     );
                 }
             })

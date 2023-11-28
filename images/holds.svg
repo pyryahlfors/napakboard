@@ -139,4 +139,4 @@ Euroholds
 <!-- /
 Generic placeholder
 / -->
-<circle class="placeholder" cx="15" cy="15" r="5" />
+<path class="placeholder" d="M10,15a5,5 0 1,0 10,0a5,5 0 1,0 -10,0" />
