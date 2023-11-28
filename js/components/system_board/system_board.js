@@ -204,6 +204,7 @@ class systemBoard {
                 this.setupCanvas.height = this.holdSize * (this.boardHeight +1 )* window.devicePixelRatio;
 
                 this.setupCanvas.style.width = this.boardContainerWrapper.scrollWidth + "px";
+                this.setupCanvas.style.height = this.boardContainerWrapper.scrollHeight + "px";
 
                 this.boardContainer.appendChild(this.setupCanvas);
 

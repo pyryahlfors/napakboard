@@ -158,15 +158,19 @@
 }
 
 
-.board-container .grid-cell.start:after {
+.board-container .grid-cell.start:after,
+.board-container .grid-cell.start:before {
   box-shadow: 0 0 0 2px var(--color-start);
 }
-.board-container .grid-cell.top:after {
+.board-container .grid-cell.top:after,
+.board-container .grid-cell.top:before {
   box-shadow: 0 0 0 2px var(--color-top);
 }
 
-.board-container .grid-cell.foot:after {
+.board-container .grid-cell.foot:after,
+.board-container .grid-cell.foot:before {
   box-shadow: 0 0 0 2px var(--color-foot);
+  background: var(--color-foot)
 }
 
 .board-wrapper canvas {
