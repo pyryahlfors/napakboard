@@ -200,14 +200,11 @@ class systemBoard {
                 this.ctx = this.setupCanvas.getContext("2d");
 
                 this.holdSize = 30; // size of SVG viewBox - must be 30 or everything will be fucked
-                this.setupCanvas.width = this.holdSize * ( this.boardWidth + 1 ) * window.devicePixelRatio;
-                this.setupCanvas.height = this.holdSize * (this.boardHeight + 1 )* window.devicePixelRatio;
+                this.setupCanvas.width = this.holdSize * ( this.boardWidth +1 ) * window.devicePixelRatio;
+                this.setupCanvas.height = this.holdSize * (this.boardHeight +1 )* window.devicePixelRatio;
 
                 this.setupCanvas.style.width = this.boardContainerWrapper.scrollWidth + "px";
 
-                let margin = document.querySelector(".grid-cell.row-name.row-letter.top-corner").getBoundingClientRect();
-                this.setupCanvas.style.top = margin.height+"px";
-                this.setupCanvas.style.left = margin.width+"px";
                 this.boardContainer.appendChild(this.setupCanvas);
 
                 for( let holds in data.holdSetup) {
@@ -258,15 +255,15 @@ class systemBoard {
                     holdCanvasctx.restore();
 
                     let x = Number( this.boardCols.indexOf( holds.toString()[0] ) );
-                    let y = holds.replace(/\D/g,'');
+                    let y = Number(holds.replace(/\D/g,'') -1 );
                     this.ctx.drawImage(holdCanvas, 
-                        ( x - 1 ) * this.holdSize * window.devicePixelRatio + ( this.holdSize / 2 * window.devicePixelRatio), 
-                        ( y - 1 ) * this.holdSize * window.devicePixelRatio - ( this.holdSize / 2 * window.devicePixelRatio)
+                        (x  * this.holdSize ) * window.devicePixelRatio + ( this.holdSize / 2 * window.devicePixelRatio), 
+                        (y * this.holdSize )* window.devicePixelRatio  + ( this.holdSize / 2 * window.devicePixelRatio)
                     );
                 }
 
-                for(let x=0, i=this.boardWidth; x<i;x++) {
-                    for(let y=0, j=this.boardHeight; y<j;y++) {
+                for(let x=1, i=this.boardWidth+2; x<i;x++) {
+                    for(let y=1, j=this.boardHeight+2; y<j;y++) {
                         this.ctx.beginPath();
                         this.ctx.strokeStyle = "rgba(128,128,128,1)";
                         this.ctx.arc(x*this.holdSize*window.devicePixelRatio + (0.5*this.holdSize*window.devicePixelRatio), y*this.holdSize*window.devicePixelRatio  + (0.5*this.holdSize*window.devicePixelRatio), 3, 0, 2 * Math.PI, false);

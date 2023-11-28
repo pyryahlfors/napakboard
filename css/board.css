@@ -67,17 +67,11 @@
 }
 
 
-.board-container .hold {
-  position: relative;
-  pointer-events: none;
-  width: 100%;
-  height: 100%;
-}
-
 .board-container .grid-cell {
   aspect-ratio: 1 / 1;
   height: 100%;
   position: relative;
+  z-index: 1;
   filter: grayscale(0.2);
   display: flex;
   justify-content: center;
@@ -95,7 +89,7 @@
   position: sticky;
   text-transform: uppercase;
   background: #fff;
-  z-index: 1;
+  z-index: 2;
   font-family: 'Allerta Stencil', sans-serif;
   box-shadow: 0 0 0 2px #fff;
 }
@@ -134,7 +128,12 @@
 .board-container .grid-cell.intermediate:after, 
 .board-container .grid-cell.top:after, 
 .board-container .grid-cell.selected:after,
-.board-container .grid-cell.foot:after {
+.board-container .grid-cell.foot:after,
+.board-container .grid-cell.start:before, 
+.board-container .grid-cell.intermediate:before, 
+.board-container .grid-cell.top:before, 
+.board-container .grid-cell.selected:before,
+.board-container .grid-cell.foot:before {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -150,6 +149,15 @@
   background: transparent;
 }
 
+.board-container .grid-cell.top:before,
+.board-container .grid-cell.intermediate:before,
+.board-container .grid-cell.foot:before,
+.board-container .grid-cell.start:before,
+.board-container .grid-cell.selected:before {
+    animation: ripple 2s ease-in-out infinite forwards;
+}
+
+
 .board-container .grid-cell.start:after {
   box-shadow: 0 0 0 2px var(--color-start);
 }
@@ -163,5 +171,19 @@
 
 .board-wrapper canvas {
   position: absolute;
-  pointer-events: none;  
+  pointer-events: none; 
+  top: 0;
+  left: 0;
+}
+
+
+@keyframes ripple {
+  0% {
+      transform: translate3d(-50%, -50%, 0) scale(1);
+      opacity: 1;
+  }
+  100% {
+      transform: translate3d(-50%, -50%, 0) scale(1.25);
+      opacity: 0;
+  }
 }
