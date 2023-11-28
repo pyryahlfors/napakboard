@@ -203,20 +203,12 @@ class systemBoard {
                 this.setupCanvas.width = this.holdSize * ( this.boardWidth + 1 ) * window.devicePixelRatio;
                 this.setupCanvas.height = this.holdSize * (this.boardHeight + 1 )* window.devicePixelRatio;
 
-                for(let x=0, i=this.boardWidth; x<i;x++) {
-                    for(let y=0, j=this.boardHeight; y<j;y++) {
-                        this.ctx.fillStyle = "rgba(0,0,0,.01)";
-                        this.ctx.rect(x*this.holdSize*window.devicePixelRatio + (0.5*this.holdSize*window.devicePixelRatio), y*this.holdSize*window.devicePixelRatio  + (0.5*this.holdSize*window.devicePixelRatio), 2, 2)
-                        this.ctx.fill();
-                    }
-                }
-
                 this.setupCanvas.style.width = this.boardContainerWrapper.scrollWidth + "px";
 
                 let margin = document.querySelector(".grid-cell.row-name.row-letter.top-corner").getBoundingClientRect();
                 this.setupCanvas.style.top = margin.height+"px";
                 this.setupCanvas.style.left = margin.width+"px";
-                this.boardContainerWrapper.appendChild(this.setupCanvas);
+                this.boardContainer.appendChild(this.setupCanvas);
 
                 for( let holds in data.holdSetup) {
                     const { rotation, scale, hold, holdColor, boltPlacement } = data.holdSetup[holds];
@@ -254,23 +246,16 @@ class systemBoard {
                         .translate((-holdCanvas.width / 2) + boltOffsetX, (-holdCanvas.height / 2)+boltOffsetY)   // -1 * size
                     );
 
-                    holdCanvasctx.save();
+
+
                     holdCanvasctx.shadowColor = "rgba(0,0,0,.3)";
                     holdCanvasctx.shadowBlur = this.holdSize / 2;
-                    holdCanvasctx.fillStyle = holdColor || 'transparent';
-                    holdCanvasctx.lineWidth = 1;
-                    holdCanvasctx.fill(transformHold);  
                     holdCanvasctx.strokeStyle = "rgba(0,0,0,.3)";                      
+                    holdCanvasctx.fillStyle = holdColor || 'transparent';
+                    holdCanvasctx.fill(transformHold);  
+
                     holdCanvasctx.stroke(transformHold);
                     holdCanvasctx.restore();
-                    
-                    // Bolt
-                    holdCanvasctx.arc(holdCanvas.width/2, holdCanvas.width/2, 3, 0, 2 * Math.PI, false);
-                    holdCanvasctx.fillStyle="#aaa";
-                    holdCanvasctx.fill();
-                    holdCanvasctx.fillStyle="#000";
-                    holdCanvasctx.stroke();
-
 
                     let x = Number( this.boardCols.indexOf( holds.toString()[0] ) );
                     let y = holds.replace(/\D/g,'');
@@ -278,6 +263,17 @@ class systemBoard {
                         ( x - 1 ) * this.holdSize * window.devicePixelRatio + ( this.holdSize / 2 * window.devicePixelRatio), 
                         ( y - 1 ) * this.holdSize * window.devicePixelRatio - ( this.holdSize / 2 * window.devicePixelRatio)
                     );
+                }
+
+                for(let x=0, i=this.boardWidth; x<i;x++) {
+                    for(let y=0, j=this.boardHeight; y<j;y++) {
+                        this.ctx.beginPath();
+                        this.ctx.strokeStyle = "rgba(128,128,128,1)";
+                        this.ctx.arc(x*this.holdSize*window.devicePixelRatio + (0.5*this.holdSize*window.devicePixelRatio), y*this.holdSize*window.devicePixelRatio  + (0.5*this.holdSize*window.devicePixelRatio), 3, 0, 2 * Math.PI, false);
+                        this.ctx.fillStyle = "rgba(255,255,255,.8)";
+                        this.ctx.fill()
+                        this.ctx.stroke();
+                    }
                 }
             })
 
