@@ -375,8 +375,32 @@ class systemBoard {
                 }
             });
 
-
             sortOptionsContainer.append(sortMenu, document.createElement("hr"), document.createTextNode('Select board:'), boardSelect, document.createElement("hr"));
+
+            let order = new dsRadio({
+                cssClass: 'radio-menu',
+                title: 'Order', 
+                name: 'order',
+                options: [
+                    {
+                        title: "ascending", 
+                        value: "asc",
+                        checked: globals.sortOrder === 'asc' ? true : false
+                    }, 
+                    {
+                        title: "descending", 
+                        value: "desc",
+                        checked: globals.sortOrder === 'desc' ? true : false
+                    }
+                ],
+                onchange: () => { 
+                    globals.sortOrder = document.forms['routesort'].order.value;
+                    updateRouteListSorting();
+                }
+            });
+
+            sortOptionsContainer.append(document.createTextNode('Order'), order)
+
             let toggleMyAscents = new dsToggle({
                 cssClass  : 'horizontal-menu full-width',
                 targetObj : 'excludeTicks',
@@ -386,7 +410,7 @@ class systemBoard {
                 onToggle : () => { updateRouteListSorting() },
               });
 
-            sortOptionsContainer.append(document.createTextNode('My ticks'), toggleMyAscents.render())
+            sortOptionsContainer.append(document.createElement("hr"), document.createTextNode('My ticks'), toggleMyAscents.render())
 
 
             listDialog.append(sortOptionsContainer);
@@ -399,6 +423,8 @@ class systemBoard {
                 if(globals.routeSorting === 'name')  { routes = globals.boardRoutes.sort((a, b) => a.name.localeCompare(b.name)) }
                 if(globals.routeSorting === 'grade') { routes = globals.boardRoutes.sort((a,b) => a.grade - b.grade) }
                 if(globals.routeSorting === 'date')  { routes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)) }
+
+                if(globals.sortOrder === 'desc')  { routes.reverse() }
 
                 routes.forEach((routeData) => {
                     // exclude user ticks (if selected)

@@ -85,8 +85,8 @@
                     let scalePosX = holdCanvas.width  / 2 - ((this.holdSize * scaleX) / 2) ; //( holdCanvas.width - this.holdSize * scaleX) / 2; 
                     let scalePosY = holdCanvas.height / 2 - ((this.holdSize * scaleY) / 2) ; 
 
-                    let boltOffsetX = boltPlacement ? (this.holdSize / 100) * boltPlacement[0] : 0;
-                    let boltOffsetY = boltPlacement ? (this.holdSize / 100) * boltPlacement[1] : 0;
+                    let boltOffsetX = boltPlacement ? (this.holdSize / 100) * boltPlacement[0] * window.devicePixelRatio : 0;
+                    let boltOffsetY = boltPlacement ? (this.holdSize / 100) * boltPlacement[1] * window.devicePixelRatio : 0;
 
                     scaleHold.addPath(newHold, new DOMMatrix()
                         .translate(scalePosX+boltOffsetX, scalePosY+boltOffsetY)
