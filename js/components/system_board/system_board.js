@@ -154,8 +154,7 @@ class systemBoard {
                                     let currentHoldType;
                                     let currentHoldOrder;
 
-                                    if(globals.board == 'Kantti') { this.holdTypes = ['intermediate', 'start', 'top'];}
-                                    else { this.holdTypes = ['intermediate', 'foot', 'start', 'top']; }
+                                    this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
                             
                                
                                     if(hold.classList.contains('selected')) {
