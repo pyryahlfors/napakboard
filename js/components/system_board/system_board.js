@@ -155,7 +155,6 @@ class systemBoard {
                                     let currentHoldOrder;
 
                                     this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
-                            
                                
                                     if(hold.classList.contains('selected')) {
                                         this.holdTypes.forEach((el, count) => {
@@ -440,8 +439,9 @@ class systemBoard {
                             let routeGrade = new dsLegend({title: globals.grades.font[routeData.grade], type: 'grade', cssClass: globals.difficulty[routeData.grade]})
 
                             let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
-                            let routeSetter = dce({el: 'div', content: routeData.setter});
-                            routeDetails.append(routeGrade, routeAdded, routeSetter);
+                            let routeSetter = dce({el: 'div', content: `by ${routeData.setter}`});
+                            let routeRepeats = dce({el: 'div', content: (routeData.ticks ? `- ${routeData.ticks.length} repeat${routeData.ticks.length > 1 ? 's' : ''}` : null)});
+                            routeDetails.append(routeGrade, routeAdded, routeSetter, routeRepeats);
                             routeItem.append(routeName, routeDetails);
                             routeItem.addEventListener('click', () => { 
                                 let toggleSelected = listDialog.querySelectorAll('.selected');
