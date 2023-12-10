@@ -256,3 +256,10 @@ h3.bold {font-weight: 600;}
 .hidden {
   display: none;
 }
+
+hr {
+  height: 1px;
+  width: 100%;
+  border: none;
+  background: rgba(255,255,255,.1);
+}
