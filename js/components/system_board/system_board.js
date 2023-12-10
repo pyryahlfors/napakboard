@@ -14,7 +14,7 @@ import dsLegend from '../ds-legend/index.js';
 
 class systemBoard {
     constructor( params ) {
-        this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper' });
+        this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper'});
         this.boardContainer = dce({el: 'div', cssClass:'board-container kantti' });
         this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
 
@@ -104,6 +104,11 @@ class systemBoard {
                 this.boardHeight = data.characteristics.height;
                 this.boardWidth = data.characteristics.width;
 
+                let cellSize = 40;
+
+                this.boardContainer.style.height = `${(this.boardHeight + 1) * cellSize}px`;
+                this.boardContainer.style.width= `${(this.boardWidth + 1) * cellSize}px`;
+                
                 let oldSheet = document.body.querySelector("#napakgrid");
                 if(oldSheet) {
                     oldSheet.parentNode.removeChild(oldSheet);
@@ -114,37 +119,33 @@ class systemBoard {
                 document.body.appendChild(style);
                 let sheet = style.sheet;
 
-                // Generate grid cells
-                let gridTemplateAreas = '';
+                let toprow = dce({el: 'div', cssStyle: `position: sticky; z-index: 2; top: 0; height: ${cellSize}px`});
+                let juuh = dce({el: 'div'});
                 for(let i=-1, j=this.boardHeight; i<j;i++) {
                     let gridRowAreas = [];
             
-                    let gridCell = dce({el: 'div'});
+                    let gridCell = dce({el: 'div', cssStyle: `left: 0; top: 0; height: ${cellSize}px; width: ${cellSize}px`});
                         gridCell.className = "grid-cell"
             
                     for(let k=-1, l=this.boardWidth; k<l;k++) {
-                        let gridCell = dce({el: 'div'})
+                        let gridCell = dce({el: 'div', cssStyle: `left: ${(k+1) * cellSize}px; top: ${(i+1) * cellSize}px; height: ${cellSize}px; width: ${cellSize}px`});
                         gridCell.className = "grid-cell"
+
                         if(i<0) {
-                            gridRowAreas.push(`header-${k < 0 ? 0  : k+1 }`)
-            
                             gridCell.innerHTML = (k >= 0 ) ? this.boardCols[k] : '';
-            
                             gridCell.classList.add('row-name', 'row-letter')
                             if ( k < 0 ) {
                                 gridCell.classList.add('top-corner')
                             }
+                        toprow.append(gridCell);
                         }
             
                         else{
                             if(k<0) {
-                                gridRowAreas.push(`row-order-${i+1}`);
                                 gridCell.innerHTML = this.boardHeight - i; //i+1;//
-                                gridCell.classList.add('row-name', 'row-number');
-            
+                                gridCell.classList.add('row-name', 'row-number');            
                             }
                             else {
-                                gridRowAreas.push(`grid-cell-${this.boardCols[k]}${i+1}`);
                                 gridCell.id = `${this.boardCols[k]}${i+1}`
                                 gridCell.addEventListener('click', (e) => {
                                     // prevent adding holds to route
@@ -185,14 +186,12 @@ class systemBoard {
                                 }, false)
                             }
                         }
-                        this.boardContainer.appendChild(gridCell);
+                    if(i>=0) {
+                        juuh.appendChild(gridCell);
+                        }
                     }
-                    gridTemplateAreas+= `"${gridRowAreas.join(' ')}"`;
+                this.boardContainer.append(toprow, juuh);
                 }
-                sheet.insertRule(`.board-container {grid-template-columns: repeat(${this.boardWidth+1}, 1fr)}`);
-                sheet.insertRule(`.board-container {grid-template-rows: repeat(${this.boardHeight+1}, 1fr)}`);
-                sheet.insertRule(`.board-container {aspect-ratio: ${this.boardWidth}/${this.boardHeight}}`);
-
                 /* SETUP CANVAS */
                 this.setupCanvas = document.createElement("canvas");
                 this.ctx = this.setupCanvas.getContext("2d");
@@ -201,8 +200,8 @@ class systemBoard {
                 this.setupCanvas.width = this.holdSize * ( this.boardWidth +1 ) * window.devicePixelRatio;
                 this.setupCanvas.height = this.holdSize * (this.boardHeight +1 )* window.devicePixelRatio;
 
-                this.setupCanvas.style.width = this.boardContainerWrapper.scrollWidth + "px";
-                this.setupCanvas.style.height = this.boardContainerWrapper.scrollHeight + "px";
+                this.setupCanvas.style.width = ((this.boardWidth + 1) * cellSize) + "px";
+                this.setupCanvas.style.height = ((this.boardHeight + 1) * cellSize) + "px";
 
                 this.boardContainer.appendChild(this.setupCanvas);
 
