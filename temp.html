@@ -6,7 +6,7 @@
 
 <script>
 ( () => {
-
+    // pulpauttaa SVG:n
     let svg = (params) => {
         let xlmns = 'http://www.w3.org/2000/svg';
         let element = document.createElementNS(xlmns, params.el);
@@ -25,39 +25,40 @@
     this.boardCols = 'abcdefghijklmnopqrstuvwxyz';
         
     // fetch hold setup
-    fetch(`hold_setup_kantti.json?doUpdate=${new Date().getTime}`)
+    fetch(`hordo_setup_kantti.json?doUpdate=${new Date().getTime}`)
     .then(response => response.json())
     .then(data => {
         this.boardHeight = data.characteristics.height;
         this.boardWidth = data.characteristics.width;
 
-/* SETUP CANVAS */
+        const dpr = window.devicePixelRatio; // vähä pikseleit vähä
+
+        /* SETUP CANVAS */
         this.setupCanvas = document.createElement("canvas");
         this.ctx = this.setupCanvas.getContext("2d");
 
         this.holdSize = 30; // size of SVG viewBox - must be 30 or everything will be fucked
-        this.setupCanvas.width = this.holdSize * ( this.boardWidth + 1 ) * window.devicePixelRatio;
-        this.setupCanvas.height = this.holdSize * (this.boardHeight + 1 )* window.devicePixelRatio;
+        this.setupCanvas.width = this.holdSize * ( this.boardWidth + 1 ) * dpr;
+        this.setupCanvas.height = this.holdSize * (this.boardHeight + 1 )* dpr;
 
-        this.setupCanvas.style.width = this.holdSize * ( this.boardWidth + 1 ) + "px";
-        this.setupCanvas.style.heigh = this.holdSize * ( this.boardHeight + 1 ) + "px";
+        this.setupCanvas.style.width = `${this.holdSize * ( this.boardWidth + 1 )}px`;
+        this.setupCanvas.style.heigh = `${this.holdSize * ( this.boardHeight + 1 )}px`;
 
         document.body.appendChild(this.setupCanvas);
 
         this.holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
-        fetch('images/holds.svg?update=true')
+        fetch('images/holds.svg?da=das')
             .then(r => r.text())
             .then(text => {
                 this.holdImages.innerHTML = text;
 
-
                 this.ctx.font = "bold 24px IBM Plex Mono";
-                // Cell names
+                // Cell names A......Z
                 for(let x=1, xx=this.boardWidth; x<xx+1;x++) {
                     let cellText = this.boardCols[x-1].toUpperCase(),
                         textWidth = this.ctx.measureText(cellText ).width;
 
-                    this.ctx.fillText(cellText, x*this.holdSize*window.devicePixelRatio - textWidth / 2, 30);
+                    this.ctx.fillText(cellText, x*this.holdSize*dpr - textWidth / 2, 30);
                 }
 
                 // Row numbers
@@ -65,67 +66,86 @@
                     let cellText = y,
                         textHeight = this.ctx.measureText(cellText ).height;
 
-                    this.ctx.fillText(cellText, 10, ( y * this.holdSize*window.devicePixelRatio ) + 16) ;
+                    this.ctx.fillText(cellText, 10, ( y * this.holdSize*dpr ) + 16) ;
                 }
-                        
-                for( let holds in data.holdSetup) {
-                    const { rotation, scale, hold, holdColor, boltPlacement } = data.holdSetup[holds];
+       
+                // dem holds
+                data.holdSetup.forEach(holds => {
+                    const {  location, rotation, scaleY, scaleX, hold, color, offsetX, offsetY } = holds;
 
+
+                    // create a canvas for single hold
                     let holdCanvas = document.createElement("CANVAS")
-                    holdCanvas.width = this.holdSize * 2 * window.devicePixelRatio;
-                    holdCanvas.height = this.holdSize * 2 * window.devicePixelRatio;
+                    holdCanvas.width = this.holdSize * 2 * dpr;     // needs some extra space so it can be turned and scaled
+                    holdCanvas.height = this.holdSize * 2 * dpr;    // needs some extra space so it can be turned and scaled
 
-                    let holdCanvasctx = holdCanvas.getContext("2d");
-
-                    let newHold = new Path2D(this.holdImages.querySelector(`.${hold || 'placeholder'}`).cloneNode(true).getAttribute("d"));
-
-                    let scaleHold  = new Path2D();
-                    let scaleX = ( (scale) ? scale[0] : 1 ) * window.devicePixelRatio;
-                    let scaleY = ( (scale) ? scale[1] : 1 ) * window.devicePixelRatio;
-                    let scalePosX = holdCanvas.width  / 2 - ((this.holdSize * scaleX) / 2) ; //( holdCanvas.width - this.holdSize * scaleX) / 2; 
-                    let scalePosY = holdCanvas.height / 2 - ((this.holdSize * scaleY) / 2) ; 
-
-                    let boltOffsetX = boltPlacement ? (this.holdSize / 100) * boltPlacement[0] * window.devicePixelRatio : 0;
-                    let boltOffsetY = boltPlacement ? (this.holdSize / 100) * boltPlacement[1] * window.devicePixelRatio : 0;
-
-                    scaleHold.addPath(newHold, new DOMMatrix()
-                        .translate(scalePosX+boltOffsetX, scalePosY+boltOffsetY)
-                        .scale(scaleX, scaleY)
-                    );
-
-                    let transformHold = new Path2D();
-
-                    transformHold.addPath(scaleHold, new DOMMatrix()
-                        .translate((holdCanvas.width / 2) + boltOffsetX, (holdCanvas.height / 2) + boltOffsetY)       // size
-                        .rotate(rotation ? rotation : 0)
-                        .translate((-holdCanvas.width / 2) + boltOffsetX, (-holdCanvas.height / 2)+boltOffsetY)   // -1 * size
-                    );
-
-                    holdCanvasctx.save();
-                    holdCanvasctx.shadowColor = "rgba(0,0,0,.3)";
-                    holdCanvasctx.shadowBlur = this.holdSize / 2;
-                    holdCanvasctx.fillStyle = holdColor || 'transparent';
-                    holdCanvasctx.lineWidth = 1;
-                    holdCanvasctx.fill(transformHold);  
-                    holdCanvasctx.strokeStyle = "rgba(0,0,0,.3)";                      
-                    holdCanvasctx.stroke(transformHold);
-                    holdCanvasctx.restore();
+                    let holdCanvasctx = holdCanvas.getContext("2d"); // and this is where we will draw
+                    if( this.holdImages.querySelector(`.${hold || 'placeholder'}`) ) {
+                        let newHold = new Path2D(this.holdImages.querySelector(`.${hold || 'placeholder'}`).cloneNode(true).getAttribute("d")); // get the svg path
                     
-                    // Bolt
-                    holdCanvasctx.arc(holdCanvas.width/2, holdCanvas.width/2, 3, 0, 2 * Math.PI, false);
-                    holdCanvasctx.fillStyle="#aaa";
-                    holdCanvasctx.fill();
-                    holdCanvasctx.fillStyle="#000";
-                    holdCanvasctx.stroke();
+                        // scale
+                        let scaleHold  = new Path2D();
+                        scaleXX = ( (scaleX) ? scaleX : 1 ) * dpr;
+                        scaleYY = ( (scaleY) ? scaleY : 1 ) * dpr;
+
+                        let scalePosX = holdCanvas.width  / 2 - ((this.holdSize * scaleXX) / 2) ; 
+                        let scalePosY = holdCanvas.height / 2 - ((this.holdSize * scaleYY) / 2) ; 
+
+                        scaleHold.addPath(newHold, new DOMMatrix()
+                            .translate(scalePosX, scalePosY)
+                            .scale(scaleXX, scaleYY)
+                        );
+
+                        scaleHold.moveTo(0,0)
+                        scaleHold.lineTo(this.holdSize * 2 * dpr,this.holdSize * 2 * dpr)
+                        scaleHold.moveTo(this.holdSize * 2 * dpr,0)
+                        scaleHold.lineTo(0,this.holdSize * 2 * dpr)
+
+                        // addjust bolt placement
+                        let boltOffsetX = offsetX ? (this.holdSize / 100) * offsetX * dpr * 2: 0;
+                        let boltOffsetY = offsetY ? (this.holdSize / 100) * offsetY * dpr * 2 : 0;
 
 
-                    let x = Number( this.boardCols.indexOf( holds.toString()[0] ) );
-                    let y = holds.replace(/\D/g,'');
-                    this.ctx.drawImage(holdCanvas, 
-                        ( x ) * this.holdSize * window.devicePixelRatio, 
-                        ( y - 1 ) * this.holdSize * window.devicePixelRatio
-                    );
-                }
+                        /// rotation
+                        let transformHold = new Path2D();
+                        transformHold.addPath(scaleHold, new DOMMatrix()
+                            .translate((holdCanvas.width - boltOffsetY*0.5) / 2, (holdCanvas.height - boltOffsetX * 0.5 )/ 2 )
+//                            .rotate(rotation ? rotation : 0)
+                            .translate((-holdCanvas.width+boltOffsetY* 0.5) / 2, (-holdCanvas.height + boltOffsetX* 0.5)/ 2 )
+                        );
+
+
+                        // ... and then draw it
+                        holdCanvasctx.save();
+                        holdCanvasctx.shadowColor = "rgba(0,0,0,.3)";
+                        holdCanvasctx.shadowBlur = this.holdSize / 2;
+                        holdCanvasctx.fillStyle = color || '#f80';
+                        holdCanvasctx.lineWidth = 1;
+                        holdCanvasctx.fill(transformHold);  
+                        holdCanvasctx.strokeStyle = "rgba(0,0,0,.3)";                      
+                        holdCanvasctx.stroke(transformHold);
+                        holdCanvasctx.restore();
+                        
+                        // Bolt
+                        holdCanvasctx.arc(holdCanvas.width/2, holdCanvas.width/2, 3, 0, 2 * Math.PI, false);
+                        holdCanvasctx.fillStyle="#aaa";
+                        holdCanvasctx.fill();
+                        holdCanvasctx.fillStyle="#000";
+                        holdCanvasctx.stroke();
+
+
+                        let x = Number( this.boardCols.indexOf(location.toString()[0]));
+                        let y = Number(location.replace(/\D/g,''))+1;
+
+                        console.log(x, y)
+
+                        // copy and draw the hold to the main canvas 
+                        this.ctx.drawImage(holdCanvas, 
+                            ( x ) * this.holdSize * dpr, 
+                            ( y - 1 ) * this.holdSize * dpr
+                        );
+                    }
+                })
             })
         .catch(console.error.bind(console));
     })

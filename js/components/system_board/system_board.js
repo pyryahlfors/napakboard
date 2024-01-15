@@ -18,9 +18,9 @@ class systemBoard {
         this.boardContainer = dce({el: 'div', cssClass:'board-container kantti' });
         this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
 
-        this.boardContainer.addEventListener('touchstart', (e) => { 
-            this.swipeTimer = new Date(); 
-            this.swipe = [e.touches[0].clientX, e.touches[0].clientY] 
+        this.boardContainer.addEventListener('touchstart', (e) => {
+            this.swipeTimer = new Date();
+            this.swipe = [e.touches[0].clientX, e.touches[0].clientY]
         }, false);
         this.boardContainer.addEventListener('touchmove', (e) => { this.swipeDiffer = [e.touches[0].clientX, e.touches[0].clientY] }, false);
         this.boardContainer.addEventListener('touchend', (e) => {
@@ -35,8 +35,8 @@ class systemBoard {
                 selectedRouteOrder -= 1;
                 if(selectedRouteOrder < 0) { selectedRouteOrder = globals.boardRoutes.length - 1}
             }
-            
-            if( this.swipe[0] - this.swipeDiffer[0] > 100 ) { 
+
+            if( this.swipe[0] - this.swipeDiffer[0] > 100 ) {
                 doUpdate = true;
                 selectedRouteOrder += 1;
                 if(selectedRouteOrder > globals.boardRoutes.length - 1) { selectedRouteOrder = 0}
@@ -52,7 +52,7 @@ class systemBoard {
         const notify = () => {
             globals.serverMessage.push({message : 'Updating route data', timeout: 1, id : 'tick-sync'});
             globals.serverMessage = globals.serverMessage;
-            globals.serverMessage[0].finished = true; 
+            globals.serverMessage[0].finished = true;
             globals.serverMessage = globals.serverMessage;
         }
 
@@ -66,7 +66,7 @@ class systemBoard {
         this.db = getFirestore();
 
 /**
- * 
+ *
  */
         this.changeBoard = () => {
             this.loadBoardSetup();
@@ -95,12 +95,12 @@ class systemBoard {
             this.boardContainer.innerHTML = "";
             this.boardContainerWrapper.append(this.boardContainer);
             this.boardCols = 'abcdefghijklmnopqrstuvwxyz';
-        
+
             // fetch hold setup
             fetch(`/projects/napakboard/hold_setup_${globals.board}.json?doUpdate=${new Date().getTime}`)
             .then(response => response.json())
             .then(data => {
-                
+
                 this.boardHeight = data.characteristics.height;
                 this.boardWidth = data.characteristics.width;
 
@@ -108,7 +108,7 @@ class systemBoard {
 
                 this.boardContainer.style.height = `${(this.boardHeight + 1) * cellSize}px`;
                 this.boardContainer.style.width= `${(this.boardWidth + 1) * cellSize}px`;
-                
+
                 let oldSheet = document.body.querySelector("#napakgrid");
                 if(oldSheet) {
                     oldSheet.parentNode.removeChild(oldSheet);
@@ -123,10 +123,10 @@ class systemBoard {
                 let juuh = dce({el: 'div'});
                 for(let i=-1, j=this.boardHeight; i<j;i++) {
                     let gridRowAreas = [];
-            
+
                     let gridCell = dce({el: 'div', cssStyle: `left: 0; top: 0; height: ${cellSize}px; width: ${cellSize}px`});
                         gridCell.className = "grid-cell"
-            
+
                     for(let k=-1, l=this.boardWidth; k<l;k++) {
                         let gridCell = dce({el: 'div', cssStyle: `left: ${(k+1) * cellSize}px; top: ${(i+1) * cellSize}px; height: ${cellSize}px; width: ${cellSize}px`});
                         gridCell.className = "grid-cell"
@@ -139,11 +139,11 @@ class systemBoard {
                             }
                         toprow.append(gridCell);
                         }
-            
+
                         else{
                             if(k<0) {
                                 gridCell.innerHTML = this.boardHeight - i; //i+1;//
-                                gridCell.classList.add('row-name', 'row-number');            
+                                gridCell.classList.add('row-name', 'row-number');
                             }
                             else {
                                 gridCell.id = `${this.boardCols[k]}${i+1}`
@@ -156,7 +156,7 @@ class systemBoard {
                                     let currentHoldOrder;
 
                                     this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
-                               
+
                                     if(hold.classList.contains('selected')) {
                                         this.holdTypes.forEach((el, count) => {
                                             if(hold.classList.contains(el)) {
@@ -166,22 +166,22 @@ class systemBoard {
                                         })
 
                                         hold.classList.remove(currentHoldType);
-                          
+
                                         hold.classList.add(this.holdTypes[currentHoldOrder+1]);
                                         if(currentHoldOrder +1 == this.holdTypes.length) {
-                                            hold.classList.remove('selected', 'undefined');                                            
-                                            document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';        
-                                        } 
+                                            hold.classList.remove('selected', 'undefined');
+                                            document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
+                                        }
                                         else {
-                                            document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold`;        
+                                            document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold`;
                                         }
                                     }
 
-                                    else { 
-                                        hold.classList.add('selected', this.holdTypes[0]); 
+                                    else {
+                                        hold.classList.add('selected', this.holdTypes[0]);
                                         document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold`;
 
-                                    }   
+                                    }
                                     this.updateBoard( )
                                 }, false)
                             }
@@ -213,17 +213,17 @@ class systemBoard {
                     holdCanvas.height = this.holdSize * 2 * window.devicePixelRatio;
 
                     let holdCanvasctx = holdCanvas.getContext("2d");
-                    let cloneHold = this.holdImages.querySelector(`.${hold || 'placeholder'}`) 
+                    let cloneHold = this.holdImages.querySelector(`.${hold || 'placeholder'}`)
                     if(!this.holdImages.querySelector(`.${hold}`)) {
                         cloneHold = this.holdImages.querySelector('.placeholder');
                     }
                     let newHold = new Path2D(cloneHold.cloneNode(true).getAttribute("d"));
-                    
+
                     let scaleHold  = new Path2D();
                     let scaleX = ( (scale) ? scale[0] : 1 ) * window.devicePixelRatio;
                     let scaleY = ( (scale) ? scale[1] : 1 ) * window.devicePixelRatio;
-                    let scalePosX = holdCanvas.width  / 2 - ((this.holdSize * scaleX) / 2) ; 
-                    let scalePosY = holdCanvas.height / 2 - ((this.holdSize * scaleY) / 2) ; 
+                    let scalePosX = holdCanvas.width  / 2 - ((this.holdSize * scaleX) / 2) ;
+                    let scalePosY = holdCanvas.height / 2 - ((this.holdSize * scaleY) / 2) ;
 
                     let boltOffsetX = boltPlacement ? (this.holdSize / 100) * boltPlacement[0] : 0;
                     let boltOffsetY = boltPlacement ? (this.holdSize / 100) * boltPlacement[1] : 0;
@@ -245,17 +245,17 @@ class systemBoard {
 
                     holdCanvasctx.shadowColor = "rgba(0,0,0,.3)";
                     holdCanvasctx.shadowBlur = this.holdSize / 2;
-                    holdCanvasctx.strokeStyle = "rgba(0,0,0,.3)";                      
+                    holdCanvasctx.strokeStyle = "rgba(0,0,0,.3)";
                     holdCanvasctx.fillStyle = holdColor || 'transparent';
-                    holdCanvasctx.fill(transformHold);  
+                    holdCanvasctx.fill(transformHold);
 
                     holdCanvasctx.stroke(transformHold);
                     holdCanvasctx.restore();
 
                     let x = Number( this.boardCols.indexOf( holds.toString()[0] ) );
                     let y = Number(holds.replace(/\D/g,'') -1 );
-                    this.ctx.drawImage(holdCanvas, 
-                        (x  * this.holdSize ) * window.devicePixelRatio + ( this.holdSize / 2 * window.devicePixelRatio), 
+                    this.ctx.drawImage(holdCanvas,
+                        (x  * this.holdSize ) * window.devicePixelRatio + ( this.holdSize / 2 * window.devicePixelRatio),
                         (y * this.holdSize )* window.devicePixelRatio  + ( this.holdSize / 2 * window.devicePixelRatio)
                     );
                 }
@@ -282,7 +282,7 @@ class systemBoard {
  */
         this.updateRoute = ( holdSetup ) =>  {
             for ( let hold in holdSetup ) {
-                this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
+                this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)
                 }
         }
 
@@ -294,28 +294,28 @@ class systemBoard {
             ( async () => {
                 const docRef = doc(this.db, "routes", routeId);
                 const docSnap = await getDoc(docRef);
-                
+
                 if (docSnap.exists()) {
                     let routeData = docSnap.data();
                     let holdSetup = routeData.holdSetup;
 
                     globals.selectedRoute = routeData['name'];
                     globals.selectedRouteId = routeId;
-        
+
                     for ( let hold in holdSetup ) {
-                        this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)   
+                        this.boardContainer.querySelector(`#${hold}`).classList.add(`selected`, `${holdSetup[hold]}`)
                         }
 
                     this.updateBoard( { routeId : routeId, routeData: null } );
 
-                    } 
+                    }
                 else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");
                 }
             })();
         }
-        
+
 /**
  * Get list of routes
  */
@@ -326,14 +326,14 @@ class systemBoard {
 
             let sortMenu = new dsRadio({
                 cssClass: 'radio-menu',
-                title: 'Tick type', 
+                title: 'Tick type',
                 name: 'sort',
                 options: [
                     {
-                        title: "name", 
+                        title: "name",
                         value: "name",
                         checked: globals.routeSorting === 'name' ? true : false
-                    }, 
+                    },
                     {
                         title: "grade",
                         value: "grade",
@@ -347,24 +347,29 @@ class systemBoard {
                 ],
                 onchange: () => { globals.routeSorting = document.forms['routesort'].sort.value }
             });
-            
+
             let boardSelect = new dsRadio({
                 cssClass: 'radio-menu',
-                title: 'Board', 
+                title: 'Board',
                 name: 'board',
                 options: [
                     {
-                        title: "Kantti", 
+                        title: "Kantti",
                         value: "Kantti",
                         checked: globals.board === 'Kantti' ? true : false
-                    }, 
+                    },
                     {
                         title: "PCB",
                         value: "PCB",
                         checked: globals.board === 'PCB' ? true : false
+                    },
+                    {
+                        title: "Pattice",
+                        value: "Pattice",
+                        checked: globals.board === 'Pattice' ? true : false
                     }
                 ],
-                onchange: () => { 
+                onchange: () => {
                     globals.selectedRoute = null;
                     globals.selectedRouteId = null;
                     globals.board = document.forms['routesort'].board.value;
@@ -376,21 +381,21 @@ class systemBoard {
 
             let order = new dsRadio({
                 cssClass: 'radio-menu',
-                title: 'Order', 
+                title: 'Order',
                 name: 'order',
                 options: [
                     {
-                        title: "ascending", 
+                        title: "ascending",
                         value: "asc",
                         checked: globals.sortOrder === 'asc' ? true : false
-                    }, 
+                    },
                     {
-                        title: "descending", 
+                        title: "descending",
                         value: "desc",
                         checked: globals.sortOrder === 'desc' ? true : false
                     }
                 ],
-                onchange: () => { 
+                onchange: () => {
                     globals.sortOrder = document.forms['routesort'].order.value;
                     updateRouteListSorting();
                 }
@@ -442,10 +447,10 @@ class systemBoard {
                             let routeRepeats = dce({el: 'div', content: (routeData.ticks ? `- ${routeData.ticks.length} repeat${routeData.ticks.length > 1 ? 's' : ''}` : null)});
                             routeDetails.append(routeGrade, routeAdded, routeSetter, routeRepeats);
                             routeItem.append(routeName, routeDetails);
-                            routeItem.addEventListener('click', () => { 
+                            routeItem.addEventListener('click', () => {
                                 let toggleSelected = listDialog.querySelectorAll('.selected');
                                 toggleSelected.forEach( ( el) => {el.classList.remove('selected')});
-                                routeItem.classList.add('selected'); 
+                                routeItem.classList.add('selected');
                                 selectedRoute = routeData.id;
                             }, false);
                         routelistContainer.appendChild(routeItem);
@@ -453,8 +458,8 @@ class systemBoard {
                         globals.sortedRoutes.push(routeData)
                         }
                     }
-                });                
-                
+                });
+
                 if(listDialog.querySelector('.route-list-container')) {
                     let clearList = listDialog.querySelector('.route-list-container');
                     clearList.parentNode.removeChild(clearList);
@@ -468,7 +473,7 @@ class systemBoard {
                 if(globals.routeSorting === 'grade') { globals.boardRoutes = globals.boardRoutes.sort((a,b) => a.grade - b.grade) }
                 if(globals.routeSorting === 'date')  { globals.boardRoutes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)) }
             }
-            
+
             storeObserver.add({
                 store: globals,
                 key: 'boardRoutes',
@@ -494,7 +499,7 @@ class systemBoard {
                 callback: () => {updateRouteListSorting()}
               });
 
-            updateRouteList(); 
+            updateRouteList();
 
             let mother = document.querySelector('.app');
             let modalWindow = new dsModal({
@@ -502,13 +507,13 @@ class systemBoard {
                 content: listDialog,
                 options: [{
                     cancel: new dsButton({
-                        title: 'Cancel', 
-                        cssClass: 'btn btn_small', 
+                        title: 'Cancel',
+                        cssClass: 'btn btn_small',
                         thisOnClick: () => { modalWindow.close() }
                     }),
                     load: new dsButton({
-                        title: 'Load', 
-                        cssClass: 'btn btn_small preferred', 
+                        title: 'Load',
+                        cssClass: 'btn btn_small preferred',
                         thisOnClick: () => {
                             if(selectedRoute) {
                                 this.loadRoute(selectedRoute)
@@ -537,13 +542,13 @@ class systemBoard {
                 content: clearDialog,
                 options: [{
                     cancel: new dsButton({
-                        title: 'Cancel', 
-                        cssClass: 'btn btn_small', 
+                        title: 'Cancel',
+                        cssClass: 'btn btn_small',
                         thisOnClick: () => { modalWindow.close() }
                     }),
                     confirm: new dsButton({
-                        title: 'Confirm', 
-                        cssClass: 'btn btn_small preferred', 
+                        title: 'Confirm',
+                        cssClass: 'btn btn_small preferred',
                         thisOnClick: () => {
                             globals.selectedRoute = null;
                             globals.selectedRouteId = null;
@@ -563,7 +568,7 @@ class systemBoard {
  * Clear selected holds
  */
         this.clearRoute = ( ) => {
-            let selected = this.boardContainer.querySelectorAll('.selected'); 
+            let selected = this.boardContainer.querySelectorAll('.selected');
             selected.forEach((el) => {el.classList.remove('selected', 'top', 'start', 'intermediate', 'foot')});
         }
 
@@ -597,17 +602,17 @@ class systemBoard {
                 content: saveDialog,
                 options: [{
                     cancel: new dsButton({
-                        title: 'Cancel', 
-                        cssClass: 'btn btn_small', 
+                        title: 'Cancel',
+                        cssClass: 'btn btn_small',
                         thisOnClick: () => { modalWindow.close() }
                     }),
                     save: new dsButton({
-                        title: 'Save', 
-                        cssClass: 'btn btn_small preferred', 
+                        title: 'Save',
+                        cssClass: 'btn btn_small preferred',
                         thisOnClick: () => {
                              this.validateAndSave({
-                                routeName: routeName.value, 
-                                setter: setter.value, 
+                                routeName: routeName.value,
+                                setter: setter.value,
                                 grade: grade.value,
                                 callBack: () => { modalWindow.close() }
                             })
@@ -623,7 +628,7 @@ class systemBoard {
  * Validate save form and store into firebase
  */
         this.validateAndSave = ( params ) => {
-            let selected = this.boardContainer.querySelectorAll('.selected'); 
+            let selected = this.boardContainer.querySelectorAll('.selected');
 
             let holdSetup = {};
             selected.forEach( (hold) => {
@@ -655,10 +660,10 @@ class systemBoard {
                         "grade": params.grade,
                         "setter": `${params.setter}`,
                         "holdSetup": holdSetup,
-                        "napakboard": globals.board,                   
+                        "napakboard": globals.board,
                     });
                     alert('Route saved!')
-                    if( params.callBack ) { params.callBack() } 
+                    if( params.callBack ) { params.callBack() }
                 })();
             }
         }
@@ -670,7 +675,7 @@ class systemBoard {
             let routeTicks = globals.boardRoutes.find(({ id }) => id === globals.selectedRouteId);
             if(!routeTicks) { return; }
             let climbed = routeTicks.ticks && routeTicks.ticks.includes(getAuth().currentUser.uid);
-                        
+
             let tickDialog = dce({el:'div'});
             let confirm = dce({el: 'p', content: climbed ? 'You have already ticked this route. Want to remove it?' : 'Tick route?'});
             tickDialog.append(confirm);
@@ -680,14 +685,14 @@ class systemBoard {
 
                 let tickType = new dsRadio({
                     cssClass: 'radio-menu',
-                    title: 'Tick type', 
+                    title: 'Tick type',
                     name: 'tick',
                     options: [
                         {
-                            title: "flash", 
-                            value: "flash", 
+                            title: "flash",
+                            value: "flash",
                             checked: true
-                        }, 
+                        },
                         {
                             title: "redpoint",
                             value: "redpoint"
@@ -696,7 +701,7 @@ class systemBoard {
 
                 routeTickForm.append(tickType);
                 tickDialog.appendChild(routeTickForm);
-    
+
             }
 
             let modalWindow = new dsModal({
@@ -704,13 +709,13 @@ class systemBoard {
                 content: tickDialog,
                 options: [{
                     cancel: new dsButton({
-                        title: 'Cancel', 
-                        cssClass: 'btn btn_small', 
+                        title: 'Cancel',
+                        cssClass: 'btn btn_small',
                         thisOnClick: () => { modalWindow.close() }
                     }),
                     tick: new dsButton({
-                        title: climbed ? 'Remove tick' : 'Tick', 
-                        cssClass: 'btn btn_small preferred', 
+                        title: climbed ? 'Remove tick' : 'Tick',
+                        cssClass: 'btn btn_small preferred',
                         thisOnClick: () => {
                             if(globals.selectedRouteId) {
 
@@ -757,7 +762,7 @@ class systemBoard {
 
         this.updateBoard = ( ) => {
             if( globals.lightsOn ) {
-                let selected = this.boardContainer.querySelectorAll('.selected'); 
+                let selected = this.boardContainer.querySelectorAll('.selected');
                 let holdSetup = {};
                 selected.forEach( (hold) => {
                     let holdType = 'intermediate';
@@ -770,12 +775,12 @@ class systemBoard {
                 (async () => {
                     const routeRef = doc(this.db, "current", `currentRoute_${globals.board}`);
                     await updateDoc( routeRef, {
-                        routeData: {holdSetup: holdSetup}, 
+                        routeData: {holdSetup: holdSetup},
                         routeName: globals.selectedRoute || 'Unsaved route',
                         routeId: globals.selectedRouteId || 'No id',
                         boardId: globals.board,
                     } );
-                })();                
+                })();
             }
         }
 
@@ -787,8 +792,8 @@ class systemBoard {
           });
 
 
-        this.render = () => { 
-            return this.boardContainerWrapper; 
+        this.render = () => {
+            return this.boardContainerWrapper;
         }
 
     }
