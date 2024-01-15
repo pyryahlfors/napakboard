@@ -322,7 +322,7 @@ class systemBoard {
         this.list = () => {
             let selectedRoute = null;
             let listDialog = dce({el:'div'});
-            let sortOptionsContainer = dce({el: 'form', cssClass: 'sticky', content: 'Sort by:', attrbs: [["name", "routesort"]]});
+            let sortOptionsContainer = dce({el: 'form', cssClass: 'sticky', attrbs: [["name", "routesort"]]});
 
             let sortMenu = new dsRadio({
                 cssClass: 'radio-menu',
@@ -377,7 +377,12 @@ class systemBoard {
                 }
             });
 
-            sortOptionsContainer.append(sortMenu, document.createElement("hr"), document.createTextNode('Select board:'), boardSelect, document.createElement("hr"));
+            sortOptionsContainer.append(
+				dce({el: 'h3', content: 'Select board', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}),
+				boardSelect, document.createElement("hr"),
+				dce({el: 'h3', content: 'Sort by', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}),
+				sortMenu,
+				document.createElement("hr"));
 
             let order = new dsRadio({
                 cssClass: 'radio-menu',
@@ -401,7 +406,7 @@ class systemBoard {
                 }
             });
 
-            sortOptionsContainer.append(document.createTextNode('Order'), order)
+            sortOptionsContainer.append(dce({el: 'h3', content: 'Order', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}), order)
 
             let toggleMyAscents = new dsToggle({
                 cssClass  : 'horizontal-menu full-width',
@@ -412,7 +417,7 @@ class systemBoard {
                 onToggle : () => { updateRouteListSorting() },
               });
 
-            sortOptionsContainer.append(document.createElement("hr"), document.createTextNode('My ticks'), toggleMyAscents.render())
+            sortOptionsContainer.append(document.createElement("hr"), dce({el: 'h3', content: 'My ticks', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}), toggleMyAscents.render())
 
 
             listDialog.append(sortOptionsContainer);
