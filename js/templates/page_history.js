@@ -2,7 +2,7 @@ import { dce, eightaNuScore } from '../shared/helpers.js';
 import { globals } from '../shared/globals.js';
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
- 
+
 import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
 import statusTicker from '../components/ds-statusticker/index.js';
 
@@ -23,13 +23,19 @@ class viewHistory {
       let userID = getAuth().currentUser.uid;
       const docRef = doc(getFirestore(), "users", userID);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
-        let userTicks = docSnap.data().ticks;
+        let userTicks = docSnap.data().ticks.reverse();
         let tempContainer = document.createDocumentFragment();
-        userTicks.forEach( route => { 
+		let board = null;
+        userTicks.forEach( route => {
           let selectedRoute = globals.boardRoutes.find(({ id }) => id === route.routeId);
           if(selectedRoute) {
+			if(selectedRoute.napakboard !== board) {
+				let boardName= dce({el: 'h4', cssStyle: 'text-align: center; border-bottom: 1px solid #fff; width: 100%; margin-bottom: 0.5rem; padding-bottom: 0.5rem;', content: selectedRoute.napakboard});
+				tempContainer.appendChild(boardName);
+				board = selectedRoute.napakboard;
+			}
             let routeScore = eightaNuScore({ascentType: route.type, grade: selectedRoute.grade});
             userScore+=routeScore;
             routeCount+=1;
@@ -43,21 +49,21 @@ class viewHistory {
             ascentType.appendChild(ascentLegend)
             let tickScore = dce({el: 'DIV', cssClass: `tick-ascentscore`, content: routeScore})
             tickContainer.append(gradeLegend, routeName, ascentType, tickScore);
-      
-            tempContainer.append(tickContainer)              
+
+            tempContainer.append(tickContainer)
             }
         })
 
         let historyTitle = dce({el: 'H2', content: 'History'});
         historyContainer.append(historyTitle)
         historyContainer.append(document.createTextNode(`User score: `), dce({el: 'h3', cssClass: 'inline bold', content: userScore}));
-        
+
         historyContainer.append(document.createElement('br'));
         historyContainer.append(document.createTextNode(`Total routes climbed: `), dce({el: 'h3', cssClass: 'inline bold', content: routeCount}));
         historyContainer.append(document.createElement('br'));
         historyContainer.append(document.createTextNode(`Routes:`));
         historyContainer.append(tempContainer)
-        } 
+        }
       else {
         console.log("No such document!");
       }
@@ -65,7 +71,7 @@ class viewHistory {
 
 
     const footerNavi = new bottomNavi({options :  {
-      list: { 
+      list: {
         title: 'Climb',
         icon: 'climb',
         link: () => {route('board')}
