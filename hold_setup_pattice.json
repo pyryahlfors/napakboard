@@ -6,5 +6,12 @@
         },
 
     "holdSetup" : {
+		"g7": {"holdColor": "#c00"},
+		"d10": {"holdColor": "#c00"},
+		"j10": {"holdColor": "#c0c"},
+		"i12": {"holdColor": "#fff"},
+		"h12": {"holdColor": "#c0c"},
+		"j13": {"holdColor": "#c00"},
+		"i14": {"holdColor": "#fff"}
     }
 }
