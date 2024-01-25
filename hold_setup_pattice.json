@@ -6,12 +6,92 @@
         },
 
     "holdSetup" : {
-		"g7": {"holdColor": "#c00"},
-		"d10": {"holdColor": "#c00"},
-		"j10": {"holdColor": "#c0c"},
-		"i12": {"holdColor": "#fff"},
-		"h12": {"holdColor": "#c0c"},
-		"j13": {"holdColor": "#c00"},
-		"i14": {"holdColor": "#fff"}
-    }
+		"c1": {"holdColor": "black"},
+		"d1": {"holdColor": "yellow"},
+		"f1": {"holdColor": "white"},
+		"h1": {"holdColor": "white"},
+		"i1": {"holdColor": "yellow"},
+		"j1": {"holdColor": "yellow"},
+		"l1": {"holdColor": "black"},
+		"n1": {"holdColor": "gray"},
+		"o1": {"holdColor": "blue"},
+		"q1": {"holdColor": "yellow"},
+
+		"c3": {"holdColor": "red"},
+		"d3": {"holdColor": "orange"},
+		"f3": {"holdColor": "blue"},
+		"h3": {"holdColor": "orange"},
+		"i3": {"holdColor": "black"},
+		"n3": {"holdColor": "orange"},
+
+		"j4": {"holdColor": "green"},
+
+		"i5": {"holdColor": "blue"},
+		"j5": {"holdColor": "orange"},
+		"k5": {"holdColor": "blue"},
+		"l5": {"holdColor": "yellow"},
+		"m5": {"holdColor": "white"},
+
+		"m6": {"holdColor": "red"},
+		"n6": {"holdColor": "yellow"},
+
+		"f7": {"holdColor": "blue"},
+		"g7": {"holdColor": "orange"},
+		"o7": {"holdColor": "green"},
+
+		"h8": {"holdColor": "purple"},
+
+		"a10": {"holdColor": "yellow"},
+		"c10": {"holdColor": "blue"},
+		"d10": {"holdColor": "red"},
+		"e10": {"holdColor": "blue"},
+		"f10": {"holdColor": "white"},
+		"g10": {"holdColor": "yellow"},
+		"h10": {"holdColor": "black"},
+		"i10": {"holdColor": "orange"},
+		"j10": {"holdColor": "purple"},
+		"k10": {"holdColor": "blue"},
+		"l10": {"holdColor": "yellow"},
+		"m10": {"holdColor": "red"},
+		"n10": {"holdColor": "white"},
+		"o10": {"holdColor": "yellow"},
+		"p10": {"holdColor": "green"},
+		"r10": {"holdColor": "yellow"},
+
+		"l11": {"holdColor": "green"},
+
+		"c12": {"holdColor": "black"},
+		"m12": {"holdColor": "black"},
+
+		"b13": {"holdColor": "yellow"},
+		"m13": {"holdColor": "yellow"},
+		"n13": {"holdColor": "green"},
+		"p13": {"holdColor": "black"},
+		"r13": {"holdColor": "yellow"},
+
+		"n14": {"holdColor": "black"},
+		"o14": {"holdColor": "orange"},
+		"p14": {"holdColor": "white"},
+		"q14": {"holdColor": "purple"},
+
+		"d15": {"holdColor": "blue"},
+		"e15": {"holdColor": "gray"},
+		"k15": {"holdColor": "orange"},
+		"r15": {"holdColor": "red"},
+
+		"f16": {"holdColor": "black"},
+		"g16": {"holdColor": "yellow"},
+		"h16": {"holdColor": "white"},
+		"k16": {"holdColor": "white"},
+		"l16": {"holdColor": "yello"},
+		"m16": {"holdColor": "green"},
+		"o16": {"holdColor": "green"},
+		"q16": {"holdColor": "yellow"},
+
+		"b17": {"holdColor": "green"},
+		"h17": {"holdColor": "black"},
+		"n17": {"holdColor": "white"},
+		"o17": {"holdColor": "yellow"}
+
+	}
 }
