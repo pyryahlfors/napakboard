@@ -657,9 +657,8 @@ class systemBoard {
             }
 
             if(routeReady) {
-                // Add a new document in collection "cities"
                 ( async () => {
-                    await addDoc(collection(this.db, "routes"), {
+					const newRoute = await addDoc(collection(this.db, "routes"), {
                         "added": new Date(),
                         "name": `${params.routeName}`,
                         "grade": params.grade,
@@ -667,8 +666,15 @@ class systemBoard {
                         "holdSetup": holdSetup,
                         "napakboard": globals.board,
                     });
+
+					console.log(newRoute.id);
                     alert('Route saved!')
-                    if( params.callBack ) { params.callBack() }
+
+                    if( params.callBack ) {
+						params.callBack()
+						globals.selectedRouteId = newRoute.id;
+						this.loadRoute(globals.selectedRouteId)
+					}
                 })();
             }
         }
