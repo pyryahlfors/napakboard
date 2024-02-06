@@ -42,9 +42,12 @@
 
 			this.holdImages.childNodes.forEach((el)=>{
 				if(el.tagName === 'path') {
+					let holdContainer = document.createElement("DIV");
+					holdContainer.style.textAlign = 'center'
 					let hold = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 					hold.append(el)
-					document.body.append(hold)
+					holdContainer.append(hold, document.createElement("br"), document.createTextNode(el.className.animVal || el.datasets.name));
+					document.body.append(holdContainer)
 				}
 			})
 		  })
