@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+<head></head>
+<body>
+
+<style>
+	body {
+		display: flex;
+		flex-wrap: wrap;
+		flex-shrink: 0;
+	}
+
+	svg {
+		width: 100px;
+		height: 100px;
+	}
+</style>
+<script>
+( () => {
+    // pulpauttaa SVG:n
+    let svg = (params) => {
+        let xlmns = 'http://www.w3.org/2000/svg';
+        let element = document.createElementNS(xlmns, params.el);
+
+        if (params.cssClass) { element.className = params.cssClass; }
+        if (params.cssStyle) { element.setAttribute('style', params.cssStyle);}
+        if (params.id) { element.setAttribute('id', params.id); }
+        if (params.attrbs) {
+            for (let i = 0, j = params.attrbs.length; i < j; i++) {
+            element.setAttributeNS(null, params.attrbs[i][0], params.attrbs[i][1]);
+            }
+        }
+    return element;
+    }
+
+	this.holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
+	fetch('images/holds.svg?da=das')
+		.then(r => r.text())
+		.then(text => {
+			this.holdImages.innerHTML = text;
+
+			this.holdImages.childNodes.forEach((el)=>{
+				if(el.tagName === 'path') {
+					let hold = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
+					hold.append(el)
+					document.body.append(hold)
+				}
+			})
+		  })
+		.catch(console.error.bind(console));
+	})();
+</script>
+
+</body>
+</html>
