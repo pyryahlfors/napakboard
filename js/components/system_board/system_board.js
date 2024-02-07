@@ -179,7 +179,7 @@ class systemBoard {
 
                                     else {
                                         hold.classList.add('selected', this.holdTypes[0]);
-                                        document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold ${hold.id}`;
+                                        document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold (${hold.id})`;
 
                                     }
                                     this.updateBoard( )
