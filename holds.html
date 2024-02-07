@@ -46,7 +46,13 @@
 					holdContainer.style.textAlign = 'center'
 					let hold = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 					hold.append(el)
-					holdContainer.append(hold, document.createElement("br"), document.createTextNode(el.className.animVal || el.datasets.name));
+					let holdname = el.className.animVal;
+					if(!holdname || holdname == "" ) {
+						if(el.dataset && el.dataset.name) {
+							holdname = el.dataset.name;
+						}
+ 					}
+					holdContainer.append(hold, document.createElement("br"), document.createTextNode(holdname ));
 					document.body.append(holdContainer)
 				}
 			})
