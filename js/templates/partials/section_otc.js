@@ -112,7 +112,7 @@ class otc {
 			globals.selectedRoute = null;
 			globals.selectedRouteId = null;
 			globals.board = document.forms['boardselect'].board.value;
-			console.log(globals)
+			localStorage.setItem("board", globals.board);
 		}
 	});
 

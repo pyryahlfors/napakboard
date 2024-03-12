@@ -28,7 +28,7 @@ let globalObjects = {
   routeSorting: 'name',
   boardRoutes: [],
   sortedRoutes: [],
-  board: 'Kantti',
+  board: localStorage.getItem("board") || 'Kantti',
   sortOrder: 'asc',
 
   grades : {
