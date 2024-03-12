@@ -1,5 +1,5 @@
 import { dce } from '../shared/helpers.js';
- 
+
 import systemBoard  from '../components/system_board/system_board.js';
 import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
 import statusTicker from '../components/ds-statusticker/index.js';
@@ -14,26 +14,27 @@ class viewBoard {
     let mySystemBoard = new systemBoard();
     window.mySystemBoard = mySystemBoard;
 
-    const footerNavi = new bottomNavi({options : 
+    const footerNavi = new bottomNavi({options :
         {
-          save: { 
+          save: {
             title: 'save',
             icon: 'save',
             link: () => {mySystemBoard.save()}
             },
-          clear: { 
+          clear: {
             title: 'clear',
             icon: 'clear',
             link: () => {mySystemBoard.clear()}
             },
-          tick: { 
+          tick: {
             title: 'tick',
             icon: 'tick',
             link: () => {mySystemBoard.tick()}
             },
-          light: { 
+          light: {
             title: 'light up',
             icon: 'light',
+			selected: globals.lightsOn,
             link: () => {
               globals.lightsOn =! globals.lightsOn;
               footerNavi.toggle('light', globals.lightsOn);

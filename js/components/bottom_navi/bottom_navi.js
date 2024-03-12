@@ -1,6 +1,6 @@
 import { dce, svg } from '../../shared/helpers.js';
 
- 
+
 class bottomNavi {
     constructor( params ) {
         this.naviContainer = dce({el: 'footer', cssClass: 'bottom-navi'});
@@ -17,11 +17,11 @@ class bottomNavi {
                 createLinks();
             })
             .catch(console.error.bind(console));
-            
+
         const createLinks = () => {
             let linksContainer = dce({el: 'div', cssClass: 'nav-bottom-links'});
             for( let navigationItems in params.options ) {
-                let naviItem = dce({el: 'a', cssClass: `link-container`});
+                let naviItem = dce({el: 'a', cssClass: `link-container ${params.options[navigationItems].selected ? 'keep-selected' : ''} `});
                 naviItem.id = `footer-${navigationItems}`
                 if(params.options[navigationItems].disabled) {naviItem.classList.add('disabled')}
                 naviItem.addEventListener('click', () => {
@@ -36,7 +36,7 @@ class bottomNavi {
                 naviItem.append(naviIcon, document.createTextNode(params.options[navigationItems].title))
                 linksContainer.appendChild(naviItem)
             }
-            navContainer.append(linksContainer)    
+            navContainer.append(linksContainer)
         }
 
         this.toggle = ( item, onoff ) => {
