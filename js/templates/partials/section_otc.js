@@ -3,6 +3,9 @@ import { dce, storeObserver } from '../../shared/helpers.js';
 import { route } from '../../shared/route.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 import { user } from '../../shared/user.js';
+import { globals } from '../../shared/globals.js';
+
+import dsRadio from '../../components/ds-radio/index.js';
 
 class otc {
   constructor() {
@@ -35,7 +38,7 @@ class otc {
         route('login')
         }, function(error) {
         // An error happened.
-      });      
+      });
     }, false)
 
     // Listen and update details when login/logout. This is retarded. Fix it at some point
@@ -45,8 +48,8 @@ class otc {
       if(!userName) { updateProfile.classList.remove('hidden'); }
       else { updateProfile.classList.add('hidden'); }
     }
-    
-    
+
+
     storeObserver.add({
       store: user,
       key: 'login',
@@ -82,9 +85,43 @@ class otc {
       document.body.classList.remove('otc')
     }, false);
 
+	let boardChangeForm = dce({el: 'form', cssStyle: 'padding: 20px; text-align:center;', attrbs: [["name", "boardselect"]]});
+	boardChangeForm.append(dce({el: 'h3', cssClass: 'mb', content: 'Board select'}));
+	let boardSelect = new dsRadio({
+		cssClass: 'radio-menu',
+		title: 'Board',
+		name: 'board',
+		options: [
+			{
+				title: "Kantti",
+				value: "Kantti",
+				checked: globals.board === 'Kantti' ? true : false
+			},
+			{
+				title: "PCB",
+				value: "PCB",
+				checked: globals.board === 'PCB' ? true : false
+			},
+			{
+				title: "Pattice",
+				value: "Pattice",
+				checked: globals.board === 'Pattice' ? true : false
+			}
+		],
+		onchange: (val) => {
+			globals.selectedRoute = null;
+			globals.selectedRouteId = null;
+			globals.board = document.forms['boardselect'].board.value;
+			console.log(globals)
+		}
+	});
+
+	boardChangeForm.append(boardSelect);
+	sideNavLinks.append(boardChangeForm)
+
     sideNavLinks.append(btnProfile, btnHistory, btnBoard);
 
-    otcLinksContainer.append(loginInfo, sideNavLinks);
+	otcLinksContainer.append(loginInfo, sideNavLinks);
 
     container.append(otcLinksContainer);
 

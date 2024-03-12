@@ -63,6 +63,16 @@ class systemBoard {
             callback: notify
           });
 
+		  storeObserver.add({
+			store: globals,
+			key: 'board',
+			id: 'systemBoardSelect',
+			callback: () => {
+				this.boardContainer.className = `board-container ${globals.board.toLowerCase()}`;
+				this.changeBoard();
+			}
+		});
+
         this.db = getFirestore();
 
 /**
@@ -108,6 +118,8 @@ class systemBoard {
 
                 this.boardContainer.style.height = `${(this.boardHeight + 1) * cellSize}px`;
                 this.boardContainer.style.width= `${(this.boardWidth + 1) * cellSize}px`;
+				this.boardContainer.className = `board-container ${globals.board.toLowerCase()}`;
+
 
                 let oldSheet = document.body.querySelector("#napakgrid");
                 if(oldSheet) {
@@ -348,38 +360,8 @@ class systemBoard {
                 onchange: () => { globals.routeSorting = document.forms['routesort'].sort.value }
             });
 
-            let boardSelect = new dsRadio({
-                cssClass: 'radio-menu',
-                title: 'Board',
-                name: 'board',
-                options: [
-                    {
-                        title: "Kantti",
-                        value: "Kantti",
-                        checked: globals.board === 'Kantti' ? true : false
-                    },
-                    {
-                        title: "PCB",
-                        value: "PCB",
-                        checked: globals.board === 'PCB' ? true : false
-                    },
-                    {
-                        title: "Pattice",
-                        value: "Pattice",
-                        checked: globals.board === 'Pattice' ? true : false
-                    }
-                ],
-                onchange: () => {
-                    globals.selectedRoute = null;
-                    globals.selectedRouteId = null;
-                    globals.board = document.forms['routesort'].board.value;
-                    this.boardContainer.className = `board-container ${globals.board.toLowerCase()}`;
-                }
-            });
 
             sortOptionsContainer.append(
-				dce({el: 'h3', content: 'Select board', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}),
-				boardSelect, document.createElement("hr"),
 				dce({el: 'h3', content: 'Sort by', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}),
 				sortMenu,
 				document.createElement("hr"));
@@ -484,16 +466,6 @@ class systemBoard {
                 key: 'boardRoutes',
                 id: 'systemBoardRoutesUpdate',
                 callback: () => {updateRouteList()}
-            });
-
-            storeObserver.add({
-                store: globals,
-                key: 'board',
-                id: 'systemBoardSelect',
-                callback: () => {
-                    this.changeBoard();
-                    updateRouteList();
-                }
             });
 
             // Sort listener
