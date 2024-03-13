@@ -186,13 +186,13 @@ class systemBoard {
                                             document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
                                         }
                                         else {
-                                            document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold to ${this.boardHeight - i}  (${hold.id})`;
+                                            document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold to ${this.boardCols[k]}${this.boardHeight - i}  (${hold.id})`;
                                         }
                                     }
 
                                     else {
                                         hold.classList.add('selected', this.holdTypes[0]);
-                                        document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold to ${this.boardHeight - i} (${hold.id})`;
+                                        document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold to ${this.boardCols[k]}${this.boardHeight - i} (${hold.id})`;
 
                                     }
                                     this.updateBoard( )
