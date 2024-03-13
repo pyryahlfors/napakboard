@@ -85,7 +85,7 @@ class otc {
       document.body.classList.remove('otc')
     }, false);
 
-	let boardChangeForm = dce({el: 'form', cssStyle: 'padding: 20px; text-align:center;', attrbs: [["name", "boardselect"]]});
+	let boardChangeForm = dce({el: 'form', attrbs: [["name", "boardselect"]]});
 	boardChangeForm.append(dce({el: 'h3', cssClass: 'mb', content: 'Board select'}));
 	let boardSelect = new dsRadio({
 		cssClass: 'radio-menu',

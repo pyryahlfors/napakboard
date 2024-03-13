@@ -17,6 +17,30 @@
   will-change: transform;
   padding-top: env(safe-area-inset-top, 0);
 }
+.otc-navigation:before {
+	content:"";
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	background:url('../images/bgr_boardselect.jpg');
+	opacity:.1;
+	z-index:-1;
+	background-size:cover;
+	background-position:50% 50%
+}
+.otc-navigation:after {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	aspect-ratio: 1/1;
+	width: 100%;
+	background: radial-gradient(circle at 50% 100%,rgba(0,209,255,.2) 0,transparent 50%);
+	content: "";
+	pointer-events: none;
+}
 
 .otc-links-container {
   width: 100%;
@@ -47,10 +71,17 @@
   padding: 10px 0;
   position: relative;
   text-transform: uppercase;
-  background: var(--color-theme-color3);
   color: var(--color-white);
+  width: 75%;
+  min-width: 200px;
+  margin: 0 auto 0;
 }
 
+.otc-links-container .sidenav-links a:before {
+	content: "→";
+	position: absolute;
+	left: 0;
+	}
 .otc-links-container .sidenav-links a.selected {
   background: var(--color-theme-color2);
   color: var(--color-black);
@@ -60,6 +91,13 @@
   position: relative;
 }
 
+
+.otc-links-container .sidenav-links form {
+	border-bottom: 1px solid rgba(255,255,255,.5);
+	margin: 20px;
+	padding: 20px 0;
+	text-align:center;
+}
 .logo-container {
   position: relative;
   padding: var(--padding-base);
@@ -151,7 +189,7 @@ body.otc .navi-shadow {
 }
 
 
-@media only screen and (min-width: 1024px) and (min-height: 768px) { 
+@media only screen and (min-width: 1024px) and (min-height: 768px) {
   .otc-navigation {
     width: 75%;
     transform: translateX(0);
