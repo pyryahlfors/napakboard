@@ -190,6 +190,10 @@
 	z-index: 1;
 }
 
+.board-container .grid-cell span.tip-below:after {
+	top: unset;
+	bottom: -0.75rem;
+}
 .board-container .grid-cell.intermediate span:after {
 	background: var(--color-intermediate);
 	content: 'inter.';

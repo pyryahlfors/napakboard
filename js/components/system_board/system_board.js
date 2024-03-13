@@ -125,11 +125,6 @@ class systemBoard {
                 if(oldSheet) {
                     oldSheet.parentNode.removeChild(oldSheet);
                 }
-                // create css for board
-                let style = document.createElement("style");
-                style.id = "napakgrid";
-                document.body.appendChild(style);
-                let sheet = style.sheet;
 
                 let toprow = dce({el: 'div', cssStyle: `position: sticky; z-index: 2; top: 0; height: ${cellSize}px`});
                 let juuh = dce({el: 'div'});
@@ -158,7 +153,11 @@ class systemBoard {
                                 gridCell.classList.add('row-name', 'row-number');
                             }
                             else {
-								gridCell.append(document.createElement("span"));
+								let tipSpan = document.createElement("span");
+								if (i===0) {
+									tipSpan.className="tip-below";
+								}
+								gridCell.append(tipSpan);
                                 gridCell.id = `${this.boardCols[k]}${i+1}`;
                                 gridCell.addEventListener('click', (e) => {
                                     // prevent adding holds to route
