@@ -401,6 +401,7 @@ class systemBoard {
 
             sortOptionsContainer.append(document.createElement("hr"), dce({el: 'h3', content: 'My ticks', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}), toggleMyAscents.render())
 
+			let routeCountContainer = dce({el: 'h3', cssStyle: 'text-align: center; padding: 10px 0;', content: `Showing ${globals.sortedRoutes.length} routes`});
 
 			let showFiltersContainer = dce({el: 'DIV', cssClass: 'show-filters-container'});
 			let showFilters = dce({el: 'BUTTON', cssClass: 'btn btn_small preferred show-filters mt mb', content: 'Show filters'});
@@ -421,7 +422,7 @@ class systemBoard {
 
 			showFiltersContainer.append(showFilters);
 
-            listDialog.append(sortOptionsContainer, showFiltersContainer);
+            listDialog.append(sortOptionsContainer, routeCountContainer, showFiltersContainer);
 
             const updateRouteList = ( ) => {
                 let routelistContainer = dce({el: 'div', cssClass : 'route-list-container'});
@@ -470,7 +471,8 @@ class systemBoard {
                     let clearList = listDialog.querySelector('.route-list-container');
                     clearList.parentNode.removeChild(clearList);
                 }
-                listDialog.append(routelistContainer)
+                listDialog.append(routelistContainer);
+				routeCountContainer.innerHTML = `Showing ${globals.sortedRoutes.length} routes`;
             }
 
 // Sorting options
