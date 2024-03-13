@@ -403,7 +403,7 @@ class systemBoard {
 
 
 			let showFiltersContainer = dce({el: 'DIV', cssClass: 'show-filters-container'});
-			let showFilters = dce({el: 'BUTTON', cssClass: 'btn show-filters mt mb', content: 'Show filters'});
+			let showFilters = dce({el: 'BUTTON', cssClass: 'btn btn_small preferred show-filters mt mb', content: 'Show filters'});
 
 			showFilters.addEventListener('click', () => {
 				globals.clickDelay = true;
@@ -575,7 +575,7 @@ class systemBoard {
 
 // Save modal
         this.save = ( params ) => {
-            let saveDialog = dce({el:'FORM'});
+            let saveDialog = dce({el:'FORM', cssStyle: 'padding: 10px 0'});
 
             let routeName = new dsInput({label: 'Route name', attrbs: [
                 ['placeholder', ''],
@@ -595,7 +595,7 @@ class systemBoard {
 
             let grade = new dsSelect({label: 'Grade', options: gradeOptions})
 
-            saveDialog.append(routeName, setter, grade);
+            saveDialog.append(routeName, grade, setter);
 
             let mother = document.querySelector('.app');
             let modalWindow = new dsModal({
@@ -683,8 +683,8 @@ class systemBoard {
             if(!routeTicks) { return; }
             let climbed = routeTicks.ticks && routeTicks.ticks.includes(getAuth().currentUser.uid);
 
-            let tickDialog = dce({el:'div'});
-            let confirm = dce({el: 'p', content: climbed ? 'You have already ticked this route. Want to remove it?' : 'Tick route?'});
+            let tickDialog = dce({el:'div', cssStyle: 'padding: 10px 0 20px; text-align: center'});
+            let confirm = dce({el: 'p', content: climbed ? 'You have already ticked this route. Want to remove it?' : ''});
             tickDialog.append(confirm);
 
             if(!climbed) {
