@@ -33,7 +33,7 @@ BODY, HTML {
     -webkit-text-size-adjust: none;
     overflow: hidden;
 }
-  
+
 h3,
 label {
     color: inherit;
@@ -62,7 +62,7 @@ h3.bold {font-weight: 600;}
     touch-action: none;
   }
 
-  
+
 .page-content {
     height: 100%;
     color: var(--color-white);
@@ -78,7 +78,7 @@ h3.bold {font-weight: 600;}
 .controls {
     margin: 10px 0;
     display: flex;
-    justify-content:space-between;    
+    justify-content:space-between;
 }
 
 .page-board,
@@ -179,8 +179,8 @@ h3.bold {font-weight: 600;}
 
 .route-list-item.climbed.selected,
 .route-list-item.selected {
-    background: var(--color-theme-color2);
-    color: var(--color-black)
+	box-shadow: 0 0 0 4px var(--color-theme-color2);
+	background: #222;
 }
 
 .route-list-item.climbed {
@@ -262,4 +262,8 @@ hr {
   width: 100%;
   border: none;
   background: rgba(255,255,255,.1);
+}
+
+.justify-center {
+	justify-content: center;
 }

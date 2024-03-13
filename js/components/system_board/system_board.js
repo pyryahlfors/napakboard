@@ -334,7 +334,7 @@ class systemBoard {
         this.list = () => {
             let selectedRoute = null;
             let listDialog = dce({el:'div'});
-            let sortOptionsContainer = dce({el: 'form', cssClass: 'routefilters', cssStyle: 'z-index: 2;', attrbs: [["name", "routesort"]]});
+            let sortOptionsContainer = dce({el: 'form', cssClass: 'routefilters', cssStyle: 'z-index: 2; margin-left: -20px; margin-right: -20px; padding: 10px 20px; background: rgb(32,32,32)', attrbs: [["name", "routesort"]]});
 
             let sortMenu = new dsRadio({
                 cssClass: 'radio-menu',
@@ -391,7 +391,7 @@ class systemBoard {
             sortOptionsContainer.append(dce({el: 'h3', content: 'Order', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}), order)
 
             let toggleMyAscents = new dsToggle({
-                cssClass  : 'horizontal-menu full-width',
+                cssClass  : 'horizontal-menu justify-center full-width',
                 targetObj : 'excludeTicks',
                 options   : [
                   {title: 'Include', value: false, selected: globals.excludeTicks === false},

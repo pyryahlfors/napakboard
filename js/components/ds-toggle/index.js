@@ -4,7 +4,7 @@ import { globals } from '../../shared/globals.js';
 class dsToggle {
   constructor(params) {
 
-    let switchElement = dce({el: 'DIV', cssClass: 'on-off-selector'});
+    let switchElement = dce({el: 'DIV', cssClass: `on-off-selector ${params.cssClass}`});
     let firstOption = dce({el: 'SPAN', content: params.options[0].title});
     let secondOption = dce({el: 'SPAN', content: params.options[1].title});
 

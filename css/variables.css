@@ -1,7 +1,7 @@
 :root {
     --color-theme-color0: rgb(0, 0, 0);
-    --color-theme-color1: #292a36;
-    --color-theme-color1-accent: #373844;
+    --color-theme-color1: #000;
+    --color-theme-color1-accent: #3c3c43;
     --color-theme-color2: rgba(0, 255, 203, 1);
     --color-theme-color2-alpha: rgba(0, 255, 203, 0.3);
     --color-theme-color3: rgba(91, 110, 120, 1);
@@ -30,7 +30,7 @@
     --font-size-bodytext: 1.234rem; /* 20px - 1rem = 16px */
     --font-size-heading-1: 2rem; /* 32px */
     --font-size-heading-2: 2rem; /* 48px */
-  
+
     --padding-base: 20px;
     --padding-base-double: 40px;
     --padding-base-half: 10px;
@@ -41,23 +41,22 @@
     --chart-bar-radius: 2px;
     --base-btn-border-radius: 2px;
   }
-  
+
   @media (orientation: portrait) {
     :root {
       --font-size-bodytext: 1.234rem; /* 20px - 1rem = 16px */
     }
   }
-  
+
   @media (orientation: landscape) {
     :root {
       --font-size-bodytext: 1rem; /* 16px */
     }
   }
-  
+
   @media only screen and (max-width: 320px) {
     :root {
       --font-size-bodytext: 1rem; /* 16px */
       --font-size-heading-1: 1.5rem;
     }
   }
-  
