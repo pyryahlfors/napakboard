@@ -158,7 +158,8 @@ class systemBoard {
                                 gridCell.classList.add('row-name', 'row-number');
                             }
                             else {
-                                gridCell.id = `${this.boardCols[k]}${i+1}`
+								gridCell.append(document.createElement("span"));
+                                gridCell.id = `${this.boardCols[k]}${i+1}`;
                                 gridCell.addEventListener('click', (e) => {
                                     // prevent adding holds to route
                                     if(globals.selectedRoute !== null) return;
@@ -185,13 +186,13 @@ class systemBoard {
                                             document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
                                         }
                                         else {
-                                            document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold (${hold.id})`;
+                                            document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold to ${this.boardHeight - i}  (${hold.id})`;
                                         }
                                     }
 
                                     else {
                                         hold.classList.add('selected', this.holdTypes[0]);
-                                        document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold (${hold.id})`;
+                                        document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold to ${this.boardHeight - i} (${hold.id})`;
 
                                     }
                                     this.updateBoard( )

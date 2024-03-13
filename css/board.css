@@ -169,6 +169,47 @@
   box-shadow: 0 0 0 2px var(--color-foot);
 }
 
+.board-container .grid-cell.intermediate span:after,
+.board-container .grid-cell.foot span:after,
+.board-container .grid-cell.selected span:after,
+.board-container .grid-cell.start span:after,
+.board-container .grid-celltop span:after {
+	position: absolute;
+	top: -0.75rem;
+	height: 0.75rem;
+	width: 100%;
+	font-size: 0.5em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transform: translateX(-50%);
+	color: #000;
+	font-weight: bold;
+	border-radius: 2px;
+	text-transform: uppercase;
+	z-index: 1;
+}
+
+.board-container .grid-cell.intermediate span:after {
+	background: var(--color-intermediate);
+	content: 'inter.';
+}
+
+.board-container .grid-cell.start span:after {
+	background: var(--color-start);
+	content: 'start';
+}
+
+.board-container .grid-cell.foot span:after {
+	background: var(--color-foot);
+	content: 'foot';
+}
+
+.board-container .grid-cell.top span:after {
+	background: var(--color-top);
+	content: 'top';
+}
+
 .board-wrapper canvas {
   position: absolute;
   pointer-events: none;
