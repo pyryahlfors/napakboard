@@ -5,18 +5,19 @@ class dsModal extends HTMLElement {
     super();
     this.params = params || {};
     }
-  
+
     connectedCallback() {
       this.render();
     }
-  
+
     disconnectedCallback() {
     }
-    
+
     close() {
       let self = this;
       self.parentNode.removeChild(self);
     }
+
 
     render() {
       let modalShadow = dce({el: 'DIV', cssClass: 'modal-shadow'});
@@ -37,14 +38,20 @@ class dsModal extends HTMLElement {
         }
       });
 
+	  if(this.params.onscroll) {
+		modalContent.addEventListener('scroll', (e) => {
+			this.params.onscroll(e);
+		}, false);
+		}
+
       container.append(modalTitle, modalContent, modalOptions)
 
       modalShadow.appendChild(container)
-  
+
       this.append(modalShadow);
 
      }
   }
-  
+
   window.customElements.define('ds-modal', dsModal);
   export default dsModal;

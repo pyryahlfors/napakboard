@@ -334,7 +334,7 @@ class systemBoard {
         this.list = () => {
             let selectedRoute = null;
             let listDialog = dce({el:'div'});
-            let sortOptionsContainer = dce({el: 'form', cssClass: 'sticky', attrbs: [["name", "routesort"]]});
+            let sortOptionsContainer = dce({el: 'form', cssClass: 'routefilters', cssStyle: 'z-index: 2;', attrbs: [["name", "routesort"]]});
 
             let sortMenu = new dsRadio({
                 cssClass: 'radio-menu',
@@ -402,7 +402,26 @@ class systemBoard {
             sortOptionsContainer.append(document.createElement("hr"), dce({el: 'h3', content: 'My ticks', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}), toggleMyAscents.render())
 
 
-            listDialog.append(sortOptionsContainer);
+			let showFiltersContainer = dce({el: 'DIV', cssClass: 'show-filters-container'});
+			let showFilters = dce({el: 'BUTTON', cssClass: 'btn show-filters mt mb', content: 'Show filters'});
+
+			showFilters.addEventListener('click', () => {
+				globals.clickDelay = true;
+				sortOptionsContainer.classList.toggle('sticky')
+				setTimeout(()=>{globals.clickDelay = false}, 300);
+			}, false);
+
+			// get the sticky element
+			const observer = new IntersectionObserver(
+				([e]) => e.target.classList.toggle('isSticky', e.intersectionRatio < 1),
+				{threshold: [1]}
+			);
+
+			observer.observe(showFiltersContainer)
+
+			showFiltersContainer.append(showFilters);
+
+            listDialog.append(sortOptionsContainer, showFiltersContainer);
 
             const updateRouteList = ( ) => {
                 let routelistContainer = dce({el: 'div', cssClass : 'route-list-container'});
@@ -482,6 +501,11 @@ class systemBoard {
             let modalWindow = new dsModal({
                 title: 'Route list',
                 content: listDialog,
+				onscroll: (e) => {
+					if(!globals.clickDelay) {
+						e.target.querySelector('form').classList.remove('sticky');
+					}
+				},
                 options: [{
                     cancel: new dsButton({
                         title: 'Cancel',
