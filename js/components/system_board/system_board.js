@@ -333,6 +333,7 @@ class systemBoard {
  */
         this.list = () => {
             let selectedRoute = null;
+			delete globals.routeNameSearch;
             let listDialog = dce({el:'div'});
             let sortOptionsContainer = dce({el: 'form', cssClass: 'routefilters', cssStyle: 'z-index: 2; margin-left: -20px; margin-right: -20px; padding: 10px 20px; background: rgb(32,32,32)', attrbs: [["name", "routesort"]]});
 			sortOptionsContainer.onsubmit = (e) => {
@@ -344,10 +345,11 @@ class systemBoard {
 			// Name
 			let name = new dsInput({
 				attrbs: [
-					['placeholder', ''],
+					['placeholder', 'Route name'],
 					['name', 'routename'],
 					['value', ''],
-					['style', 'margin: 0']
+					['style', 'margin: 0'],
+					['value', globals.routeNameSearch || '']
 				],
 				onkeyup: (e) => {
 					// TODO: Just call the updateRouteList from here
