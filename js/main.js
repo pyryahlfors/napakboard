@@ -24,10 +24,10 @@ const napakBoard = {
         globals.routes.history = viewHistory;
         globals.routes.resetPassword = viewResetPassword
         globals.routes.signup = viewSignup;
-           
+
         const appContainer = dce({el: 'DIV', cssClass : 'app'});
         const appContentContainer = dce({el: 'DIV', cssClass : 'page-content'});
-  
+
         // Off the canvas navigation
         let otcMenu = new otc();
         let naviShadow = dce({el: 'DIV', cssClass: 'navi-shadow'});
@@ -42,35 +42,37 @@ const napakBoard = {
 
         let loginStatus = () => {
           let redirect = document.location.hash.slice(2);
-          
-          if(user.login.isLoggedIn) { 
-            // get routes from DB
-            const dbQuery = query(collection(getFirestore(), 'routes'));
-            onSnapshot(dbQuery, (querySnapshot) => {
-            const routes = [];
-            querySnapshot.forEach((doc) => {
-                let routeData = doc.data();
-                routeData.id = doc.id;
-                routes.push(routeData);
-            });
 
-            if(routes.length !== globals.boardRoutes.length) {
-              globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
-              globals.standardMessage = globals.standardMessage;
-            }
+          if(user.login.isLoggedIn) {
+			if(!globals.boardSetupMode) {
+				// get routes from DB
+				const dbQuery = query(collection(getFirestore(), 'routes'));
+				onSnapshot(dbQuery, (querySnapshot) => {
+				const routes = [];
+				querySnapshot.forEach((doc) => {
+					let routeData = doc.data();
+					routeData.id = doc.id;
+					routes.push(routeData);
+				});
 
-            globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-            globals.sortedRoutes = globals.boardRoutes;
-            });
+				if(routes.length !== globals.boardRoutes.length) {
+				globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
+				globals.standardMessage = globals.standardMessage;
+				}
 
-            route(globals.routes[redirect] ? redirect : 'board') 
+				globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+				globals.sortedRoutes = globals.boardRoutes;
+				});
+			}
+
+            route(globals.routes[redirect] ? redirect : 'board')
             }
 
           else { route('login'); }
         }
 
         user.storeObservers.push({key: 'login', callback: loginStatus})
-        
+
         // call ones for autologin
         loginStatus();
 
@@ -84,7 +86,7 @@ const napakBoard = {
             user.login = user.login;
           }
         })
-    }   
+    }
 }
 
 napakBoard.initialize();

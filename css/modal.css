@@ -90,3 +90,39 @@ button.show-filters {
     opacity: 1;
     pointer-events: all
 }
+
+.setup-hold.selected {
+	position: relative;
+	margin: 20px;
+}
+
+.setup-hold.selected:before {
+	background: rgba(0,0,0,.2);
+	border-radius: 4px;
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate3d(-50%, -50%, 0);
+	content: "";
+	margin-top: -5px;
+
+}
+
+.setup-hold.selected:after {
+	position: absolute;
+	width: 2px;
+	height: 2px;
+	border-radius: 100px;
+	content: "";
+	top: 50%;
+	left: 50%;
+	box-shadow: 0 0 0 1px rgba(255,255,255,.8);
+	transform: translate3d(-50%, -50%, 0);
+	z-index: 1;
+	background: #000;
+	margin-top: -5px;
+}
+
+

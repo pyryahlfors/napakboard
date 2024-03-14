@@ -13,7 +13,7 @@ import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth
 import dsLegend from '../ds-legend/index.js';
 
 class systemBoard {
-    constructor( params ) {
+    constructor( ) {
         this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper'});
         this.boardContainer = dce({el: 'div', cssClass:'board-container kantti' });
         this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
@@ -100,7 +100,7 @@ class systemBoard {
  * Get hold setup
  */
 
-        this.loadBoardSetup = () => {
+        this.loadBoardSetup = (fromGlobals) => {
             this.boardContainerWrapper.innerHTML = "";
             this.boardContainer.innerHTML = "";
             this.boardContainerWrapper.append(this.boardContainer);
@@ -110,7 +110,9 @@ class systemBoard {
             fetch(`/projects/napakboard/hold_setup_${globals.board}.json?doUpdate=${new Date().getTime}`)
             .then(response => response.json())
             .then(data => {
+				if(fromGlobals) data = fromGlobals;
 
+				globals.boardSetup = data;
                 this.boardHeight = data.characteristics.height;
                 this.boardWidth = data.characteristics.width;
 
@@ -129,8 +131,6 @@ class systemBoard {
                 let toprow = dce({el: 'div', cssStyle: `position: sticky; z-index: 2; top: 0; height: ${cellSize}px`});
                 let juuh = dce({el: 'div'});
                 for(let i=-1, j=this.boardHeight; i<j;i++) {
-                    let gridRowAreas = [];
-
                     let gridCell = dce({el: 'div', cssStyle: `left: 0; top: 0; height: ${cellSize}px; width: ${cellSize}px`});
                         gridCell.className = "grid-cell"
 
@@ -162,39 +162,255 @@ class systemBoard {
                                 gridCell.addEventListener('click', (e) => {
                                     // prevent adding holds to route
                                     if(globals.selectedRoute !== null) return;
-                                    let hold = e.target;
+									if(!globals.boardSetupMode) {
+										let hold = e.target;
 
-                                    let currentHoldType;
-                                    let currentHoldOrder;
+										let currentHoldType;
+										let currentHoldOrder;
 
-                                    this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
+										this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
 
-                                    if(hold.classList.contains('selected')) {
-                                        this.holdTypes.forEach((el, count) => {
-                                            if(hold.classList.contains(el)) {
-                                                currentHoldType = el;
-                                                currentHoldOrder = count;
-                                            }
-                                        })
+										if(hold.classList.contains('selected')) {
+											this.holdTypes.forEach((el, count) => {
+												if(hold.classList.contains(el)) {
+													currentHoldType = el;
+													currentHoldOrder = count;
+												}
+											})
 
-                                        hold.classList.remove(currentHoldType);
+											hold.classList.remove(currentHoldType);
 
-                                        hold.classList.add(this.holdTypes[currentHoldOrder+1]);
-                                        if(currentHoldOrder +1 == this.holdTypes.length) {
-                                            hold.classList.remove('selected', 'undefined');
-                                            document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
-                                        }
-                                        else {
-                                            document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold to ${this.boardCols[k]}${this.boardHeight - i}  (${hold.id})`;
-                                        }
-                                    }
+											hold.classList.add(this.holdTypes[currentHoldOrder+1]);
+											if(currentHoldOrder +1 == this.holdTypes.length) {
+												hold.classList.remove('selected', 'undefined');
+												document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
+											}
+											else {
+												document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold to ${this.boardCols[k]}${this.boardHeight - i}`;
+											}
+										}
 
-                                    else {
-                                        hold.classList.add('selected', this.holdTypes[0]);
-                                        document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold to ${this.boardCols[k]}${this.boardHeight - i} (${hold.id})`;
+										else {
+											hold.classList.add('selected', this.holdTypes[0]);
+											document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold to ${this.boardCols[k]}${this.boardHeight - i}`;
 
-                                    }
-                                    this.updateBoard( )
+										}
+										this.updateBoard( )
+									}
+/**
+ * SETUP MODE
+ */
+									if(globals.boardSetupMode) {
+										const holdTransform = {
+										};
+
+										const updateBoardJSON = (params) => {
+											holdsContainer.querySelector('.selected').querySelector('svg').style.transform = `rotate(${holdTransform?.rotation || 0}deg) translate3d(${holdTransform?.offsetX || 0}%, ${holdTransform?.offsetY || 0}%,0) scaleX(${holdTransform?.scaleX*.01 || 1}) scaleY(${holdTransform?.scaleY*.01 || 1})`;
+											globals.boardSetup.holdSetup[params.id] = {...globals.boardSetup.holdSetup[params.id], ...holdTransform}
+										}
+
+										const hold = e.target;
+
+										let holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
+										let perse = dce({el: 'div'});
+										let holdsContainer = dce({el: 'div', cssStyle: 'display: flex; flex-wrap: wrap; justify-content: center' });
+										fetch('/projects/napakboard/images/holds.svg?update=true')
+										.then(r => r.text())
+										.then(text => {
+											holdImages.innerHTML = text;
+
+											holdImages.childNodes.forEach((el)=>{
+												if(el.tagName === 'path') {
+													let holdContainer = dce({el: 'div', cssStyle: 'width: 30px; height: 30;font-size: 0.5em; line-heigth: 1rem; fill: #fff', cssClass: 'setup-hold'});
+													holdContainer.style.textAlign = 'center'
+													let holdImage = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
+													holdImage.append(el)
+													let holdname = el.className.animVal;
+													if(!holdname || holdname == "" ) {
+														if(el.dataset && el.dataset.name) {
+															holdname = el.dataset.name;
+														}
+													 }
+
+													holdContainer.addEventListener('click', () => {
+														holdsContainer.childNodes.forEach((child) => {
+															child.style.display = (child !== holdContainer) ? 'none' : 'block';
+														})
+
+														holdContainer.classList.add('selected')
+														globals.boardSetup.holdSetup[hold.id] = {...globals.boardSetup.holdSetup[hold.id], 'hold': holdname}
+														updateBoardJSON(hold)
+														this.loadBoardSetup(globals.boardSetup)
+													}, false);
+													holdContainer.append(holdImage); //, document.createElement("br"), document.createTextNode(holdname ));
+													holdsContainer.append(holdContainer)
+												}
+											})
+										});
+
+										/** rotation */
+										let rotationContainer = dce({el: 'div', cssStyle: 'display: flex'});
+										rotationContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Rotation'}));
+
+										let rotateHold = new dsInput({
+											attrbs: [
+												['type', 'range'],
+												['min', 0],
+												['max', 395],
+												['step', 5],
+												['value', globals.boardSetup.holdSetup[hold.id]?.rotation || 0]
+											],
+											oninput: (e) => {
+												holdTransform['rotation'] = Number(e.target.value);
+												updateBoardJSON(hold);
+												},
+											onchange: (e) => {
+												this.loadBoardSetup(globals.boardSetup)
+											}
+										});
+										rotationContainer.append(rotateHold);
+
+										/** Offset X */
+										let offsetXContainer = dce({el: 'div', cssStyle: 'display: flex'});
+										offsetXContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Offset X'}));
+
+										let offsetX = new dsInput({
+											attrbs: [
+												['type', 'range'],
+												['min', -50],
+												['max', 50],
+												['step', 5],
+												['value', globals.boardSetup.holdSetup[hold.id]?.offsetX || 0]
+											],
+											oninput: (e) => {
+												holdTransform['offsetX'] = Number(e.target.value);
+												updateBoardJSON(hold);
+												},
+												onchange: (e) => {
+													this.loadBoardSetup(globals.boardSetup)
+												}
+										});
+										offsetXContainer.append(offsetX);
+
+										/** Offset Y */
+										let offsetYContainer = dce({el: 'div', cssStyle: 'display: flex'});
+										offsetYContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Offset Y'}));
+
+										let offsetY = new dsInput({
+											attrbs: [
+												['type', 'range'],
+												['min', -50],
+												['max', 50],
+												['step', 5],
+												['value', globals.boardSetup.holdSetup[hold.id]?.offsetY || 0]
+											],
+											oninput: (e) => {
+												holdTransform['offsetY'] = Number(e.target.value);
+												updateBoardJSON(hold);
+												},
+												onchange: (e) => {
+													this.loadBoardSetup(globals.boardSetup)
+												}
+										});
+										offsetYContainer.append(offsetY);
+
+
+										/** Scale X */
+										let scaleXContainer = dce({el: 'div', cssStyle: 'display: flex'});
+										scaleXContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Scale X'}));
+
+										let scaleX = new dsInput({
+											attrbs: [
+												['type', 'range'],
+												['min', -200],
+												['max', 200],
+												['step', 10],
+												['value', globals.boardSetup.holdSetup[hold.id]?.scaleX || 100]
+											],
+											oninput: (e) => {
+												holdTransform['scaleX'] = Number(e.target.value);
+												updateBoardJSON(hold);
+											},
+											onchange: (e) => {
+												this.loadBoardSetup(globals.boardSetup)
+											}
+										});
+										scaleXContainer.append(scaleX);
+
+										/** Scale Y */
+										let scaleYContainer = dce({el: 'div', cssStyle: 'display: flex'});
+										scaleYContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Scale Y'}));
+
+										let scaleY = new dsInput({
+											attrbs: [
+												['type', 'range'],
+												['min', -200],
+												['max', 200],
+												['step', 10],
+												['value', globals.boardSetup.holdSetup[hold.id]?.scaleY || 100]
+											],
+											oninput: (e) => {
+												holdTransform['scaleY'] = Number(e.target.value);
+												updateBoardJSON(hold);
+												},
+												onchange: (e) => {
+													this.loadBoardSetup(globals.boardSetup)
+												}
+										});
+										scaleYContainer.append(scaleY);
+
+
+										/** color */
+										let colorContainer = dce({el: 'div', cssStyle: 'display: flex'});
+										colorContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Color'}));
+
+										let color = new dsInput({
+											attrbs: [
+												['type', 'color'],
+												['min', -200],
+												['max', 200],
+												['step', 10],
+												['style', 'padding: 0; width: 50px;'],
+												['value', globals.boardSetup.holdSetup[hold.id]?.holdColor || '#000' ]
+											],
+											oninput: (e) => {
+												holdTransform['holdColor'] = e.target.value;
+												updateBoardJSON(hold);
+												},
+												onchange: (e) => {
+													this.loadBoardSetup(globals.boardSetup)
+												}
+										});
+										colorContainer.append(color);
+
+										perse.append(holdsContainer,
+											rotationContainer,
+											offsetXContainer,
+											offsetYContainer,
+											scaleXContainer,
+											scaleYContainer,
+											colorContainer
+											)
+
+										let mother = document.querySelector('.app');
+										let modalWindow = new dsModal({
+											title: `Setup hold ${hold.id}`,
+											content: perse,
+											options: [{
+												cancel: new dsButton({
+													title: 'Cancel',
+													cssClass: 'btn btn_small',
+													thisOnClick: () => { modalWindow.close() }
+												}),
+												load: new dsButton({
+													title: 'Load',
+													cssClass: 'btn btn_small preferred',
+													thisOnClick: () => { modalWindow.close() }
+												})
+											}],
+										});
+									mother.append(modalWindow);
+									}
                                 }, false)
                             }
                         }
@@ -209,6 +425,7 @@ class systemBoard {
                 this.ctx = this.setupCanvas.getContext("2d");
 
                 this.holdSize = 30; // size of SVG viewBox - must be 30 or everything will be fucked
+                this.cellSize = 40; // size of SVG viewBox - must be 30 or everything will be fucked
                 this.setupCanvas.width = this.holdSize * ( this.boardWidth +1 ) * window.devicePixelRatio;
                 this.setupCanvas.height = this.holdSize * (this.boardHeight +1 )* window.devicePixelRatio;
 
@@ -217,71 +434,82 @@ class systemBoard {
 
                 this.boardContainer.appendChild(this.setupCanvas);
 
+				const dpr = window.devicePixelRatio; // vähä pikseleit vähä
+
+
                 for( let holds in data.holdSetup) {
-                    const { rotation, scale, hold, holdColor, boltPlacement } = data.holdSetup[holds];
+					let holdCanvas = document.createElement("CANVAS")
+					holdCanvas.width = this.holdSize * 2 * window.devicePixelRatio;
+					holdCanvas.height = this.holdSize * 2 * window.devicePixelRatio;
 
-                    let holdCanvas = document.createElement("CANVAS")
-                    holdCanvas.width = this.holdSize * 2 * window.devicePixelRatio;
-                    holdCanvas.height = this.holdSize * 2 * window.devicePixelRatio;
+					let holdCanvasctx = holdCanvas.getContext("2d");
 
-                    let holdCanvasctx = holdCanvas.getContext("2d");
-                    let cloneHold = this.holdImages.querySelector(`.${hold || 'placeholder'}`)
-                    if(!this.holdImages.querySelector(`.${hold}`)) {
-                        cloneHold = this.holdImages.querySelector('.placeholder');
-                    }
-                    let newHold = new Path2D(cloneHold.cloneNode(true).getAttribute("d"));
+					const { hold, rotation, scaleY, scaleX, holdColor, offsetX, offsetY } = data.holdSetup[holds];
 
-                    let scaleHold  = new Path2D();
-                    let scaleX = ( (scale) ? scale[0] : 1 ) * window.devicePixelRatio;
-                    let scaleY = ( (scale) ? scale[1] : 1 ) * window.devicePixelRatio;
-                    let scalePosX = holdCanvas.width  / 2 - ((this.holdSize * scaleX) / 2) ;
-                    let scalePosY = holdCanvas.height / 2 - ((this.holdSize * scaleY) / 2) ;
+					// scale
+					const scaleHold = new Path2D();
+					const scaleXX = ((scaleX ? scaleX*0.01 : 1) * dpr);
+					const scaleYY = ((scaleY ? scaleY*0.01 : 1) * dpr);
 
-                    let boltOffsetX = boltPlacement ? (this.holdSize / 100) * boltPlacement[0] : 0;
-                    let boltOffsetY = boltPlacement ? (this.holdSize / 100) * boltPlacement[1] : 0;
+					const scalePosX = holdCanvas.width / 2 - (this.holdSize * scaleXX) / 2;
+					const scalePosY = holdCanvas.height / 2 - (this.holdSize * scaleYY) / 2;
 
-                    scaleHold.addPath(newHold, new DOMMatrix()
-                        .translate(scalePosX+boltOffsetX, scalePosY+boltOffsetY)
-                        .scale(scaleX, scaleY)
-                    );
+					// addjust bolt placement
+					const boltOffsetX = offsetX ? (this.holdSize / 100) * offsetX : 0;
+					const boltOffsetY = offsetY ? (this.holdSize / 100) * offsetY : 0;
 
-                    let transformHold = new Path2D();
+					let cloneHold = this.holdImages.querySelector(`[data-name='${hold}']`);
+					if(!this.holdImages.querySelector(`[data-name='${hold}']`)) {
+						cloneHold = this.holdImages.querySelector("[data-name='placeholder']");
+					}
 
-                    transformHold.addPath(scaleHold, new DOMMatrix()
-                        .translate((holdCanvas.width / 2) + boltOffsetX, (holdCanvas.height / 2) + boltOffsetY)       // size
-                        .rotate(rotation ? rotation : 0)
-                        .translate((-holdCanvas.width / 2) + boltOffsetX, (-holdCanvas.height / 2)+boltOffsetY)   // -1 * size
-                    );
+					const holdPath = new Path2D(cloneHold.cloneNode(true).getAttribute("d"));
+
+					scaleHold.addPath(holdPath, new DOMMatrix().translate(scalePosX + boltOffsetX * dpr, scalePosY + boltOffsetY * dpr).scale(scaleXX, scaleYY));
+
+					const transformHold = new Path2D();
+
+					/// rotation
+					transformHold.addPath(
+					scaleHold,
+					new DOMMatrix()
+						.translate(holdCanvas.width / 2, holdCanvas.height / 2)
+						.rotate(rotation ? rotation : 0)
+						.translate(-holdCanvas.width / 2, -holdCanvas.height / 2),
+					);
+
+					// ... and then draw it
+					holdCanvasctx.save();
+					holdCanvasctx.shadowColor = 'rgba(0,0,0,.2)';
+					holdCanvasctx.shadowBlur = this.holdSize / 4;
+					holdCanvasctx.fillStyle = holdColor || '#000';
+					holdCanvasctx.lineWidth = 1;
+					holdCanvasctx.fill(transformHold);
+					holdCanvasctx.strokeStyle = 'rgba(0,0,0,.3)';
+					holdCanvasctx.stroke(transformHold);
+					holdCanvasctx.restore();
+
+					// Bolt
+					holdCanvasctx.shadowColor = 'transparent';
+					holdCanvasctx.shadowBlur = 0;
+					holdCanvasctx.arc(holdCanvas.width / 2, holdCanvas.width / 2, 1.5, 0, 2 * Math.PI, false);
+					holdCanvasctx.fillStyle = 'rgba(255,255,255,.8)';
+					holdCanvasctx.strokeStyle = 'rgba(0,0,0,.5)';
+					holdCanvasctx.lineWidth = 1;
+					holdCanvasctx.fill();
+					holdCanvasctx.stroke();
 
 
+					let x = Number( this.boardCols.indexOf( holds.toString()[0] ) );
+					let y = Number(holds.replace(/\D/g,'') -1 );
 
-                    holdCanvasctx.shadowColor = "rgba(0,0,0,.3)";
-                    holdCanvasctx.shadowBlur = this.holdSize / 2;
-                    holdCanvasctx.strokeStyle = "rgba(0,0,0,.3)";
-                    holdCanvasctx.fillStyle = holdColor || 'transparent';
-                    holdCanvasctx.fill(transformHold);
+				  // copy and draw the hold to the main canvas
+				  this.ctx.drawImage(holdCanvas, x * this.holdSize * dpr, y * this.holdSize * dpr);
 
-                    holdCanvasctx.stroke(transformHold);
-                    holdCanvasctx.restore();
+				  this.setupCanvas.style.top = `${this.cellSize / 2}px`;
+				  this.setupCanvas.style.left = `${this.cellSize / 2}px`;
 
-                    let x = Number( this.boardCols.indexOf( holds.toString()[0] ) );
-                    let y = Number(holds.replace(/\D/g,'') -1 );
-                    this.ctx.drawImage(holdCanvas,
-                        (x  * this.holdSize ) * window.devicePixelRatio + ( this.holdSize / 2 * window.devicePixelRatio),
-                        (y * this.holdSize )* window.devicePixelRatio  + ( this.holdSize / 2 * window.devicePixelRatio)
-                    );
-                }
-
-                for(let x=1, i=this.boardWidth+2; x<i;x++) {
-                    for(let y=1, j=this.boardHeight+2; y<j;y++) {
-                        this.ctx.beginPath();
-                        this.ctx.strokeStyle = "rgba(128,128,128,1)";
-                        this.ctx.arc(x*this.holdSize*window.devicePixelRatio + (0.5*this.holdSize*window.devicePixelRatio), y*this.holdSize*window.devicePixelRatio  + (0.5*this.holdSize*window.devicePixelRatio), 3, 0, 2 * Math.PI, false);
-                        this.ctx.fillStyle = "rgba(255,255,255,.8)";
-                        this.ctx.fill()
-                        this.ctx.stroke();
-                    }
-                }
+				}
             })
 
             if(globals.selectedRouteId) {
@@ -554,6 +782,7 @@ class systemBoard {
                 id: 'sortRoutesBy',
                 callback: () => {updateRouteListSorting()}
               });
+
 
             updateRouteList();
 

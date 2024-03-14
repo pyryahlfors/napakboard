@@ -14,34 +14,52 @@ class viewBoard {
     let mySystemBoard = new systemBoard();
     window.mySystemBoard = mySystemBoard;
 
-    const footerNavi = new bottomNavi({options :
-        {
-          save: {
-            title: 'save',
-            icon: 'save',
-            link: () => {mySystemBoard.save()}
-            },
-          clear: {
-            title: 'clear',
-            icon: 'clear',
-            link: () => {mySystemBoard.clear()}
-            },
-          tick: {
-            title: 'tick',
-            icon: 'tick',
-            link: () => {mySystemBoard.tick()}
-            },
-          light: {
-            title: 'light up',
-            icon: 'light',
-			selected: globals.lightsOn,
-            link: () => {
-              globals.lightsOn =! globals.lightsOn;
-              footerNavi.toggle('light', globals.lightsOn);
-              }
-            },
-          }
-    });
+	let footerNavi;
+	if(globals.boardSetupMode) {
+		footerNavi = new bottomNavi({options :
+			{
+			save: {
+				title: 'copy setup',
+				icon: 'save',
+				link: () => {
+					navigator.clipboard.writeText(JSON.stringify(globals.boardSetup));
+					alert('Setup copied to clipboard')
+					}
+				}
+			}
+		});
+	}
+	else {
+		 footerNavi = new bottomNavi({options :
+			{
+			save: {
+				title: 'save',
+				icon: 'save',
+				link: () => {mySystemBoard.save()}
+				},
+			clear: {
+				title: 'clear',
+				icon: 'clear',
+				link: () => {mySystemBoard.clear()}
+				},
+			tick: {
+				title: 'tick',
+				icon: 'tick',
+				link: () => {mySystemBoard.tick()}
+				},
+			light: {
+				title: 'light up',
+				icon: 'light',
+				selected: globals.lightsOn,
+				link: () => {
+				globals.lightsOn =! globals.lightsOn;
+				footerNavi.toggle('light', globals.lightsOn);
+				}
+				},
+			}
+		});
+	}
+
 
     tickPage.append(ticker.render(), mySystemBoard.render(),footerNavi.render());
     mySystemBoard.getHoldSetup();
