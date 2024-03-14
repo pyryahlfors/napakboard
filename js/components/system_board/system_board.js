@@ -335,6 +335,10 @@ class systemBoard {
             let selectedRoute = null;
             let listDialog = dce({el:'div'});
             let sortOptionsContainer = dce({el: 'form', cssClass: 'routefilters', cssStyle: 'z-index: 2; margin-left: -20px; margin-right: -20px; padding: 10px 20px; background: rgb(32,32,32)', attrbs: [["name", "routesort"]]});
+			sortOptionsContainer.onsubmit = (e) => {
+				e.preventDefault();
+				return;
+			}
 
 
 			// Name
