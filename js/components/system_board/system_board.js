@@ -336,9 +336,32 @@ class systemBoard {
             let listDialog = dce({el:'div'});
             let sortOptionsContainer = dce({el: 'form', cssClass: 'routefilters', cssStyle: 'z-index: 2; margin-left: -20px; margin-right: -20px; padding: 10px 20px; background: rgb(32,32,32)', attrbs: [["name", "routesort"]]});
 
+
+			// Name
+			let name = new dsInput({
+				attrbs: [
+					['placeholder', ''],
+					['name', 'routename'],
+					['value', ''],
+					['style', 'margin: 0']
+				],
+				onkeyup: (e) => {
+					globals.routeNameSearch = e.target.value;
+					}
+			});
+
+			let routeNameContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 10px 0;  justify-content: space-between; align-items: center;'})
+			routeNameContainer.append(
+				dce({el: 'h3', content: 'Route Name', cssStyle: 'text-align: center; color: #aaa; font-weight: 300'}),
+				name
+			);
+
+			sortOptionsContainer.append(routeNameContainer, document.createElement("hr") );
+
+			// Sort by
             let sortMenu = new dsRadio({
                 cssClass: 'radio-menu',
-                title: 'Tick type',
+                title: 'Sort by',
                 name: 'sort',
                 options: [
                     {
@@ -360,13 +383,16 @@ class systemBoard {
                 onchange: () => { globals.routeSorting = document.forms['routesort'].sort.value }
             });
 
+			let sortByContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 10px 0; justify-content: space-between; align-items: center;'})
+			sortByContainer.append(
+				dce({el: 'h3', content: 'Sort by', cssStyle: 'text-align: center; color: #aaa; font-weight: 300'}),
+				sortMenu
+			);
 
-            sortOptionsContainer.append(
-				dce({el: 'h3', content: 'Sort by', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}),
-				sortMenu,
-				document.createElement("hr"));
+            sortOptionsContainer.append( sortByContainer, document.createElement("hr") );
 
-            let order = new dsRadio({
+			// order
+			let order = new dsRadio({
                 cssClass: 'radio-menu',
                 title: 'Order',
                 name: 'order',
@@ -388,8 +414,16 @@ class systemBoard {
                 }
             });
 
-            sortOptionsContainer.append(dce({el: 'h3', content: 'Order', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}), order)
 
+			let orderContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 10px 0; justify-content: space-between; align-items: center;'})
+			orderContainer.append(
+				dce({el: 'h3', content: 'Order', cssStyle: 'text-align: center; color: #aaa; font-weight: 300'}),
+				order);
+
+
+            sortOptionsContainer.append(orderContainer, document.createElement("hr") );
+
+			// My ticks
             let toggleMyAscents = new dsToggle({
                 cssClass  : 'horizontal-menu justify-center full-width',
                 targetObj : 'excludeTicks',
@@ -399,7 +433,13 @@ class systemBoard {
                 onToggle : () => { updateRouteListSorting() },
               });
 
-            sortOptionsContainer.append(document.createElement("hr"), dce({el: 'h3', content: 'My ticks', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}), toggleMyAscents.render())
+			let myTicksContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 10px 0; justify-content: space-between; align-items: center;'})
+			myTicksContainer.append(
+				dce({el: 'h3', content: 'My ticks', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}),
+				toggleMyAscents.render()
+			);
+
+            sortOptionsContainer.append(myTicksContainer );
 
 			let routeCountContainer = dce({el: 'h3', cssStyle: 'text-align: center; padding: 10px 0;', content: `Showing ${globals.sortedRoutes.length} routes`});
 
@@ -424,7 +464,7 @@ class systemBoard {
 
             listDialog.append(sortOptionsContainer, routeCountContainer, showFiltersContainer);
 
-            const updateRouteList = ( ) => {
+            const updateRouteList = ( params  ) => {
                 let routelistContainer = dce({el: 'div', cssClass : 'route-list-container'});
 
                 let routes = globals.boardRoutes;
@@ -435,12 +475,13 @@ class systemBoard {
 
                 if(globals.sortOrder === 'desc')  { routes.reverse() }
 
+				const searchString = params && params.search ? params.search : '';
                 routes.forEach((routeData) => {
                     // exclude user ticks (if selected)
                     if( globals.excludeTicks && routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid)) {
                     }
                     else{
-                        if(routeData.napakboard === globals.board) {
+                        if(routeData.napakboard === globals.board && routeData.name.indexOf(searchString) !== -1 ) {
                             // doc.data() is never undefined for query doc snapshots
                             let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
                             if( globals.selectedRouteId === routeData.id ) { routeItem.classList.add('selected'); }
@@ -487,6 +528,13 @@ class systemBoard {
                 key: 'boardRoutes',
                 id: 'systemBoardRoutesUpdate',
                 callback: () => {updateRouteList()}
+            });
+
+			storeObserver.add({
+                store: globals,
+                key: 'routeNameSearch',
+                id: 'systemBoardNameSearchUpdate',
+                callback: () => {updateRouteList({search: globals.routeNameSearch})}
             });
 
             // Sort listener
