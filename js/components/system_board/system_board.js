@@ -201,11 +201,11 @@ class systemBoard {
  * SETUP MODE
  */
 									if(globals.boardSetupMode) {
-										const holdTransform = {
-										};
+										const holdTransform = {};
 
 										const updateBoardJSON = (params) => {
 											holdsContainer.querySelector('.selected').querySelector('svg').style.transform = `rotate(${holdTransform?.rotation || 0}deg) translate3d(${holdTransform?.offsetX || 0}%, ${holdTransform?.offsetY || 0}%,0) scaleX(${holdTransform?.scaleX*.01 || 1}) scaleY(${holdTransform?.scaleY*.01 || 1})`;
+											holdsContainer.querySelector('.selected').querySelector('svg').fill = holdTransform?.holdColor || '#000';
 											globals.boardSetup.holdSetup[params.id] = {...globals.boardSetup.holdSetup[params.id], ...holdTransform}
 										}
 
@@ -224,23 +224,40 @@ class systemBoard {
 													let holdContainer = dce({el: 'div', cssStyle: 'width: 30px; height: 30;font-size: 0.5em; line-heigth: 1rem; fill: #fff', cssClass: 'setup-hold'});
 													holdContainer.style.textAlign = 'center'
 													let holdImage = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
-													holdImage.append(el)
-													let holdname = el.className.animVal;
-													if(!holdname || holdname == "" ) {
-														if(el.dataset && el.dataset.name) {
-															holdname = el.dataset.name;
+													holdImage.append(el);
+
+													let holdname = el.dataset.name;
+
+													if(globals.boardSetup.holdSetup[hold.id].hold) {
+														if(globals.boardSetup.holdSetup[hold.id].hold === holdname) {
+															holdContainer.classList.add('selected')
+															holdContainer.style.display = 'block';
 														}
-													 }
+														else {
+															holdContainer.style.display = 'none';
+														}
+													}
+
 
 													holdContainer.addEventListener('click', () => {
-														holdsContainer.childNodes.forEach((child) => {
-															child.style.display = (child !== holdContainer) ? 'none' : 'block';
-														})
+														if(holdsContainer.querySelector('.selected')) {
+															holdsContainer.childNodes.forEach((child) => {
+																child.classList.remove('selected');
+																child.style.display = 'block';
+															});
 
-														holdContainer.classList.add('selected')
-														globals.boardSetup.holdSetup[hold.id] = {...globals.boardSetup.holdSetup[hold.id], 'hold': holdname}
-														updateBoardJSON(hold)
-														this.loadBoardSetup(globals.boardSetup)
+														}
+														else {
+															holdsContainer.childNodes.forEach((child) => {
+																child.classList.remove('selected');
+																child.style.display = (child !== holdContainer) ? 'none' : 'block';
+															});
+															holdContainer.classList.add('selected')
+															globals.boardSetup.holdSetup[hold.id] = {...globals.boardSetup.holdSetup[hold.id], 'hold': holdname}
+															updateBoardJSON(hold);
+															this.loadBoardSetup(globals.boardSetup);
+														}
+
 													}, false);
 													holdContainer.append(holdImage); //, document.createElement("br"), document.createTextNode(holdname ));
 													holdsContainer.append(holdContainer)
