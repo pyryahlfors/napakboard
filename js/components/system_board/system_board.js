@@ -453,6 +453,15 @@ class systemBoard {
 
 				const dpr = window.devicePixelRatio; // vähä pikseleit vähä
 
+				let perse = {};
+				for(let i=0, j=this.boardHeight; i<j;i++) {
+                    for(let k=0, l=this.boardWidth; k<l;k++) {
+						perse[`${this.boardCols[k]}${i+1}`]  = {};
+					}
+				}
+
+
+				data.holdSetup = {...perse, ...data.holdSetup};
 
                 for( let holds in data.holdSetup) {
 					let holdCanvas = document.createElement("CANVAS")
@@ -463,49 +472,50 @@ class systemBoard {
 
 					const { hold, rotation, scaleY, scaleX, holdColor, offsetX, offsetY } = data.holdSetup[holds];
 
-					// scale
-					const scaleHold = new Path2D();
-					const scaleXX = ((scaleX ? scaleX*0.01 : 1) * dpr);
-					const scaleYY = ((scaleY ? scaleY*0.01 : 1) * dpr);
+					if(hold || holdColor) {
+						// scale
+						const scaleHold = new Path2D();
+						const scaleXX = ((scaleX ? scaleX*0.01 : 1) * dpr);
+						const scaleYY = ((scaleY ? scaleY*0.01 : 1) * dpr);
 
-					const scalePosX = holdCanvas.width / 2 - (this.holdSize * scaleXX) / 2;
-					const scalePosY = holdCanvas.height / 2 - (this.holdSize * scaleYY) / 2;
+						const scalePosX = holdCanvas.width / 2 - (this.holdSize * scaleXX) / 2;
+						const scalePosY = holdCanvas.height / 2 - (this.holdSize * scaleYY) / 2;
 
-					// addjust bolt placement
-					const boltOffsetX = offsetX ? (this.holdSize / 100) * offsetX : 0;
-					const boltOffsetY = offsetY ? (this.holdSize / 100) * offsetY : 0;
+						// addjust bolt placement
+						const boltOffsetX = offsetX ? (this.holdSize / 100) * offsetX : 0;
+						const boltOffsetY = offsetY ? (this.holdSize / 100) * offsetY : 0;
 
-					let cloneHold = this.holdImages.querySelector(`[data-name='${hold}']`);
-					if(!this.holdImages.querySelector(`[data-name='${hold}']`)) {
-						cloneHold = this.holdImages.querySelector("[data-name='placeholder']");
-					}
+						let cloneHold = this.holdImages.querySelector(`[data-name='${hold}']`);
+						if(!this.holdImages.querySelector(`[data-name='${hold}']`)) {
+							cloneHold = this.holdImages.querySelector("[data-name='placeholder']");
+						}
 
-					const holdPath = new Path2D(cloneHold.cloneNode(true).getAttribute("d"));
+						const holdPath = new Path2D(cloneHold.cloneNode(true).getAttribute("d"));
 
-					scaleHold.addPath(holdPath, new DOMMatrix().translate(scalePosX + boltOffsetX * dpr, scalePosY + boltOffsetY * dpr).scale(scaleXX, scaleYY));
+						scaleHold.addPath(holdPath, new DOMMatrix().translate(scalePosX + boltOffsetX * dpr, scalePosY + boltOffsetY * dpr).scale(scaleXX, scaleYY));
 
-					const transformHold = new Path2D();
+						const transformHold = new Path2D();
 
-					/// rotation
-					transformHold.addPath(
-					scaleHold,
-					new DOMMatrix()
-						.translate(holdCanvas.width / 2, holdCanvas.height / 2)
-						.rotate(rotation ? rotation : 0)
-						.translate(-holdCanvas.width / 2, -holdCanvas.height / 2),
-					);
+						/// rotation
+						transformHold.addPath(
+						scaleHold,
+						new DOMMatrix()
+							.translate(holdCanvas.width / 2, holdCanvas.height / 2)
+							.rotate(rotation ? rotation : 0)
+							.translate(-holdCanvas.width / 2, -holdCanvas.height / 2),
+						);
 
-					// ... and then draw it
-					holdCanvasctx.save();
-					holdCanvasctx.shadowColor = 'rgba(0,0,0,.2)';
-					holdCanvasctx.shadowBlur = this.holdSize / 4;
-					holdCanvasctx.fillStyle = holdColor || '#000';
-					holdCanvasctx.lineWidth = 1;
-					holdCanvasctx.fill(transformHold);
-					holdCanvasctx.strokeStyle = 'rgba(0,0,0,.3)';
-					holdCanvasctx.stroke(transformHold);
-					holdCanvasctx.restore();
-
+						// ... and then draw it
+						holdCanvasctx.save();
+						holdCanvasctx.shadowColor = 'rgba(0,0,0,.2)';
+						holdCanvasctx.shadowBlur = this.holdSize / 4;
+						holdCanvasctx.fillStyle = holdColor || '#000';
+						holdCanvasctx.lineWidth = 1;
+						holdCanvasctx.fill(transformHold);
+						holdCanvasctx.strokeStyle = 'rgba(0,0,0,.3)';
+						holdCanvasctx.stroke(transformHold);
+						holdCanvasctx.restore();
+						}
 					// Bolt
 					holdCanvasctx.shadowColor = 'transparent';
 					holdCanvasctx.shadowBlur = 0;
