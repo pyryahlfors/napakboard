@@ -107,7 +107,7 @@ class systemBoard {
             this.boardCols = 'abcdefghijklmnopqrstuvwxyz';
 
             // fetch hold setup
-            fetch(`/projects/napakboard/hold_setup_${globals.board}.json?doUpdate=${new Date().getTime}`)
+            fetch(`/projects/napakboard/hold_setup_${globals.board}.json?adoUpdate=${new Date().getTime}`)
             .then(response => response.json())
             .then(data => {
 				if(fromGlobals) data = fromGlobals;
