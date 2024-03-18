@@ -96,6 +96,10 @@ button.show-filters {
 	margin: 20px;
 }
 
+.setup-hold.selected > div {
+	display: none;
+}
+
 .setup-hold.selected:before {
 	background: rgba(0,0,0,.2);
 	border-radius: 4px;

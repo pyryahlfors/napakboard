@@ -256,7 +256,9 @@ class systemBoard {
 													}
 
 												}, false);
-												holdContainer.append(holdImage); //, document.createElement("br"), document.createTextNode(holdname ));
+												let holdNameContainer = dce({el: 'div', cssClass: 'hold-name'});
+												holdNameContainer.append(document.createTextNode(holdname ));
+												holdContainer.append(holdImage, holdNameContainer );
 												holdsContainer.append(holdContainer)
 											}
 										})
