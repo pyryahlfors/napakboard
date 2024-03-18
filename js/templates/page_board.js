@@ -19,11 +19,12 @@ class viewBoard {
 		footerNavi = new bottomNavi({options :
 			{
 			save: {
-				title: 'copy setup',
+				title: 'Save setup',
 				icon: 'save',
 				link: () => {
-					navigator.clipboard.writeText(JSON.stringify(globals.boardSetup));
-					alert('Setup copied to clipboard')
+//					navigator.clipboard.writeText(JSON.stringify(globals.boardSetup));
+//					alert('Setup copied to clipboard');
+					mySystemBoard.updateSetup(globals.board);
 					}
 				}
 			}
