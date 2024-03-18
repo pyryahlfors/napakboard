@@ -250,6 +250,7 @@ class systemBoard {
 														});
 														holdContainer.classList.add('selected')
 														globals.boardSetup.holdSetup[hold.id] = {...globals.boardSetup.holdSetup[hold.id], 'hold': holdname}
+														console.log(globals.boardSetup.holdSetup[hold.id])
 														updateBoardJSON(hold);
 														this.loadBoardSetup(globals.boardSetup);
 													}
@@ -550,7 +551,7 @@ class systemBoard {
 
 				if (docSnap.exists() && docSnap.data().boardSetup ) {
 
-					this.drawHolds(docSnap.data().boardSetup);
+					this.drawHolds(fromGlobals ? fromGlobals : docSnap.data().boardSetup);
 				} else {
 					// fetch hold setup
 					fetch(`/projects/napakboard/hold_setup_${globals.board}.json?adoUpdate=${new Date().getTime}`)
