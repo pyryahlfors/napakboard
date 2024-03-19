@@ -114,15 +114,16 @@ input:invalid:not(:placeholder-shown):focus {
   position: relative;
   width: 40px;
   background: var(--color-black-alpha40);
-  border-radius: 9px;
-  height: 9px;
+  border-radius: 19px;
+  height: 19px;
   align-self: center;
+  box-shadow:  0 0 0 1px rgba(255,255,255,.3)	;
 }
 
 .on-off-switch::after {
   position: absolute;
-  top: 4.5px;
-  left: 4.5px;
+  top: 10px;
+  left: 9.5px;
   content: '';
   transform: translate3d(-50%, -50%, 0);
   font-size: 0;
@@ -135,5 +136,5 @@ input:invalid:not(:placeholder-shown):focus {
 }
 
 .on-off-switch.switched-off::after {
-  left: calc(100% - 4.5px);
+  left: calc(100% - 9.5px);
 }

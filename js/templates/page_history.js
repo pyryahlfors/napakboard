@@ -24,7 +24,7 @@ class viewHistory {
       const docRef = doc(getFirestore(), "users", userID);
       const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
+      if (docSnap.exists() && docSnap.data()?.ticks) {
         let userTicks = docSnap.data().ticks.reverse();
         let tempContainer = document.createDocumentFragment();
 		let board = null;
