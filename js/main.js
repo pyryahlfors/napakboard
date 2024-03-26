@@ -4,6 +4,7 @@ import { globals } from './shared/globals.js';
 import { user } from './shared/user.js';
 
 import viewBoard from './templates/page_board.js';
+import viewSetup from './templates/page_setup.js';
 import viewLogin from './templates/page_login.js';
 import viewSignup from './templates/page_signup.js';
 import viewResetPassword from './templates/page_reset-password.js';
@@ -19,6 +20,7 @@ const napakBoard = {
     initialize : () => {
         // Routes
         globals.routes.board = viewBoard;
+        globals.routes.setup = viewSetup;
         globals.routes.login = viewLogin;
         globals.routes.profile = viewProfile;
         globals.routes.history = viewHistory;
@@ -45,27 +47,11 @@ const napakBoard = {
 
           if(user.login.isLoggedIn) {
 			if(!globals.boardSetupMode) {
-				// get routes from DB
-				const dbQuery = query(collection(getFirestore(), 'routes'));
-				onSnapshot(dbQuery, (querySnapshot) => {
-				const routes = [];
-				querySnapshot.forEach((doc) => {
-					let routeData = doc.data();
-					routeData.id = doc.id;
-					routes.push(routeData);
-				});
-
-				if(routes.length !== globals.boardRoutes.length) {
-				globals.standardMessage.push({message : `Routes updated - ${routes.length} routes found`, timeout: 1, id : 'homepage-routes'});
-				globals.standardMessage = globals.standardMessage;
-				}
-
-				globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-				globals.sortedRoutes = globals.boardRoutes;
-				});
+	            route(globals.routes[redirect] ? redirect : 'board');
 			}
-
-            route(globals.routes[redirect] ? redirect : 'board')
+			else {
+	            route('setup');
+			}
             }
 
           else { route('login'); }

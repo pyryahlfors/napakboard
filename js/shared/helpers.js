@@ -1,6 +1,6 @@
 import { globals } from './globals.js';
 
-let storeObserver = { 
+let storeObserver = {
   add : ( params ) => {
     let store = params.store;
 
@@ -19,9 +19,15 @@ let storeObserver = {
     });
   },
 
-  remove: ( id ) => {
-    console.log(id);
-  },
+  remove: ( params ) => {
+	let store = params.store;
+    // remove existing observer if it has some ID
+    store.storeObservers.forEach((o, count) => {
+		if(params.id && o.id === params.id) {
+		  store.storeObservers.splice(count, 1)
+		}
+	  });
+	},
 
   clear: () => {
     let remove = [];
@@ -70,7 +76,7 @@ let svg = (params) => {
   return element;
 }
 
-// Parse date 
+// Parse date
 let parseDate = (d) => {
   let parsed = d.split("-");
   return {

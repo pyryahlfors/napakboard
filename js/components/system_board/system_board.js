@@ -15,39 +15,8 @@ import dsLegend from '../ds-legend/index.js';
 class systemBoard {
     constructor( ) {
         this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper'});
-        this.boardContainer = dce({el: 'div', cssClass:'board-container kantti' });
+        this.boardContainer = dce({el: 'div', cssClass:`board-container ${globals.board.toLowerCase()}`});
         this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
-
-        this.boardContainer.addEventListener('touchstart', (e) => {
-            this.swipeTimer = new Date();
-            this.swipe = [e.touches[0].clientX, e.touches[0].clientY]
-        }, false);
-        this.boardContainer.addEventListener('touchmove', (e) => { this.swipeDiffer = [e.touches[0].clientX, e.touches[0].clientY] }, false);
-        this.boardContainer.addEventListener('touchend', (e) => {
-            if(document.querySelector('.board-container').scrollWidth > window.innerWidth) return;
-            // check swipe travel - exit if null
-            if(!this.swipeDiffer[0] && this.swipeDiffer[0] !== 0) { return }
-            let doUpdate = false;
-            let selectedRouteOrder = globals.selectedRouteId ? globals.boardRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
-
-            if( this.swipeDiffer[0] - this.swipe[0] > 100 ) {
-                doUpdate = true;
-                selectedRouteOrder -= 1;
-                if(selectedRouteOrder < 0) { selectedRouteOrder = globals.boardRoutes.length - 1}
-            }
-
-            if( this.swipe[0] - this.swipeDiffer[0] > 100 ) {
-                doUpdate = true;
-                selectedRouteOrder += 1;
-                if(selectedRouteOrder > globals.boardRoutes.length - 1) { selectedRouteOrder = 0}
-            }
-
-            if( doUpdate ) {
-                this.loadRoute(globals.boardRoutes[selectedRouteOrder].id)
-            }
-        this.swipeDiffer = [null, null];
-        }, false);
-
 
         const notify = () => {
             globals.serverMessage.push({message : 'Updating route data', timeout: 1, id : 'tick-sync'});
@@ -56,14 +25,7 @@ class systemBoard {
             globals.serverMessage = globals.serverMessage;
         }
 
-        storeObserver.add({
-            store: globals,
-            key: 'boardRoutes',
-            id: 'routesUpdate',
-            callback: notify
-          });
-
-		  storeObserver.add({
+		storeObserver.add({
 			store: globals,
 			key: 'board',
 			id: 'systemBoardSelect',
@@ -93,19 +55,9 @@ class systemBoard {
                     this.holdImages.innerHTML = text;
                     this.loadBoardSetup();
                 })
-                .catch(console.error.bind(console));
-            }
-
-
-/**
- * update hold setup
- */
-
-		this.updateSetup = (board) => {
-			const routeReg = doc(this.db, "boardSetup", globals.board);
-			updateDoc(routeReg, { 'boardSetup': globals.boardSetup}, {merge: true});
-			alert('setup updated')
+			.catch(console.error.bind(console));
 		}
+
 
 		this.drawHolds = ( data ) => {
 			globals.boardSetup = data;
@@ -158,275 +110,39 @@ class systemBoard {
 							gridCell.addEventListener('click', (e) => {
 								// prevent adding holds to route
 								if(globals.selectedRoute !== null) return;
-								if(!globals.boardSetupMode) {
-									let hold = e.target;
+								let hold = e.target;
 
-									let currentHoldType;
-									let currentHoldOrder;
+								let currentHoldType;
+								let currentHoldOrder;
 
-									this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
+								this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
 
-									if(hold.classList.contains('selected')) {
-										this.holdTypes.forEach((el, count) => {
-											if(hold.classList.contains(el)) {
-												currentHoldType = el;
-												currentHoldOrder = count;
-											}
-										})
-
-										hold.classList.remove(currentHoldType);
-
-										hold.classList.add(this.holdTypes[currentHoldOrder+1]);
-										if(currentHoldOrder +1 == this.holdTypes.length) {
-											hold.classList.remove('selected', 'undefined');
-											document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
+								if(hold.classList.contains('selected')) {
+									this.holdTypes.forEach((el, count) => {
+										if(hold.classList.contains(el)) {
+											currentHoldType = el;
+											currentHoldOrder = count;
 										}
-										else {
-											document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold to ${this.boardCols[k]}${this.boardHeight - i}`;
-										}
+									})
+
+									hold.classList.remove(currentHoldType);
+
+									hold.classList.add(this.holdTypes[currentHoldOrder+1]);
+									if(currentHoldOrder +1 == this.holdTypes.length) {
+										hold.classList.remove('selected', 'undefined');
+										document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
 									}
-
 									else {
-										hold.classList.add('selected', this.holdTypes[0]);
-										document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold to ${this.boardCols[k]}${this.boardHeight - i}`;
-
+										document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold to ${this.boardCols[k]}${this.boardHeight - i}`;
 									}
-									this.updateBoard( )
 								}
-/**
-* SETUP MODE
-*/
-								if(globals.boardSetupMode) {
-									const holdTransform = {};
 
-									const updateBoardJSON = (params) => {
-										holdsContainer.querySelector('.selected').querySelector('svg').style.transform = `rotate(${holdTransform?.rotation || 0}deg) translate3d(${holdTransform?.offsetX || 0}%, ${holdTransform?.offsetY || 0}%,0) scaleX(${holdTransform?.scaleX*.01 || 1}) scaleY(${holdTransform?.scaleY*.01 || 1})`;
-										holdsContainer.querySelector('.selected').querySelector('svg').fill = holdTransform?.holdColor || '#000';
-										globals.boardSetup.holdSetup[params.id] = {...globals.boardSetup.holdSetup[params.id], ...holdTransform}
-									}
+								else {
+									hold.classList.add('selected', this.holdTypes[0]);
+									document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold to ${this.boardCols[k]}${this.boardHeight - i}`;
 
-									const hold = e.target;
-
-									let holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
-									let perse = dce({el: 'div'});
-									let holdsContainer = dce({el: 'div', cssStyle: 'display: flex; flex-wrap: wrap; justify-content: center' });
-									fetch('/projects/napakboard/images/holds.svg?update=true')
-									.then(r => r.text())
-									.then(text => {
-										holdImages.innerHTML = text;
-
-										holdImages.childNodes.forEach((el)=>{
-											if(el.tagName === 'path') {
-												let holdContainer = dce({el: 'div', cssStyle: 'width: 30px; height: 30;font-size: 0.5em; line-heigth: 1rem; fill: #fff', cssClass: 'setup-hold'});
-												holdContainer.style.textAlign = 'center'
-												let holdImage = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
-												holdImage.append(el);
-
-												let holdname = el.dataset.name;
-
-												if(globals.boardSetup.holdSetup[hold.id].hold) {
-													if(globals.boardSetup.holdSetup[hold.id].hold === holdname) {
-														holdContainer.classList.add('selected')
-														holdContainer.style.display = 'block';
-													}
-													else {
-														holdContainer.style.display = 'none';
-													}
-												}
-
-
-												holdContainer.addEventListener('click', () => {
-													if(holdsContainer.querySelector('.selected')) {
-														holdsContainer.childNodes.forEach((child) => {
-															child.classList.remove('selected');
-															child.style.display = 'block';
-														});
-
-													}
-													else {
-														holdsContainer.childNodes.forEach((child) => {
-															child.classList.remove('selected');
-															child.style.display = (child !== holdContainer) ? 'none' : 'block';
-														});
-														holdContainer.classList.add('selected')
-														globals.boardSetup.holdSetup[hold.id] = {...globals.boardSetup.holdSetup[hold.id], 'hold': holdname}
-														console.log(globals.boardSetup.holdSetup[hold.id])
-														updateBoardJSON(hold);
-														this.loadBoardSetup(globals.boardSetup);
-													}
-
-												}, false);
-												let holdNameContainer = dce({el: 'div', cssClass: 'hold-name'});
-												holdNameContainer.append(document.createTextNode(holdname ));
-												holdContainer.append(holdImage, holdNameContainer );
-												holdsContainer.append(holdContainer)
-											}
-										})
-									});
-
-									/** rotation */
-									let rotationContainer = dce({el: 'div', cssStyle: 'display: flex'});
-									rotationContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Rotation'}));
-
-									let rotateHold = new dsInput({
-										attrbs: [
-											['type', 'range'],
-											['min', 0],
-											['max', 395],
-											['step', 5],
-											['value', globals.boardSetup.holdSetup[hold.id]?.rotation || 0]
-										],
-										oninput: (e) => {
-											holdTransform['rotation'] = Number(e.target.value);
-											updateBoardJSON(hold);
-											},
-										onchange: (e) => {
-											this.loadBoardSetup(globals.boardSetup)
-										}
-									});
-									rotationContainer.append(rotateHold);
-
-									/** Offset X */
-									let offsetXContainer = dce({el: 'div', cssStyle: 'display: flex'});
-									offsetXContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Offset X'}));
-
-									let offsetX = new dsInput({
-										attrbs: [
-											['type', 'range'],
-											['min', -50],
-											['max', 50],
-											['step', 5],
-											['value', globals.boardSetup.holdSetup[hold.id]?.offsetX || 0]
-										],
-										oninput: (e) => {
-											holdTransform['offsetX'] = Number(e.target.value);
-											updateBoardJSON(hold);
-											},
-											onchange: (e) => {
-												this.loadBoardSetup(globals.boardSetup)
-											}
-									});
-									offsetXContainer.append(offsetX);
-
-									/** Offset Y */
-									let offsetYContainer = dce({el: 'div', cssStyle: 'display: flex'});
-									offsetYContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Offset Y'}));
-
-									let offsetY = new dsInput({
-										attrbs: [
-											['type', 'range'],
-											['min', -50],
-											['max', 50],
-											['step', 5],
-											['value', globals.boardSetup.holdSetup[hold.id]?.offsetY || 0]
-										],
-										oninput: (e) => {
-											holdTransform['offsetY'] = Number(e.target.value);
-											updateBoardJSON(hold);
-											},
-											onchange: (e) => {
-												this.loadBoardSetup(globals.boardSetup)
-											}
-									});
-									offsetYContainer.append(offsetY);
-
-
-									/** Scale X */
-									let scaleXContainer = dce({el: 'div', cssStyle: 'display: flex'});
-									scaleXContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Scale X'}));
-
-									let scaleX = new dsInput({
-										attrbs: [
-											['type', 'range'],
-											['min', -200],
-											['max', 200],
-											['step', 10],
-											['value', globals.boardSetup.holdSetup[hold.id]?.scaleX || 100]
-										],
-										oninput: (e) => {
-											holdTransform['scaleX'] = Number(e.target.value);
-											updateBoardJSON(hold);
-										},
-										onchange: (e) => {
-											this.loadBoardSetup(globals.boardSetup)
-										}
-									});
-									scaleXContainer.append(scaleX);
-
-									/** Scale Y */
-									let scaleYContainer = dce({el: 'div', cssStyle: 'display: flex'});
-									scaleYContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Scale Y'}));
-
-									let scaleY = new dsInput({
-										attrbs: [
-											['type', 'range'],
-											['min', -200],
-											['max', 200],
-											['step', 10],
-											['value', globals.boardSetup.holdSetup[hold.id]?.scaleY || 100]
-										],
-										oninput: (e) => {
-											holdTransform['scaleY'] = Number(e.target.value);
-											updateBoardJSON(hold);
-											},
-											onchange: (e) => {
-												this.loadBoardSetup(globals.boardSetup)
-											}
-									});
-									scaleYContainer.append(scaleY);
-
-
-									/** color */
-									let colorContainer = dce({el: 'div', cssStyle: 'display: flex'});
-									colorContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Color'}));
-
-									let color = new dsInput({
-										attrbs: [
-											['type', 'color'],
-											['min', -200],
-											['max', 200],
-											['step', 10],
-											['style', 'padding: 0; width: 50px;'],
-											['value', globals.boardSetup.holdSetup[hold.id]?.holdColor || '#000' ]
-										],
-										oninput: (e) => {
-											holdTransform['holdColor'] = e.target.value;
-											updateBoardJSON(hold);
-											},
-											onchange: (e) => {
-												this.loadBoardSetup(globals.boardSetup)
-											}
-									});
-									colorContainer.append(color);
-
-									perse.append(holdsContainer,
-										rotationContainer,
-										offsetXContainer,
-										offsetYContainer,
-										scaleXContainer,
-										scaleYContainer,
-										colorContainer
-										)
-
-									let mother = document.querySelector('.app');
-									let modalWindow = new dsModal({
-										title: `Setup hold ${hold.id}`,
-										content: perse,
-										options: [{
-											cancel: new dsButton({
-												title: 'Cancel',
-												cssClass: 'btn btn_small',
-												thisOnClick: () => { modalWindow.close() }
-											}),
-											load: new dsButton({
-												title: 'Load',
-												cssClass: 'btn btn_small preferred',
-												thisOnClick: () => { modalWindow.close() }
-											})
-										}],
-									});
-								mother.append(modalWindow);
 								}
+								this.updateBoard();
 							}, false)
 						}
 					}
@@ -458,7 +174,6 @@ class systemBoard {
 					perse[`${this.boardCols[k]}${i+1}`]  = {};
 				}
 			}
-
 
 			data.holdSetup = {...perse, ...data.holdSetup};
 
@@ -565,8 +280,6 @@ class systemBoard {
 				}
 			})();
 
-
-
             if(globals.selectedRouteId) {
                 this.loadRoute(globals.selectedRouteId)
             }
@@ -615,6 +328,24 @@ class systemBoard {
  * Get list of routes
  */
         this.list = () => {
+			// get routes from DB
+
+			const dbQuery = query(collection(getFirestore(), 'routes'));
+			onSnapshot(dbQuery, (querySnapshot) => {
+			const routes = [];
+			querySnapshot.forEach((doc) => {
+				let routeData = doc.data();
+				if(routeData.napakboard === globals.board) {
+					routeData.id = doc.id;
+					routes.push(routeData);
+				}
+			});
+
+			globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+			globals.sortedRoutes = globals.boardRoutes;
+			});
+
+
             let selectedRoute = null;
 			delete globals.routeNameSearch;
             let listDialog = dce({el:'div'});
@@ -623,7 +354,6 @@ class systemBoard {
 				e.preventDefault();
 				return;
 			}
-
 
 			// Name
 			let name = new dsInput({
@@ -753,8 +483,15 @@ class systemBoard {
 			showFiltersContainer.append(showFilters);
 
             listDialog.append(sortOptionsContainer, routeCountContainer, showFiltersContainer);
+			listDialog.append(dce({el: 'div', cssClass: 'loading', content: 'Loading routes...'}));
+
 
             const updateRouteList = ( ) => {
+				let loader = listDialog.querySelector('.loading');
+				if(loader && loader.parentNode) {
+					loader.parentNode.removeChild(loader);
+				}
+
                 let routelistContainer = dce({el: 'div', cssClass : 'route-list-container'});
 
                 let routes = globals.boardRoutes;
@@ -801,12 +538,13 @@ class systemBoard {
                     }
                 });
 
-                if(listDialog.querySelector('.route-list-container')) {
+				if(listDialog.querySelector('.route-list-container')) {
                     let clearList = listDialog.querySelector('.route-list-container');
                     clearList.parentNode.removeChild(clearList);
                 }
                 listDialog.append(routelistContainer);
 				routeCountContainer.innerHTML = `Showing ${globals.sortedRoutes.length} routes`;
+
             }
 
 // Sorting options
@@ -839,8 +577,6 @@ class systemBoard {
               });
 
 
-            updateRouteList();
-
             let mother = document.querySelector('.app');
             let modalWindow = new dsModal({
                 title: 'Route list',
@@ -854,7 +590,10 @@ class systemBoard {
                     cancel: new dsButton({
                         title: 'Cancel',
                         cssClass: 'btn btn_small',
-                        thisOnClick: () => { modalWindow.close() }
+                        thisOnClick: () => {
+							globals.sortedRoutes = [];
+							modalWindow.close();
+						}
                     }),
                     load: new dsButton({
                         title: 'Load',
