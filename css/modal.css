@@ -91,9 +91,12 @@ button.show-filters {
     pointer-events: all
 }
 
+
 .setup-hold.selected {
 	position: relative;
 	margin: 20px;
+	min-width: 30px;
+	min-height: 30px;
 }
 
 .setup-hold.selected > div {
