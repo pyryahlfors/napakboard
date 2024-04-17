@@ -18,55 +18,67 @@ class viewHistory {
     let historyContainer = dce({el: 'DIV', cssClass: 'history-container'})
 
     let nakki = ( async () => {
-      let userScore = 0;
-      let routeCount = 0;
-      let userID = getAuth().currentUser.uid;
-      const docRef = doc(getFirestore(), "users", userID);
-      const docSnap = await getDoc(docRef);
+		let routes = [];
+		const dbQuery = query(collection(getFirestore(), 'routes'));
+		onSnapshot(dbQuery, (querySnapshot) => {
+			querySnapshot.forEach((doc) => {
+				let routeData = doc.data();
+				if(routeData.napakboard === globals.board) {
+					routeData.id = doc.id;
+					routes.push(routeData);
+				}
+			});
+		});
 
-      if (docSnap.exists() && docSnap.data()?.ticks) {
-        let userTicks = docSnap.data().ticks.reverse();
-        let tempContainer = document.createDocumentFragment();
-		let board = null;
-        userTicks.forEach( route => {
-          let selectedRoute = globals.boardRoutes.find(({ id }) => id === route.routeId);
-          if(selectedRoute) {
-			if(selectedRoute.napakboard !== board) {
-				let boardName= dce({el: 'h4', cssStyle: 'text-align: center; border-bottom: 1px solid #fff; width: 100%; margin-bottom: 0.5rem; padding-bottom: 0.5rem;', content: selectedRoute.napakboard});
-				tempContainer.appendChild(boardName);
-				board = selectedRoute.napakboard;
-			}
-            let routeScore = eightaNuScore({ascentType: route.type, grade: selectedRoute.grade});
-            userScore+=routeScore;
-            routeCount+=1;
 
-            let tickContainer = dce({el: 'DIV', cssClass: 'session-tick'});
+		let userScore = 0;
+		let routeCount = 0;
+		let userID = getAuth().currentUser.uid;
+		const docRef = doc(getFirestore(), "users", userID);
+		const docSnap = await getDoc(docRef);
 
-            let gradeLegend = new dsLegend({title: globals.grades.font[selectedRoute.grade], type: 'grade', cssClass: globals.difficulty[selectedRoute.grade]})
-            let routeName = dce({el: 'DIV', cssClass: `tick-routename`, content: selectedRoute.name})
-            let ascentType = dce({el: 'DIV', cssClass: `tick-ascenttype`})
-            let ascentLegend = new dsLegend({title: route.type, type: 'ascent', cssClass: route.type})
-            ascentType.appendChild(ascentLegend)
-            let tickScore = dce({el: 'DIV', cssClass: `tick-ascentscore`, content: routeScore})
-            tickContainer.append(gradeLegend, routeName, ascentType, tickScore);
 
-            tempContainer.append(tickContainer)
-            }
-        })
+		if (docSnap.exists() && docSnap.data()?.ticks) {
+		  let userTicks = docSnap.data().ticks.reverse();
+		  let tempContainer = document.createDocumentFragment();
 
-        let historyTitle = dce({el: 'H2', content: 'History'});
-        historyContainer.append(historyTitle)
-        historyContainer.append(document.createTextNode(`User score: `), dce({el: 'h3', cssClass: 'inline bold', content: userScore}));
+		  let boardName= dce({el: 'h4', cssStyle: 'text-align: center; border-bottom: 1px solid #fff; width: 100%; margin-bottom: 0.5rem; padding-bottom: 0.5rem;', content: `Climbed routes on ${globals.board} board`});
+		  tempContainer.appendChild(boardName);
 
-        historyContainer.append(document.createElement('br'));
-        historyContainer.append(document.createTextNode(`Total routes climbed: `), dce({el: 'h3', cssClass: 'inline bold', content: routeCount}));
-        historyContainer.append(document.createElement('br'));
-        historyContainer.append(document.createTextNode(`Routes:`));
-        historyContainer.append(tempContainer)
-        }
-      else {
-        console.log("No such document!");
-      }
+		  userTicks.forEach( route => {
+			let selectedRoute = routes.find(({ id }) => id === route.routeId);
+			if(selectedRoute) {
+			  let routeScore = eightaNuScore({ascentType: route.type, grade: selectedRoute.grade});
+			  userScore+=routeScore;
+			  routeCount+=1;
+
+			  let tickContainer = dce({el: 'DIV', cssClass: 'session-tick'});
+
+			  let gradeLegend = new dsLegend({title: globals.grades.font[selectedRoute.grade], type: 'grade', cssClass: globals.difficulty[selectedRoute.grade]})
+			  let routeName = dce({el: 'DIV', cssClass: `tick-routename`, content: selectedRoute.name})
+			  let ascentType = dce({el: 'DIV', cssClass: `tick-ascenttype`})
+			  let ascentLegend = new dsLegend({title: route.type, type: 'ascent', cssClass: route.type})
+			  ascentType.appendChild(ascentLegend)
+			  let tickScore = dce({el: 'DIV', cssClass: `tick-ascentscore`, content: routeScore})
+			  tickContainer.append(gradeLegend, routeName, ascentType, tickScore);
+
+			  tempContainer.append(tickContainer)
+			  }
+		  })
+
+		  let historyTitle = dce({el: 'H2', content: 'History'});
+		  historyContainer.append(historyTitle)
+		  historyContainer.append(document.createTextNode(`User score: `), dce({el: 'h3', cssClass: 'inline bold', content: userScore}));
+
+		  historyContainer.append(document.createElement('br'));
+		  historyContainer.append(document.createTextNode(`Total routes climbed: `), dce({el: 'h3', cssClass: 'inline bold', content: routeCount}));
+		  historyContainer.append(document.createElement('br'));
+		  historyContainer.append(document.createTextNode(`Routes:`));
+		  historyContainer.append(tempContainer)
+		  }
+		else {
+		  console.log("No such document!");
+		}
   })();
 
 
