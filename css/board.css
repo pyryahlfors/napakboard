@@ -169,6 +169,11 @@
   box-shadow: 0 0 0 2px var(--color-foot);
 }
 
+.board-container .grid-cell span:after,
+.board-container .grid-cell span:before {
+	pointer-events: none;
+}
+
 .board-container .grid-cell.intermediate span:after,
 .board-container .grid-cell.foot span:after,
 .board-container .grid-cell.selected span:after,
