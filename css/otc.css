@@ -208,3 +208,9 @@ body.otc .navi-shadow {
     right: 0;
   }
 }
+
+
+form[name="boardselect"] ul {
+  flex-direction: column;
+  align-items: start;
+}
