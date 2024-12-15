@@ -106,7 +106,13 @@ class otc {
 				title: "Pattice",
 				value: "Pattice",
 				checked: globals.board === 'Pattice' ? true : false
+			},
+			{
+				title: "MoistyBoi",
+				value: "MoistyBoi",
+				checked: globals.board === 'MoistyBoi' ? true : false
 			}
+
 		],
 		onchange: (val) => {
 			globals.selectedRoute = null;
