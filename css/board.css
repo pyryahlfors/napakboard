@@ -38,6 +38,12 @@
 	position: relative;
   }
 
+.board-container.moistyboi {
+	background-image: url("../images/bgr_moistyboi.jpg");
+	background-size: cover;
+	position: relative;
+  }
+
 
 
 .board-container.pcb:after {
