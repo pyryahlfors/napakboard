@@ -21,6 +21,14 @@ class viewSetup {
 			link: () => {
 				mySystemBoard.updateSetup(globals.board);
 				}
+			},
+
+			save: {
+			title: 'console.log',
+			icon: 'list',
+			link: () => {
+				console.log(globals.board);
+				}
 			}
 		}
 	});
