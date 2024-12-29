@@ -27,7 +27,7 @@ class viewSetup {
 			title: 'console',
 			icon: 'list',
 			link: () => {
-				console.log(globals.boardSetpi);
+				console.log(globals.boardSetup);
 				}
 			}
 		}
