@@ -23,7 +23,7 @@ class viewSetup {
 				}
 			},
 
-		save: {
+		console: {
 			title: 'console',
 			icon: 'list',
 			link: () => {
