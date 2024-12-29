@@ -16,18 +16,18 @@ class viewSetup {
 
 	let footerNavi = new bottomNavi({options : {
 		save: {
-			title: 'Save setup',
+			title: 'Save',
 			icon: 'save',
 			link: () => {
 				mySystemBoard.updateSetup(globals.board);
 				}
 			},
 
-			save: {
-			title: 'console.log',
+		save: {
+			title: 'console',
 			icon: 'list',
 			link: () => {
-				console.log(globals.board);
+				console.log(globals.boardSetpi);
 				}
 			}
 		}
