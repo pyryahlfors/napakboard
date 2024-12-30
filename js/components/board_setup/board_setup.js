@@ -7,7 +7,7 @@ import dsInput from '../../components/ds-input/index.js';
 import dsSelect from '../../components/ds-select/index.js';
 import dsToggle from '../../components/ds-toggle/index.js';
 import dsRadio from '../ds-radio/index.js';
-import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
+import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 
 import dsLegend from '../ds-legend/index.js';
@@ -51,7 +51,17 @@ class systemBoard {
                 .catch(console.error.bind(console));
             }
 
-
+/** */
+		this.nukeRoutes = (board) => {
+			const dbQuery = query(collection(getFirestore(), 'routes'));
+			onSnapshot(dbQuery, (querySnapshot) => {
+			querySnapshot.forEach((doc) => {
+				if(doc.data().napakboard === globals.board) {
+					deleteDoc(doc.ref)
+				}
+			});
+		});
+	}
 /**
  * update hold setup
  */

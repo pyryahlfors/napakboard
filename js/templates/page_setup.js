@@ -29,7 +29,15 @@ class viewSetup {
 			link: () => {
 				console.log(globals.boardSetup);
 				}
+			},
+		nuke: {
+			title: 'nukeDB',
+			icon: 'clear',
+			link: () => {
+				mySystemBoard.nukeRoutes();
+				}
 			}
+
 		}
 	});
 
