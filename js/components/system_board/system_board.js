@@ -110,6 +110,13 @@ class systemBoard {
 							gridCell.addEventListener('mousedown', (e) => {
 								this.timerStart = new Date().getTime();
 							}, false);
+
+							gridCell.addEventListener('contextmenu', (e) => {
+								let hold = e.target;
+								hold.classList.remove('selected', 'intermediate', 'foot', 'start', 'top');
+								document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
+								this.updateBoard();
+						}, false);
 							gridCell.addEventListener('mouseup', (e) => {
 								// prevent adding holds to route
 								if(globals.selectedRoute !== null) return;
