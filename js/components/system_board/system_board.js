@@ -107,40 +107,49 @@ class systemBoard {
 							}
 							gridCell.append(tipSpan);
 							gridCell.id = `${this.boardCols[k]}${i+1}`;
-							gridCell.addEventListener('click', (e) => {
+							gridCell.addEventListener('mousedown', (e) => {
+								this.timerStart = new Date().getTime();
+							}, false);
+							gridCell.addEventListener('mouseup', (e) => {
 								// prevent adding holds to route
 								if(globals.selectedRoute !== null) return;
+								this.timerEnd = new Date().getTime();
 								let hold = e.target;
+								if(this.timerEnd - this.timerStart < 1000) {
+									let currentHoldType;
+									let currentHoldOrder;
 
-								let currentHoldType;
-								let currentHoldOrder;
+									this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
 
-								this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
+									if(hold.classList.contains('selected')) {
+										this.holdTypes.forEach((el, count) => {
+											if(hold.classList.contains(el)) {
+												currentHoldType = el;
+												currentHoldOrder = count;
+											}
+										})
 
-								if(hold.classList.contains('selected')) {
-									this.holdTypes.forEach((el, count) => {
-										if(hold.classList.contains(el)) {
-											currentHoldType = el;
-											currentHoldOrder = count;
+										hold.classList.remove(currentHoldType);
+
+										hold.classList.add(this.holdTypes[currentHoldOrder+1]);
+										if(currentHoldOrder +1 == this.holdTypes.length) {
+											hold.classList.remove('selected', 'undefined');
+											document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
 										}
-									})
-
-									hold.classList.remove(currentHoldType);
-
-									hold.classList.add(this.holdTypes[currentHoldOrder+1]);
-									if(currentHoldOrder +1 == this.holdTypes.length) {
-										hold.classList.remove('selected', 'undefined');
-										document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
+										else {
+											document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold to ${this.boardCols[k]}${this.boardHeight - i}`;
+										}
 									}
+
 									else {
-										document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[currentHoldOrder+1]} hold to ${this.boardCols[k]}${this.boardHeight - i}`;
+										hold.classList.add('selected', this.holdTypes[0]);
+										document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold to ${this.boardCols[k]}${this.boardHeight - i}`;
+
 									}
 								}
-
 								else {
-									hold.classList.add('selected', this.holdTypes[0]);
-									document.querySelector('.status-ticker .current H3').innerText = `Added - ${this.holdTypes[0]} hold to ${this.boardCols[k]}${this.boardHeight - i}`;
-
+									hold.classList.remove('selected', 'intermediate', 'foot', 'start', 'top');
+									document.querySelector('.status-ticker .current H3').innerText = 'Removed hold from route';
 								}
 								this.updateBoard();
 							}, false)
@@ -377,7 +386,28 @@ class systemBoard {
 			);
 
 			sortOptionsContainer.append(routeNameContainer, document.createElement("hr") );
+/**
+			let angles = Array();
+            for(let i=0, j=80; i<=j; i+=5) {
+                angles.push([`${i}`, i]);
+            }
 
+			let angle = new dsSelect({
+				options: angles,
+				change: (e) => {
+					alert(e)
+					globals.routeNameSearch = e.target.value;
+					},
+				cssStyle: 'padding: 0; margin: 0;'
+			});
+
+			let routeAnglContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 10px 0;  justify-content: space-between; align-items: center;'})
+			routeAnglContainer.append(
+				dce({el: 'h3', content: 'Angle', cssStyle: 'text-align: center; color: #aaa; font-weight: 300'}),
+				angle
+			);
+			sortOptionsContainer.append(routeAnglContainer, document.createElement("hr") );
+*/
 			// Sort by
             let sortMenu = new dsRadio({
                 cssClass: 'radio-menu',
