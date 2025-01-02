@@ -384,8 +384,10 @@ class systemBoard {
 					['value', globals.routeNameSearch || '']
 				],
 				onkeyup: (e) => {
+					if(e.target) {
+						globals.routeNameSearch = e.target.value;
+					}
 					// TODO: Just call the updateRouteList from here
-					globals.routeNameSearch = e.target.value;
 					}
 			});
 
@@ -396,17 +398,16 @@ class systemBoard {
 			);
 
 			sortOptionsContainer.append(routeNameContainer, document.createElement("hr") );
-/**
+
 			let angles = Array();
             for(let i=0, j=80; i<=j; i+=5) {
-                angles.push([`${i}`, i]);
+                angles.push([`${i}`, i, i === Number(globals.boardAngle)]);
             }
 
 			let angle = new dsSelect({
 				options: angles,
 				change: (e) => {
-					alert(e)
-					globals.routeNameSearch = e.target.value;
+                    globals.boardAngle = Number(e);
 					},
 				cssStyle: 'padding: 0; margin: 0;'
 			});
@@ -416,8 +417,11 @@ class systemBoard {
 				dce({el: 'h3', content: 'Angle', cssStyle: 'text-align: center; color: #aaa; font-weight: 300'}),
 				angle
 			);
-			sortOptionsContainer.append(routeAnglContainer, document.createElement("hr") );
-*/
+
+			if(globals.boardSetup.characteristics.adjustable) {
+				sortOptionsContainer.append(routeAnglContainer, document.createElement("hr") );
+			}
+
 			// Sort by
             let sortMenu = new dsRadio({
                 cssClass: 'radio-menu',
@@ -549,6 +553,13 @@ class systemBoard {
 				// remove routes from other
 				routes = routes.filter( (route) => route.napakboard === globals.board);
 
+				// angle
+				if(globals.boardSetup.characteristics.adjustable) {
+					if(globals.boardAngle !== 0) {
+						routes = routes.filter( (route) => route.angle === globals.boardAngle);
+					}
+				}
+
                routes.forEach((routeData) => {
                     // exclude user ticks (if selected)
                     if( globals.excludeTicks && routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid)) {
@@ -592,6 +603,7 @@ class systemBoard {
                 if(globals.routeSorting === 'name')  { globals.boardRoutes = globals.boardRoutes.sort((a, b) => a.name.localeCompare(b.name)) }
                 if(globals.routeSorting === 'grade') { globals.boardRoutes = globals.boardRoutes.sort((a,b) => a.grade - b.grade) }
                 if(globals.routeSorting === 'date')  { globals.boardRoutes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)) }
+                if(globals.routeSorting === 'grade') { globals.boardRoutes = globals.boardRoutes.sort((a,b) => a.grade - b.grade) }
             }
 
             storeObserver.add({
@@ -607,6 +619,16 @@ class systemBoard {
                 id: 'systemBoardNameSearchUpdate',
                 callback: () => {updateRouteList()}
             });
+
+			storeObserver.add({
+                store: globals,
+                key: 'boardAngle',
+                id: 'systemBoardAngleUpdate',
+                callback: () => {
+					updateRouteList()
+				}
+            });
+
 
             // Sort listener
             storeObserver.add({
@@ -711,6 +733,21 @@ class systemBoard {
                 ['value', getAuth().currentUser.displayName || '']
             ]});
 
+			/** angle  */
+			let angles = Array();
+            for(let i=0, j=80; i<=j; i+=5) {
+                angles.push([`${i}`, i, i === Number(globals.boardAngle)]);
+            }
+
+			let angle = new dsSelect({
+				label: 'Route angle',
+				options: angles,
+				change: (e) => {
+                    globals.boardAngle = Number(e);
+					},
+				cssStyle: 'padding: 0; margin: 0;'
+			});
+
             let gradeOptions = Array();
             for(let i=0, j=globals.grades.font.length; i<j; i++) {
                 gradeOptions.push([globals.grades.font[i], i]);
@@ -719,6 +756,9 @@ class systemBoard {
             let grade = new dsSelect({label: 'Grade', options: gradeOptions})
 
             saveDialog.append(routeName, grade, setter);
+			if(globals.boardSetup.characteristics.adjustable) {
+				saveDialog.append(angle);
+			}
 
             let mother = document.querySelector('.app');
             let modalWindow = new dsModal({
@@ -738,6 +778,7 @@ class systemBoard {
                                 routeName: routeName.value,
                                 setter: setter.value,
                                 grade: grade.value,
+								angle: globals.boardSetup.characteristics.adjustable ? Number(angle.value) : null,
                                 callBack: () => { modalWindow.close() }
                             })
                         }
@@ -784,6 +825,7 @@ class systemBoard {
                         "setter": `${params.setter}`,
                         "holdSetup": holdSetup,
                         "napakboard": globals.board,
+						"angle": Number(params.angle),
                     });
 
 					console.log(newRoute.id);

@@ -24,21 +24,27 @@ class dsSelect extends HTMLElement {
     if(this.params.attrbs) {
       this.params.attrbs.forEach(attrb => {
         select.setAttribute(attrb[0], attrb[1])
-      }); 
+      });
     }
 
     if(this.params.options) {
       this.params.options.forEach(option => {
-        let item = dce({el: 'option', attrbs: [['value', option[1]]]});
+        let item = dce({el: 'option', attrbs: [
+			['value', option[1]],
+			[option[2] ? 'selected' : null, option[2] ? 'selected' : null]
+		]});
         item.appendChild(document.createTextNode(option[0]))
         select.appendChild(item);
       })
     }
 
     this.value = select.value;
-    
+
     select.addEventListener('change', () => {
       this.value = select.value;
+	  if(this.params.change) {
+		this.params.change(select.value)
+	  }
     }, false)
 
     selectContainer.append(select)
@@ -50,3 +56,5 @@ class dsSelect extends HTMLElement {
 window.customElements.define('ds-select', dsSelect);
 
 export default dsSelect;
+
+

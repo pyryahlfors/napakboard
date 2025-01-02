@@ -4,7 +4,6 @@ class dsInput extends HTMLElement {
   constructor( params ) {
     super();
     Object.assign( this, params );
-
     this.render = this.render.bind(this)
   }
 
@@ -25,11 +24,14 @@ class dsInput extends HTMLElement {
     if(this.attrbs) {
       this.attrbs.forEach(attrb => {
           input.setAttribute(attrb[0], attrb[1])
-      }); 
+      });
     }
 
-    input.addEventListener('keyup', () => {
+    input.addEventListener('keyup', ( ) => {
       this.value = input.value;
+	  if(this.onkeyup) {
+		this.onkeyup(input.value);
+	  }
     }, false);
 
 
