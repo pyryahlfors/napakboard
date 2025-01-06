@@ -125,7 +125,7 @@ class systemBoard {
 								if(globals.selectedRoute !== null) return;
 								this.timerEnd = new Date().getTime();
 								let hold = e.target;
-								if(this.timerEnd - this.timerStart < 1000) {
+								if(this.timerEnd - this.timerStart < 500) {
 									let currentHoldType;
 									let currentHoldOrder;
 
