@@ -125,6 +125,7 @@ class systemBoard {
 								if(globals.selectedRoute !== null) return;
 								this.timerEnd = new Date().getTime();
 								let hold = e.target;
+								// Long press to remove hold
 								if(this.timerEnd - this.timerStart < 500) {
 									let currentHoldType;
 									let currentHoldOrder;

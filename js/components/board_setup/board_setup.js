@@ -1,16 +1,10 @@
 import { dce, svg, storeObserver} from '../../shared/helpers.js';
 import { globals } from '../../shared/globals.js';
-import { handleDate } from '../../shared/date.js';
 import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
 import dsInput from '../../components/ds-input/index.js';
-import dsSelect from '../../components/ds-select/index.js';
-import dsToggle from '../../components/ds-toggle/index.js';
-import dsRadio from '../ds-radio/index.js';
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
-
-import dsLegend from '../ds-legend/index.js';
 
 class systemBoard {
     constructor( ) {
@@ -51,17 +45,6 @@ class systemBoard {
                 .catch(console.error.bind(console));
             }
 
-/** */
-		this.nukeRoutes = (board) => {
-			const dbQuery = query(collection(getFirestore(), 'routes'));
-			onSnapshot(dbQuery, (querySnapshot) => {
-			querySnapshot.forEach((doc) => {
-				if(doc.data().napakboard === globals.board) {
-					deleteDoc(doc.ref)
-				}
-			});
-		});
-	}
 /**
  * update hold setup
  */
@@ -500,6 +483,45 @@ class systemBoard {
             }
         }
 
+
+/**
+ * Nuke routes modal
+ */
+
+        this.nukeRoutes = () => {
+            let clearDialog = dce({el:'div'});
+            let confirm = dce({el: 'p', content: 'Nuke all routes on this board?'});
+            clearDialog.append(confirm);
+
+            let mother = document.querySelector('.app');
+            let modalWindow = new dsModal({
+                title: 'Clear route',
+                content: clearDialog,
+                options: [{
+                    cancel: new dsButton({
+                        title: 'Cancel',
+                        cssClass: 'btn btn_small',
+                        thisOnClick: () => { modalWindow.close() }
+                    }),
+                    confirm: new dsButton({
+                        title: 'Confirm',
+                        cssClass: 'btn btn_small preferred',
+                        thisOnClick: () => {
+							const dbQuery = query(collection(getFirestore(), 'routes'));
+							onSnapshot(dbQuery, (querySnapshot) => {
+							querySnapshot.forEach((doc) => {
+								if(doc.data().napakboard === globals.board) {
+									deleteDoc(doc.ref)
+									}
+								});
+							});
+                            modalWindow.close();
+                        }
+                    })
+                }],
+            });
+            mother.append(modalWindow)
+        }
 
 
         this.updateBoard = ( ) => {
