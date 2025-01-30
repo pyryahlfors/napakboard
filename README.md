@@ -10,7 +10,9 @@ and don´t worry - it´s free.
 - - -
 
 1. Create new firebase project
+
 1.1. Add Firebase to your web app
+
 1.2. Copy auth information and update those into `/js/shared/user.js`
 Should look like this;
 
@@ -26,7 +28,9 @@ Should look like this;
 
 
 2. Enable Firestore
+
 2.1. Create database
+
 2.2. Update database rules;
 
         rules_version = '2';
@@ -41,6 +45,7 @@ Should look like this;
     
 
 3. Enable Authentication 
+
 3.1. Enable Email/Password 
 
 *Firebase is now ready!*
