@@ -103,4 +103,4 @@ You can change the board background by changing the CSS from `css/board.css`
             }
 
 ..or just owerwrite the existing image that is done for my home board. 
-Creating the image is simple; lets say your board dimensions are 18x11, the image should be 19x12 and multiply those which whatever you like, I used 100px - so 1900x1200. The extra row and cols are for the row and col titles (ABC.., 123...)
+Creating the image is simple; lets say your board dimensions are 18x11, the image should be 19x12 and multiply those by what  whatever you like, I used 100px - so 1900x1200. The extra row and cols are for the row and col titles (ABC.., 123...)
