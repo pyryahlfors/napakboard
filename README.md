@@ -1,17 +1,18 @@
 # NapakBoard
+- - -
 NapakBoard is mobile app to store your home wall routes. It can also be used to control leds if you have those installed.
 
-You need to create an firebase project at https://firebase.google.com/
+You need to create an firebase project at `https://firebase.google.com/`
 and don´t worry - it´s free.
 
 
-Firebase
-------------------------------------
+# Firebase
+- - -
 
 1. Create new firebase project
-2. Add Firebase to your web app
-3. Copy auth information and update those into `/js/shared/user.js`
-  Should look like this;
+1.1. Add Firebase to your web app
+1.2. Copy auth information and update those into `/js/shared/user.js`
+Should look like this;
 
             // Your web app's Firebase configuration
             const firebaseConfig = {
@@ -24,9 +25,9 @@ Firebase
             };
 
 
-4. Enable Firestore
-5. Create database
-6. Update database rules;
+2. Enable Firestore
+2.1. Create database
+2.2. Update database rules;
 
         rules_version = '2';
         service cloud.firestore {
@@ -39,16 +40,16 @@ Firebase
         }
     
 
-7. Enable Authentication 
-8. Enable Email/Password 
+3. Enable Authentication 
+3.1. Enable Email/Password 
 
 *Firebase is now ready!*
 
 
 
 
-Web app
-------------------------------------
+# WEB APP
+- - -
 1. Launch it however you like. I use `python3 -h http.server`
 2. Open your browser and head to localhost:8000
     (This app is meant to be used with mobile devices so I strongly recommend to use responsive design mode and resolutions like 375x812px)
