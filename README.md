@@ -9,8 +9,8 @@ Firebase
 ------------------------------------
 
 1. Create new firebase project
-1.1.    Add Firebase to your web app
-1.2.    Copy auth information and update those into `/js/shared/user.js`
+2. Add Firebase to your web app
+3. Copy auth information and update those into `/js/shared/user.js`
   Should look like this;
 
             // Your web app's Firebase configuration
@@ -24,9 +24,9 @@ Firebase
             };
 
 
-2. Enable Firestore
-2.1. Create database
-2.2. Update database rules;
+4. Enable Firestore
+5. Create database
+6. Update database rules;
 
         rules_version = '2';
         service cloud.firestore {
@@ -39,8 +39,8 @@ Firebase
         }
     
 
-3. Enable Authentication 
-3.1. Enable Email/Password 
+7. Enable Authentication 
+8. Enable Email/Password 
 
 *Firebase is now ready!*
 
