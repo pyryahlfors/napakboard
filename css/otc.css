@@ -1,0 +1,207 @@
+.otc-navigation {
+  background: var(--color-black);
+  color: var(--color-white);
+  transform: translateX(100vw);
+  transition: transform 0.3s ease-in-out;
+  position: absolute;
+  top: 0;
+  width: 75vw;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  font-family: Roboto;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  will-change: transform;
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+
+.otc-navigation:after {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background: radial-gradient(circle at 50% 100%,var(--color-theme-accent-1-alpha) 0,transparent 50%);
+  z-index: -1;
+  content: "";
+  pointer-events: none;
+}
+
+.otc-links-container {
+  width: 100%;
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+}
+
+.otc-links-container .sidenav-links {
+  align-self: flex-end;
+  position: relative;
+  color: var(--color-white);
+  margin: 0;
+  font-family: 'IBM Plex Mono';
+  font-size: 12px;
+  font-weight: 300;
+  padding-bottom: var(--padding-base);
+}
+
+.otc-links-container h2 {
+  text-align: center;
+}
+
+.otc-links-container .sidenav-links a {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+  position: relative;
+  text-transform: uppercase;
+  color: var(--color-white);
+  width: 75%;
+  min-width: 200px;
+  margin: 0 auto 0;
+}
+
+.otc-links-container .sidenav-links a:before {
+	content: "→";
+	position: absolute;
+	left: 0;
+	}
+.otc-links-container .sidenav-links a.selected {
+  background: var(--color-theme-accent-1);
+  color: var(--color-black);
+}
+
+.otc-links-container .sidenav-links a span {
+  position: relative;
+}
+
+
+.otc-links-container .sidenav-links form {
+	border-bottom: 1px solid rgba(255,255,255,.5);
+	margin: 20px;
+	padding: 20px 0;
+	text-align:center;
+}
+.logo-container {
+  position: relative;
+  padding: var(--padding-base);
+  text-align: center;
+  color: var(--color-white);
+}
+
+.logo-container .logo {
+  height: 2em;
+  opacity: 0.9;
+}
+
+.logo-container span {
+  font-size: 0.75em;
+  position: absolute;
+  margin-top: 1.75em;
+  white-space: pre;
+}
+
+.login-info,
+.settings {
+  position: relative;
+  color: var(--color-white);
+  margin: 0;
+  font-family: 'IBM Plex Mono';
+  font-size: 12px;
+  font-weight: 300;
+  padding: var(--padding-base);
+  text-align: center;
+  width: 100%;
+}
+
+.login-info h3 {
+  margin: 0 0 10px;
+}
+
+.page-settings h3 {
+  margin: 20px auto 0;
+  text-align: center;
+}
+
+.otc-navigation .on-off-selector {
+  width: 100%;
+}
+
+.otc-navigation .on-off-switch {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.navi-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0);
+
+  z-index: 997;
+  transition: all 300ms ease-in-out;
+  pointer-events: none;
+  height: 100%;
+}
+
+
+body.otc .navi-shadow {
+  background: rgba(0, 0, 0, 0.75);
+  pointer-events: all;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+
+}
+
+
+
+.sidenav-links {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+}
+
+.otc .otc-navigation {
+  transform: translateX(25vw);
+}
+
+.otc-links-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+
+@media only screen and (min-width: 1024px) and (min-height: 768px) {
+  .otc-navigation {
+    width: 75%;
+    transform: translateX(0);
+    right: -100%;
+    transition: right 300ms ease-in-out;
+
+  }
+
+  .otc .otc-navigation {
+    transform: translateX(0);
+    right: 0;
+  }
+}
+
+
+form[name="boardselect"] ul {
+  flex-direction: column;
+  align-items: start;
+}

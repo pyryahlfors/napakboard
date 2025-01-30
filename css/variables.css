@@ -1,0 +1,77 @@
+:root {
+  --color-theme-background: rgb(28, 29, 31);
+  --color-theme-background-dark: rgb(14,14, 16);
+  --color-theme-background-light: rgba(56, 58,62,1);
+  --color-theme-text: #fff;
+  --color-theme-accent-1: rgb(0,255,203);
+  --color-theme-accent-1-alpha: rgba(0,255,203,.3);
+  --color-theme-accent-1-dim: rgba(0,255,203,.1);
+  --color-theme-accent-1-text: #000;
+  --body-height: 100%;
+  --color-theme-flash: #d8d6b2;
+  --color-theme-redpoint: #dc2c4b;
+  --color-black: #000;
+  --color-black-80: rgba(0,0,0,.8);
+  --color-black-60: rgba(0,0,0,.6);
+  --color-black-40: rgba(0,0,0,.4);
+  --color-black-20: rgba(0,0, 0,.2);
+  --color-white: #fff;
+  --color-white-90: rgba(255,255,255,.9);
+  --color-white-80: rgba(255,255,255,.8);
+  --color-white-60: rgba(255,255,255,.6);
+  --color-white-40: rgba(255,255,255,.4);
+  --color-white-20: rgba(255,255,255,.2);
+  --color-white-10: rgba(255,255,255,.1);
+  --color-white-5: rgba(255,255,255,.05);
+  --color-legend-gray: rgb(128,128,128);
+  --color-legend-yellow: rgb(255,222,0);
+  --color-legend-green: rgb(141,202,100);
+  --color-legend-orange: rgb(255,136,0);
+  --color-legend-red: rgb(241,61,61);
+  --color-legend-blue: rgb(0,117,255);
+  --color-legend-purple: rgb(117,64,222);
+  --color-legend-pink: rgb(255,0,128);
+  --color-legend-black: rgb(32,32,32);
+  --color-legend-white: rgb(2555,32255,255);
+  --color-top: #0f0;
+  --color-intermediate: #4fb1fd;
+  --color-start: #f00;
+  --color-foot: rgb(245,172, 0);
+  --color-warning-bgr: #dc586f;
+  --base-btn-border-radius: 2px;
+  --btn-border-radius: 40px;
+  --font-size-tiny: .5rem;
+  --font-size-small: .75rem;
+  --font-size-base: .875em;
+  --font-size-medium: .75rem;
+  --font-size-bodytext: 1.234rem;
+  --font-size-heading-1: 2rem;
+  --font-size-heading-2: 2rem;
+  --padding-base: 16px;
+  --padding-base-double: 32px;
+  --padding-base-half: 8px;
+  --padding-base-wide: 16px 32px;
+  --padding-base-wide-horizontal: 32px;
+  --padding-base-negative: -16px;
+  --grid-base: 4px;
+  --pinch-to-zoom: 1em
+}
+
+  @media (orientation: portrait) {
+    :root {
+      --font-size-bodytext: 1.234rem; /* 20px - 1rem = 16px */
+    }
+  }
+
+  @media (orientation: landscape) {
+    :root {
+      --font-size-bodytext: 1rem; /* 16px */
+    }
+  }
+
+  @media only screen and (max-width: 320px) {
+    :root {
+      --font-size-bodytext: 1rem; /* 16px */
+      --font-size-heading-1: 1.5rem;
+    }
+  }

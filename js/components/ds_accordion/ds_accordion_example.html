@@ -1,0 +1,89 @@
+<h3>Accordion</h3>
+
+<span class="example-title">Default</span>
+<div class="example-container">
+  <ds-accordion>
+    <ds-accordion--item title="#1 - Accordion item">
+      <p>Item content here</p>
+    </ds-accordion--item>
+
+    <ds-accordion--item title="#2 - Accordion item " >
+      <h3>Jes?</h3>
+      <p>Item content here</p>
+    </ds-accordion--item>
+
+    <ds-accordion--item title="#3 - Accordion item ">
+      <p>Item content here</p>  
+    </ds-accordion--item>
+  </ds-accordion>
+</div>
+
+
+<span class="example-title">All open</span>
+<div class="example-container">
+  <ds-accordion open>
+    <ds-accordion--item title="#1 - Accordion item">
+      <p>Item content here</p>
+    </ds-accordion--item>
+
+    <ds-accordion--item title="#2 - Accordion item" >
+      <h3>Jes?</h3>
+      <p>Item content here</p>
+    </ds-accordion--item>
+
+    <ds-accordion--item title="#3 - Accordion item ">
+      <p>Item content here</p>  
+    </ds-accordion--item>
+  </ds-accordion>
+</div>
+
+<span class="example-title">Single open</span>
+<div class="example-container">
+  <ds-accordion single>
+    <ds-accordion--item open title="Accordion item">
+      <p>Item content here</p>      
+      <p>Item content here</p>
+    </ds-accordion--item>
+
+    <ds-accordion--item title="Accordion item" >
+      <h3>Jes?</h3>
+      <p>Item content here</p>
+    </ds-accordion--item>
+
+    <ds-accordion--item title="Accordion item">
+      <p>Item content here</p>  
+      <p>Item content here</p>
+      <p>Item content here</p>
+      <p>Item content here</p>
+    </ds-accordion--item>
+
+    <ds-accordion--item title="Accordion item">
+      <p>Item content here</p>
+      <p>Item content here</p>
+      <p>Item content here</p>  
+    </ds-accordion--item>
+  </ds-accordion>
+</div>
+
+
+<span class="example-title">Accordion item open</span>
+<div class="example-container">
+  <ds-accordion>
+    <ds-accordion--item open title="#1 - Accordion item">
+      <p>Item content here</p>
+    </ds-accordion--item>
+
+    <ds-accordion--item title="#2 - Accordion item">
+      <p>Item content here</p>
+    </ds-accordion--item>
+  </ds-accordion>
+</div>
+
+
+<span class="example-title">onClick</span>
+<div class="example-container">
+  <ds-accordion>
+    <ds-accordion--item title="Click me" onclick="( () => { console.log(this); } )()">
+      <p>Check console</p>
+    </ds-accordion--item>
+</div>

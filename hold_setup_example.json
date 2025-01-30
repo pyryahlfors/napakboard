@@ -1,0 +1,23 @@
+{
+   "characteristics": {
+     "height": 18,
+     "width": 11,
+     "adjustable": false 
+   },
+   "holdSetup": {
+     "a1": {
+       "hold": "moon-99",
+       "holdColor": "#000",
+       "rotation": 85,
+       "scaleX": 120,
+       "offsetY": 0,
+       "offsetX": -10
+     },
+     "b1": {
+       "holdColor": "#000"
+     },
+     "k18" : {
+      "holdColor": "#08f"
+     }
+   }
+ }

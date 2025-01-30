@@ -1,0 +1,88 @@
+footer {
+    background: var(--color-theme-color0);
+    color: var(--color-white-dim);
+    z-index: 2;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }
+  
+footer > nav {
+  height: 40px;
+  padding: 0 var(--padding-base);
+  font-family: 'Roboto';
+  font-size: var(--font-size-bodytext);
+  text-transform: uppercase;
+  position: relative;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+footer > nav a.more {
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 40px;
+  position: absolute;
+  right: 0;
+}
+
+footer > nav a.more > span {
+  align-items: center;
+  background: transparent;
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  font-size: var(--font-size-base);
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+footer > nav a.more :hover,
+footer > nav a.more :active,
+footer > nav a.more :focus {
+  background: var(--color-theme-accent-1-alpha);
+  color: var(--color-white);
+}
+
+footer .nav-bottom-links {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-self: center;
+  width: 80%;
+  color: var(--color-white);
+  height: calc( 100% - 8px );
+}
+
+footer .nav-bottom-links .link-container {
+  font-size: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  width: 25%;
+}
+
+footer .nav-bottom-links .link-container.disabled {
+  opacity: 0.4;
+}
+
+footer .nav-bottom-links .link-container svg {
+  height: var(--padding-base);
+  stroke: var(--color-white);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+footer .nav-bottom-links .link-container:active svg,
+footer .nav-bottom-links .link-container.active svg {
+  stroke: var(--color-theme-accent-1);
+}
+
+footer .nav-bottom-links .keep-selected,
+footer .nav-bottom-links .link-container.keep-selected svg {
+  color: var(--color-theme-accent-1);
+  stroke: var(--color-theme-accent-1);
+}

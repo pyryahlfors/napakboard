@@ -1,0 +1,67 @@
+.legend-grade {
+  background: #0f8;
+  color: #fff;
+  width: 5ch;
+  display: inline-flex;
+  border-radius: var(--padding-base);
+  justify-content: center;
+  align-items: center;
+  font-size: var(--font-size-small);
+  height: 1rem;
+  line-height: 1rem;
+}
+
+.legend-grade.gray {
+  background: rgb(128, 128, 128);
+  color: #fff;
+}
+.legend-grade.yellow {
+  background: rgb(255, 222, 0);
+  color: #000;
+}
+.legend-grade.green {
+  background: rgb(64, 222, 61);
+}
+.legend-grade.orange {
+  background: rgb(255, 128, 0);
+}
+.legend-grade.red {
+  background: rgb(255, 0, 0);
+}
+.legend-grade.blue {
+  background: rgb(32, 64, 222);
+}
+.legend-grade.purple {
+  background: rgb(255, 0, 255);
+}
+.legend-grade.pink {
+  background: rgb(255, 0, 128);
+}
+.legend-grade.black {
+  background: rgb(32, 32, 32);
+}
+.legend-grade.white {
+  background: rgb(2555, 32255, 255);
+  color: #000;
+}
+
+.legend-ascent {
+  background: var(--color-redpoint);
+  border-radius: 2px;
+  color: var(--color-white);
+  display: inline-block;
+  font-family: 'IBM Plex Mono';
+  font-size: 0.75rem;
+  font-weight: 400;
+  height: 1rem;
+  line-height: 1rem;
+  padding: 0 3px;
+  min-width: 2ch;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.legend-ascent.flash {
+  background: var(--color-flash);
+  color: var(--color-black)
+}

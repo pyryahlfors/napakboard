@@ -1,0 +1,41 @@
+.ds-accordion {
+    color: var(--theme-text)
+}
+
+.ds-accordion h2 {
+    margin: 0;
+}
+.ds-accordion__item {
+    box-shadow: 0 1px var(--theme-color0);
+    padding: 0.5em 0;
+    overflow: hidden;
+    max-height: unset;
+}
+
+.ds-accordion__content{
+    transition : all 300ms ease-in-out;
+    overflow: hidden;
+    height: auto;
+}
+
+.ds-accordion__item--hidden .ds-accordion__content{
+    height: 0;
+}
+
+
+
+.ds-accordion__header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.ds-accordion__item-indicator {
+    transition: all 300ms ease-out;
+    will-change: transform;
+}
+.ds-accordion__item--hidden .ds-accordion__item-indicator {
+    transform: rotate(180deg);
+}

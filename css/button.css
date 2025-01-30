@@ -1,0 +1,98 @@
+.btn {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:Roboto;
+  font-size:var(--font-size-base);
+  font-weight:500;
+  color:var(--color-black);
+  background:var(--color-theme-accent-1);
+  -webkit-tap-highlight-color:var(--color-theme-accent-1);
+  line-height:2rem;
+  border-radius:var(--btn-border-radius);
+  position:relative;
+  transition:all .3s ease-in-out;
+  text-transform:uppercase;
+  cursor:pointer;
+  border:none;
+  padding:0 var(--padding-base)
+}
+
+.btn.disabled,
+.btn:disabled {
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.btn_white {
+  background: var(--color-theme-accent-1-alpha);
+  color: var(--color-white);
+  -webkit-tap-highlight-color: var(--color-white);
+  position: relative;
+}
+
+.btn_small {
+  width: max-content;
+  padding: 0 var(--padding-base);
+  border-radius: 100px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--color-theme-accent-1);
+  color: var(--color-white);
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  margin: 0 var(--padding-base-half);
+  border: none;
+}
+
+.btn_small.preferred {
+  background: var(--color-theme-accent-1);
+  color: var(--color-black);
+}
+
+.btn_tiny {
+  background: var(--color-theme-accent-1);
+  color: var(--color-black);
+  display: inline-flex;
+  border-radius: var(--padding-base);
+  justify-content: center;
+  align-items: center;
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  line-height: 1rem;
+  width: auto;
+  padding: 0 var(--padding-base-half);
+}
+
+.btn_tiny:hover,
+.btn_tiny:active {
+  box-shadow: 0 0 0 2px var(--color-theme-accent-1);
+}
+
+.btn svg {
+  height: 100%;
+  position: relative;
+  left: 0;
+  margin-right: var(--padding-base-half);
+}
+
+.btn img {
+  position: absolute;
+  left: 0;
+  margin-left: var(--padding-base-half);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.grade-list-container .btn_dec {
+  margin-right: 5px;
+}
+
+.btn:active {
+  animation: hoverfx 300ms ease-in-out;
+}
+
+
+.btn.destructive {
+  box-shadow: 0 0 0 1px var(--color-legend-pink);
+  background: var(--color-legend-pink);
+}

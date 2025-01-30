@@ -1,0 +1,111 @@
+.status-ticker {
+    background: var(--color-black);
+    height: 40px;
+    display: block;
+    justify-content: space-between;
+    color: var(--color-white);
+    position: relative;
+    overflow: hidden;
+    grid-area: header;
+  }
+  
+.status-ticker-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    animation : 0.3s scrollToCenter ease-in-out forwards;
+    transform: translateY(-40px);
+  }
+
+.from-bottom .status-ticker-content {
+  animation : 0.3s scrollToCenteFromBottom ease-in-out forwards;
+}
+
+.status-ticker.show-message.network .status-ticker-content {
+  animation : 0.3s scrollToBottom ease-in-out forwards;
+}
+
+.status-ticker.show-message.standard .status-ticker-content {
+  animation : 0.3s scrollToTop ease-in-out forwards;
+}
+
+.status-ticker .status-ticker-content .standard,
+.status-ticker .status-ticker-content .current,
+.status-ticker .status-ticker-content .network {
+    width: 100vw;
+    margin: 0 auto 0;
+    display: flex;
+    height: 40px;
+    justify-content: center;  
+    align-items: center;
+    position: relative;
+  }
+  
+.status-ticker div.network {
+  background: var(--color-theme-accent-1);
+  color: var(--color-black)
+}
+
+.status-ticker div.standard {
+  background: var(--color-theme-accent-1-dim);
+  color: var(--color-white);
+}
+
+.status-ticker div.network H3, 
+.status-ticker div.standard H3 {
+  font-weight: 300;
+}
+
+.status-ticker .status-ticker-content .current {
+  justify-content: space-between;
+}
+
+.status-ticker .status-ticker-content .current h3 {
+  width: 100%;
+  justify-content: center;
+}
+.status-ticker .status-ticker-content .current .prevnext{
+  display: flex;
+  width: 40px;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+
+@keyframes scrollToBottom {
+  100% {transform: translateY(-80px);}
+}
+
+@keyframes scrollToTop {
+  100% {transform: translateY(0px);}
+}
+
+@keyframes scrollToCenter {
+  0% {transform: translateY(0px);}
+  100% {transform: translateY(-40px);}
+}
+
+@keyframes scrollToCenteFromBottom {
+  0% {transform: translateY(-80px);}
+  100% {transform: translateY(-40px);}
+}
+
+.status-ticker .status-ticker-content div.toggle {
+  height: 40px;
+  width: 40px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 40px;
+  position: absolute;
+  right: 0;
+  }
+  
+
+.status-ticker h3 {
+  display: flex;
+}
