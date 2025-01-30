@@ -1,5 +1,4 @@
 # NapakBoard
-- - -
 NapakBoard is mobile app to store your home wall routes. It can also be used to control leds if you have those installed.
 
 You need to create an firebase project at `https://firebase.google.com/`
@@ -7,8 +6,6 @@ and don´t worry - it´s free.
 
 
 # Firebase
-- - -
-
 1. Create new firebase project
 
 1.1. Add Firebase to your web app
@@ -54,7 +51,6 @@ Should look like this;
 
 
 # WEB APP
-- - -
 1. Launch it however you like. I use `python3 -h http.server`
 2. Open your browser and head to localhost:8000
     (This app is meant to be used with mobile devices so I strongly recommend to use responsive design mode and resolutions like 375x812px)
@@ -94,3 +90,17 @@ Now you are good to go and start adding routes and tick climbed ones.
 Just navigate back to `localhost:8000/` <3
 
 One more thing! You can change your username from bottom navi. Tap `→` and off the canvas menu opens. Tap `PROFILE` button and change your name to whatever. This name is shown in the route listing and has no other use but is nice if you have multiple users on your board.
+
+# Customising
+You can change the board background by changing the CSS from `css/board.css`
+
+            
+            /* Change the background image */
+            .board-container  {
+              background-image: url("../images/bgr_pcb.jpg");
+              background-size: cover;
+              position: relative;
+            }
+
+..or just owerwrite the existing image that is done for my home board. 
+Creating the image is simple; lets say your board dimensions are 18x11, the image should be 19x12 and multiply those which whatever you like, I used 100px - so 1900x1200. The extra row and cols are for the row and col titles (ABC.., 123...)
