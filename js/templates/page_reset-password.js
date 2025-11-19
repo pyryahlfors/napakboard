@@ -11,7 +11,7 @@ class viewResetPassword {
     let resetFormContainer = dce({el: 'SECTION', cssClass: 'reset-form'});
 
     let logoHolder = dce({el: 'div', cssClass: 'logo-holder'});
-    let napakLogo = dce({el: 'IMG', source: 'images/n_white_on_black.svg', cssStyle: 'width: 50%; max-width: 175px;'});
+    let napakLogo = dce({el: 'IMG', source: '/projects/napakboard/images/n_white_on_black.svg', cssStyle: 'width: 50%; max-width: 175px;'});
 
 
     let pageTitle = dce({el: 'h3', cssClass: 'mb', content: 'Forgot password'});

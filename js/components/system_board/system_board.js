@@ -41,7 +41,7 @@ class systemBoard {
         this.getHoldSetup = () => {
             this.holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 0 0"]]});
 
-            fetch('images/holds.svg?update=true')
+            fetch('/projects/napakboard/images/holds.svg?update=true')
                 .then(r => r.text())
                 .then(text => {
                     this.holdImages.innerHTML = text;

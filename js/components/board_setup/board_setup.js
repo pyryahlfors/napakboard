@@ -29,7 +29,7 @@ class systemBoard {
         this.getHoldSetup = () => {
             this.holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 
-            fetch('images/holds.svg?update=true')
+            fetch('/projects/napakboard/images/holds.svg?update=true')
                 .then(r => r.text())
                 .then(text => {
                     this.holdImages.innerHTML = text;
@@ -120,7 +120,7 @@ class systemBoard {
 								let holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 								let holdsTransformContainer = dce({el: 'div'});
 								let holdsContainer = dce({el: 'div', cssStyle: 'display: flex; flex-wrap: wrap; justify-content: center' });
-								fetch('images/holds.svg?update=true')
+								fetch('/projects/napakboard/images/holds.svg?update=true')
 								.then(r => r.text())
 								.then(text => {
 									holdImages.innerHTML = text;

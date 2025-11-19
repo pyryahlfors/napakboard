@@ -12,7 +12,7 @@ class viewSignup {
     let signupFormContainer = dce({el: 'SECTION', cssClass: 'signup-form'});
 
     let logoHolder = dce({el: 'div', cssClass: 'logo-holder'});
-    let napakLogo = dce({el: 'IMG', source: 'images/n_white_on_black.svg', cssStyle: 'width: 50%; max-width: 175px;'});
+    let napakLogo = dce({el: 'IMG', source: '/projects/napakboard/images/n_white_on_black.svg', cssStyle: 'width: 50%; max-width: 175px;'});
 
     let newAccount = dce({el: 'h3', cssClass: 'mb', content: 'Create new account'});
     let signupForm = dce({el: 'FORM', attrbs: [['name', 'napak-login']]});
