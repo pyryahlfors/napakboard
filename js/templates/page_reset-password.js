@@ -11,7 +11,7 @@ class viewResetPassword {
     let resetFormContainer = dce({el: 'SECTION', cssClass: 'reset-form'});
 
     let logoHolder = dce({el: 'div', cssClass: 'logo-holder'});
-    let napakLogo = dce({el: 'IMG', source: '/images/n_white_on_black.svg', cssStyle: 'width: 50%; max-width: 175px;'});
+    let napakLogo = dce({el: 'IMG', source: 'napakboard/images/n_white_on_black.svg', cssStyle: 'width: 50%; max-width: 175px;'});
 
 
     let pageTitle = dce({el: 'h3', cssClass: 'mb', content: 'Forgot password'});
@@ -39,7 +39,7 @@ class viewResetPassword {
       }).catch(function(error) {
         resetError.innerHTML = error.code + " " + error.message;
       });
-    } 
+    }
 
     resetForm.addEventListener('submit', (e) => {
       e.preventDefault();
