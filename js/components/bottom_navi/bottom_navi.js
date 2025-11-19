@@ -10,7 +10,7 @@ class bottomNavi {
         // Load icons
         this.icons = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 
-        fetch('napakboard/images/icons.svg')
+        fetch('images/icons.svg')
             .then(r => r.text())
             .then(text => {
                 this.icons.innerHTML = text;

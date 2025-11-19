@@ -11,7 +11,7 @@ class viewLogin {
     let loginFormContainer = dce({el: 'SECTION', cssClass: 'login-form'});
 
     let logoHolder = dce({el: 'div', cssClass: 'logo-holder'});
-    let napakLogo = dce({el: 'IMG', source: 'napakboard/images/n_white_on_black.svg', cssStyle: 'width: 50%; max-width: 175px;'});
+    let napakLogo = dce({el: 'IMG', source: 'images/n_white_on_black.svg', cssStyle: 'width: 50%; max-width: 175px;'});
     let loginTitle = dce({el: 'h3', cssClass: 'mb', content: 'Login'});
     let loginForm = dce({el: 'FORM', attrbs: [['name', 'napak-login']]});
     let userEmail = dce({el: 'INPUT', attrbs: [['placeholder', 'email'], ['name', 'email'], ['autocomplete', 'username']]});

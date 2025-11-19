@@ -26,6 +26,8 @@ class systemBoard {
 			id: 'systemBoardSelect',
 			callback: () => {
 				this.boardContainer.className = `board-container ${globals.board.toLowerCase()}`;
+				globals.selectedRoute = null;
+				globals.selectedRouteId = null;
 				this.changeBoard();
 			}
 		});
@@ -39,7 +41,7 @@ class systemBoard {
         this.getHoldSetup = () => {
             this.holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 0 0"]]});
 
-            fetch('napakboard/images/holds.svg?update=true')
+            fetch('images/holds.svg?update=true')
                 .then(r => r.text())
                 .then(text => {
                     this.holdImages.innerHTML = text;
@@ -745,7 +747,7 @@ class systemBoard {
 
             randomize.addEventListener('click', (e)=>{
                 e.preventDefault();
-                document.getElementsByName("routename")[0].value = randomName();
+                routeName.value = randomName();
             }, false)
 
             let setter = new dsInput({label: 'Route setter', attrbs: [
@@ -977,12 +979,13 @@ class systemBoard {
                 });
 
                 (async () => {
-                    const routeRef = doc(this.db, "current", `currentRoute`);
+                    const routeRef = doc(this.db, "current", `currentRoute_${globals.board}`);
 
                     await setDoc( routeRef, {
                         routeData: {holdSetup: holdSetup},
                         routeName: globals.selectedRoute || 'Unsaved route',
                         routeId: globals.selectedRouteId || 'No id',
+						boardId: globals.board
                     });
                 })();
             }
