@@ -854,6 +854,7 @@ class systemBoard {
                         "setter": `${params.setter}`,
                         "setterID": params.setterID,
                         "holdSetup": holdSetup,
+						"napakboard": globals.board,
                         "angle": Number(params.angle),
                     });
 
