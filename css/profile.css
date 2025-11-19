@@ -1,4 +1,5 @@
-.profile-container {
+.profile-container,
+.boards-container {
     display: flex;
     align-items: center;
     padding: var(--padding-base);

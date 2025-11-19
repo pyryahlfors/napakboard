@@ -33,7 +33,7 @@
   font-family: 'IBM Plex Mono';
   font-weight: 300;
 }
-  
+
 .session-tick-container {
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.05);
@@ -43,7 +43,7 @@
   margin: var(--padding-base);
   font-size: var(--font-size-base);
 }
-  
+
 .session-header {
   padding: var(--padding-base-half);
   background: rgba(255, 255, 255, 0.05);
@@ -72,6 +72,7 @@
 .session-tick > .tick-ascenttype {
   text-transform: capitalize;
   width: 30%;
+  text-align: right;
 }
 
 .session-tick > .tick-ascentscore {

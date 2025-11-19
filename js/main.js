@@ -10,7 +10,8 @@ import viewSignup from './templates/page_signup.js';
 import viewResetPassword from './templates/page_reset-password.js';
 import viewProfile from './templates/page_profile.js';
 import viewHistory from './templates/page_history.js';
-
+import viewBoardSelect
+ from './templates/page_board-select.js';
 import otc from './templates/partials/section_otc.js';
 
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
@@ -26,6 +27,7 @@ const napakBoard = {
         globals.routes.history = viewHistory;
         globals.routes.resetPassword = viewResetPassword
         globals.routes.signup = viewSignup;
+        globals.routes.boardSelect = viewBoardSelect;
 
         const appContainer = dce({el: 'DIV', cssClass : 'app'});
         const appContentContainer = dce({el: 'DIV', cssClass : 'page-content'});
@@ -57,7 +59,7 @@ const napakBoard = {
         }
 
         user.storeObservers.push({key: 'login', callback: loginStatus})
-        
+
         // call ones for autologin
         loginStatus();
 

@@ -82,7 +82,7 @@ h3.bold {font-weight: 600;}
     justify-content:space-between;
 }
 
-.page-boardselect, 
+.page-boardselect,
 .page-profile,
 .page-history {
   height: 100%;
@@ -207,6 +207,11 @@ h3.bold {font-weight: 600;}
   background: var(--color-black);
   border-radius: 4px;
   margin: 0 var(--padding-base-negative);
+}
+
+.login-error {
+	color: var(--color-theme-redpoint);
+	margin: 0 0 var(--padding-base);
 }
 
 .profile-form,

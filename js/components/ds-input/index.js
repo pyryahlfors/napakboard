@@ -16,6 +16,8 @@ class dsInput extends HTMLElement {
   render() {
     let inputContainer = dce({el: 'div'});
     inputContainer.className = this.cssClass || null;
+	inputContainer.setAttribute('style', this.cssStyle || null);
+
 
     // add label
     inputContainer.appendChild(document.createTextNode(`${this.label || ''}`))

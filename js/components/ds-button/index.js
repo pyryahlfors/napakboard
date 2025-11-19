@@ -14,11 +14,12 @@ class dsButton extends HTMLElement {
   render() {
     let button = document.createElement("button");
     button.className = this.params.cssClass || '';
+	button.setAttribute('style', this.params.cssStyle || null);
 
     button.appendChild(document.createTextNode(`${this.params.title || ''}`))
 
     if ( this.params.thisOnClick ) {
-      button.addEventListener('click', () => { 
+      button.addEventListener('click', () => {
           this.params.thisOnClick();
       })
     }

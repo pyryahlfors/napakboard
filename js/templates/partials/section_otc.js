@@ -41,7 +41,7 @@ class otc {
       });
     }, false)
 
-    // Listen and update details when login/logout. 
+    // Listen and update details when login/logout.
     let loginStatus = () => {
       let userName = getAuth().currentUser.displayName;
       loginInfo.querySelector('H3.username').innerHTML = `Logged in as ${userName} 😻`;
@@ -66,19 +66,25 @@ class otc {
     let sideNavLinks = dce({el: 'SECTION', cssClass: 'sidenav-links'});
 
     let btnHistory = dce({el: 'A', content: 'History' });
-
     btnHistory.addEventListener('click', () => {
       route('history');
       document.body.classList.remove('otc')
     }, false);
 
-  sideNavLinks.append(btnHistory);
+	let btnBoardSelect = dce({el: 'A', content: 'Board Select' });
+    btnBoardSelect.addEventListener('click', () => {
+      route('boardSelect');
+      document.body.classList.remove('otc')
+    }, false);
 
-  otcLinksContainer.append(sideNavLinks);
-  tempContainer.append(loginInfo, otcLinksContainer)
+
+	sideNavLinks.append(btnHistory, btnBoardSelect);
+
+	otcLinksContainer.append(sideNavLinks);
+	tempContainer.append(loginInfo, otcLinksContainer)
 
 
-  container.append(tempContainer);
+	container.append(tempContainer);
 
     this.render = () => {
       return container

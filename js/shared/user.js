@@ -3,6 +3,12 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebas
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
+    apiKey: "AIzaSyCIKa0tKpjQhPynVjNO3sehFmJrGqocyLA",
+    authDomain: "napak-board.firebaseapp.com",
+    projectId: "napak-board",
+    storageBucket: "napak-board.appspot.com",
+    messagingSenderId: "809734457516",
+    appId: "1:809734457516:web:adfea8fe6a0ac8c9983709"
   };
 
 

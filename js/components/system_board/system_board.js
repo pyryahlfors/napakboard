@@ -14,11 +14,25 @@ import dsLegend from '../ds-legend/index.js';
 
 class systemBoard {
     constructor( ) {
+		console.log(globals.board)
         this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper'});
-        this.boardContainer = dce({el: 'div', cssClass:`board-container`});
+        this.boardContainer = dce({el: 'div', cssClass:`board-container ${globals.board.toLowerCase()}`});
         this.holdTypes = ['intermediate', 'foot', 'start', 'top'];
         this.db = getFirestore();
 
+		storeObserver.add({
+			store: globals,
+			key: 'board',
+			id: 'systemBoardSelect',
+			callback: () => {
+				this.boardContainer.className = `board-container ${globals.board.toLowerCase()}`;
+				this.changeBoard();
+			}
+		});
+
+		this.changeBoard = () => {
+            this.loadBoardSetup();
+        }
 /**
  * Get holds
  */
@@ -44,7 +58,6 @@ class systemBoard {
 
             this.boardContainer.style.height = `${(this.boardHeight + 1) * cellSize}px`;
             this.boardContainer.style.width= `${(this.boardWidth + 1) * cellSize}px`;
-            this.boardContainer.className = `board-container`;
 
 
             let oldSheet = document.body.querySelector("#napakgrid");
@@ -153,8 +166,8 @@ class systemBoard {
             this.ctx = this.setupCanvas.getContext("2d");
 
             // Don't change these
-            this.holdSize = 30; 
-            this.cellSize = 40; 
+            this.holdSize = 30;
+            this.cellSize = 40;
 
             this.setupCanvas.width = this.holdSize * ( this.boardWidth +1 ) * window.devicePixelRatio;
             this.setupCanvas.height = this.holdSize * (this.boardHeight +1 )* window.devicePixelRatio;
@@ -260,8 +273,8 @@ class systemBoard {
 
 // Get setup from firebase
             ( async () => {
-                const docRef = doc(this.db, "boardSetup", 'napakboard');
-                const docSnap = await getDoc(docRef);
+				const docRef = doc(this.db, "boardSetup", globals.board);
+				const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists() && docSnap.data().boardSetup ) {
 
@@ -330,11 +343,13 @@ class systemBoard {
             const dbQuery = query(collection(getFirestore(), 'routes'));
             onSnapshot(dbQuery, (querySnapshot) => {
             const routes = [];
-            querySnapshot.forEach((doc) => {
-                let routeData = doc.data();
-                routeData.id = doc.id;
-                routes.push(routeData);
-            });
+			querySnapshot.forEach((doc) => {
+				let routeData = doc.data();
+				if(routeData.napakboard === globals.board) {
+					routeData.id = doc.id;
+					routes.push(routeData);
+				}
+			});
 
             globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
             globals.sortedRoutes = globals.boardRoutes;
@@ -696,10 +711,42 @@ class systemBoard {
         this.save = ( params ) => {
             let saveDialog = dce({el:'FORM', cssStyle: 'padding: 10px 0'});
 
-            let routeName = new dsInput({label: 'Route name', attrbs: [
-                ['placeholder', ''],
-                ['name', 'routename']
-            ]});
+           const names = [["Funky", "Stinky", "Dusty", "Spicy", "Slippery", "Gnarly", "Chunky", "Gritty", "Wobbly", "Crispy", "Spooky", "Feisty", "Sticky", "Groovy", "Rowdy", "Wild", "Sketchy", "Crunchy", "Pumpy", "Greasy"],
+                ["crimp", "sloper", "jug", "pinch", "heelhook", "toe", "finger", "forearms", "feet", "elbows", "dyno", "hangboard", "mantle", "arete", "pocket", "ledge", "volume", "crux", "beta", "campus", "ass"],
+                [ "fest", "party", "mayhem", "madness", "parade", "circus", "riot", "fiesta", "meltdown", "jam", "explosion", "showdown", "shuffle", "brawl", "derby", "hustle", "grind", "saga", "odyssey", "storm", "fuck", "shit"]
+            ];
+
+            let randomName = () => {
+                let name = "";
+                for (let i = 0; i < names.length; i++) {
+                    const partList = names[i];
+                    const part = partList[Math.floor(Math.random() * partList.length)];
+                    name += `${part} `;
+                }
+                return name;
+            };
+
+            let routeNameContainer = dce({el:'div', cssStyle: 'display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: var(--padding-base)'});
+
+            let routeName = new dsInput({
+                label: 'Route name',
+                attrbs: [
+                    ['placeholder', ''],
+                    ['name', 'routename']
+                ],
+                cssStyle: 'width: 100%;'
+                });
+
+            let randomize = new dsButton({
+                title: 'Randomize',
+                cssClass: 'btn btn_small',
+                cssStyle: 'margin: 0 0 var(--padding-base) var(--padding-base);'
+            });
+
+            randomize.addEventListener('click', (e)=>{
+                e.preventDefault();
+                document.getElementsByName("routename")[0].value = randomName();
+            }, false)
 
             let setter = new dsInput({label: 'Route setter', attrbs: [
                 ['placeholder', ''],
@@ -735,7 +782,8 @@ class systemBoard {
 
             let grade = new dsSelect({label: 'Grade', options: gradeOptions})
 
-            saveDialog.append(routeName, grade, setter, setterid);
+            routeNameContainer.append(routeName, randomize);
+            saveDialog.append(routeNameContainer, grade, setter, setterid);
             if(globals.boardSetup.characteristics.adjustable) {
                 saveDialog.append(angle);
             }
@@ -804,7 +852,7 @@ class systemBoard {
                         "name": `${params.routeName}`,
                         "grade": params.grade,
                         "setter": `${params.setter}`,
-                        "setterID": params.setterID, 
+                        "setterID": params.setterID,
                         "holdSetup": holdSetup,
                         "angle": Number(params.angle),
                     });
@@ -897,9 +945,9 @@ class systemBoard {
                                         const userRef = doc(this.db, "users", getAuth().currentUser.uid);
                                         updateDoc(userRef, { 'ticks': arrayUnion(
                                             {
-                                                'routeId': globals.selectedRouteId, 
+                                                'routeId': globals.selectedRouteId,
                                                 'type': document.forms['tick-form'].tick.value,
-                                                'date': new Date().getTime(), 
+                                                'date': new Date().getTime(),
                                             })}, {merge: true});
                                     })();
 

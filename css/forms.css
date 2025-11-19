@@ -51,11 +51,11 @@ input:focus {
 }
 
 input:invalid:not(:placeholder-shown) {
-  box-shadow: inset 0 0 0 1px var(--color-redpoint);
+  box-shadow: inset 0 0 0 1px var(--color-theme-redpoint);
 }
 
 input:invalid:not(:placeholder-shown):focus {
-  box-shadow: inset 0 0 0 1px var(--color-redpoint), 0 0 5px 0 var(--color-redpoint);
+  box-shadow: inset 0 0 0 1px var(--color--theme-redpoint), 0 0 5px 0 var(--color-theme-redpoint);
 }
 
 .radio-menu UL {

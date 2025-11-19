@@ -8,7 +8,7 @@ import { collection, doc, getFirestore, getDoc, getDocs, setDoc, updateDoc } fro
 class systemBoard {
     constructor( ) {
         this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper'});
-        this.boardContainer = dce({el: 'div', cssClass:'board-container' });
+        this.boardContainer = dce({el: 'div', cssClass:`board-container ${globals.board.toLowerCase()}`});
 
 
 		  storeObserver.add({
@@ -16,7 +16,7 @@ class systemBoard {
 			key: 'board',
 			id: 'systemBoardSelect',
 			callback: () => {
-				this.boardContainer.className = `board-container`;
+				this.boardContainer.className = `board-container ${globals.board.toLowerCase()}`;
 				this.loadBoardSetup();
 			}
 		});
@@ -43,9 +43,9 @@ class systemBoard {
  */
 
 		this.updateSetup = (board) => {
-			console.log(globals.boardSetup)
-			const routeReg = doc(this.db, "boardSetup", 'napakboard');
-			setDoc(routeReg, { 'boardSetup': globals.boardSetup}, {merge: true});
+			console.log(globals.boardSetup);
+			const routeReg = doc(this.db, "boardSetup", globals.board);
+			updateDoc(routeReg, { 'boardSetup': globals.boardSetup}, {merge: true});
 			alert('setup updated')
 		}
 
@@ -58,8 +58,6 @@ class systemBoard {
 
 			this.boardContainer.style.height = `${(this.boardHeight + 1) * cellSize}px`;
 			this.boardContainer.style.width= `${(this.boardWidth + 1) * cellSize}px`;
-			this.boardContainer.className = `board-container`;
-
 
 			let oldSheet = document.body.querySelector("#napakgrid");
 			if(oldSheet) {
@@ -323,7 +321,7 @@ class systemBoard {
 										remove: new dsButton({
 											title: 'Remove',
 											cssClass: 'btn btn_small destructive',
-											thisOnClick: () => { 
+											thisOnClick: () => {
 												delete globals.boardSetup.holdSetup[hold.id]
 												this.loadBoardSetup(globals.boardSetup);
 												modalWindow.close();
@@ -332,7 +330,7 @@ class systemBoard {
 										cancel: new dsButton({
 											title: 'Cancel',
 											cssClass: 'btn btn_small',
-											thisOnClick: () => { 
+											thisOnClick: () => {
 												modalWindow.close();
 												this.loadBoardSetup(setupTemp);
 											}
@@ -340,7 +338,7 @@ class systemBoard {
 										load: new dsButton({
 											title: 'Set',
 											cssClass: 'btn btn_small preferred',
-											thisOnClick: () => { 
+											thisOnClick: () => {
 												this.loadBoardSetup(globals.boardSetup);
 												modalWindow.close();
 											}
@@ -357,14 +355,14 @@ class systemBoard {
 							holdSetup[hold.id] = holdType;
 							(async () => {
 								const routeRef = doc(this.db, "current", `currentRoute`);
-				
+
 								await setDoc( routeRef, {
 									routeData: {holdSetup: holdSetup},
 									routeName: globals.selectedRoute || 'Hold setup',
 									routeId: globals.selectedRouteId || null,
 								});
 							})();
-							
+
 							}, false)
 						}
 					}
@@ -486,7 +484,7 @@ class systemBoard {
 
 // Get setup from firebase
 			( async () => {
-				const docRef = doc(this.db, "boardSetup", "napakboard");
+				const docRef = doc(this.db, "boardSetup", globals.board);
 				const docSnap = await getDoc(docRef);
 
 				if (docSnap.exists() && docSnap.data().boardSetup ) {

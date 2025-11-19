@@ -46,7 +46,7 @@
 }
 
 .legend-ascent {
-  background: var(--color-redpoint);
+  background: var(--color-theme-redpoint);
   border-radius: 2px;
   color: var(--color-white);
   display: inline-block;
@@ -62,6 +62,6 @@
 }
 
 .legend-ascent.flash {
-  background: var(--color-flash);
+  background: var(--color-theme-flash);
   color: var(--color-black)
 }
