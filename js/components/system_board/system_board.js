@@ -14,7 +14,6 @@ import dsLegend from '../ds-legend/index.js';
 
 class systemBoard {
     constructor( ) {
-		console.log(globals.board)
         this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper'});
         this.boardContainer = dce({el: 'div', cssClass:`board-container ${globals.board.toLowerCase()}`});
         this.holdTypes = ['intermediate', 'foot', 'start', 'top'];

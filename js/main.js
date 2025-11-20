@@ -65,7 +65,7 @@ const napakBoard = {
 
         getAuth().onAuthStateChanged(function(authUser) {
           if( authUser ) {
-            user.name.displayName = authUser.displayName;
+			user.name.displayName = authUser.displayName;
             user.name.id = authUser.uid;
             user.login.isLoggedIn = true;
 

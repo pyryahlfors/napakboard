@@ -3,6 +3,7 @@ import { dce, storeObserver } from '../../shared/helpers.js';
 import { route } from '../../shared/route.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 import { user } from '../../shared/user.js';
+import { globals } from '../../shared/globals.js';
 
 class otc {
   constructor() {
@@ -46,17 +47,26 @@ class otc {
       let userName = getAuth().currentUser.displayName;
       loginInfo.querySelector('H3.username').innerHTML = `Logged in as ${userName} 😻`;
       updateProfile.classList.add('hidden');
-
-	let isAdmin = getAuth().currentUser ? getAuth().currentUser.admin : false;
-	if(isAdmin && !adminCheck){
-		adminCheck = true;
-		let btnSetup = dce({el: 'A', cssStyle: 'color: var(--color-theme-redpoint); background: var(--color-black);', content: 'Board Setup' });
-		btnSetup.addEventListener('click', () => {
-			document.location.href = "?setup";
-			}, false);
-		sideNavLinks.append(btnSetup);
-		}
     }
+
+	const showAdminLinks = () => {
+		let isAdmin = getAuth().currentUser ? getAuth().currentUser.uid === globals.boardSetup.owner : false;
+		if(isAdmin){
+			if(!otcLinksContainer.querySelector('.sidenav-links .btn-admin')){
+				let btnSetup = dce({el: 'A',cssClass: 'btn-admin', cssStyle: 'color: var(--color-theme-redpoint); background: var(--color-black);', content: 'Board Setup' });
+				btnSetup.addEventListener('click', () => {
+					document.location.href = "?setup";
+					}, false);
+				sideNavLinks.append(btnSetup);
+				}
+			}
+		else {
+			let adminButton = otcLinksContainer.querySelector('.sidenav-links .btn-admin');
+			if(adminButton){
+				adminButton.parentNode.removeChild(adminButton);
+				}
+			}
+		}
 
     storeObserver.add({
       store: user,
@@ -70,6 +80,13 @@ class otc {
       key: 'name',
       id: 'userDetails',
       callback: loginStatus
+    });
+
+	storeObserver.add({
+      store: globals,
+      key: 'boardSetup',
+      id: 'checkBoardOwner',
+      callback: showAdminLinks
     });
 
     let tempContainer = dce({el: 'DIV', cssStyle: 'display: flex; flex-direction: column'});

@@ -32,6 +32,7 @@ class viewHistory {
 		let userScore = 0;
 		let routeCount = 0;
 		let userID = getAuth().currentUser.uid;
+		console.log(userID);
 		const docRef = doc(getFirestore(), "users", userID);
 		const docSnap = await getDoc(docRef);
 
