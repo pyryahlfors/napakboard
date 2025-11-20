@@ -1,5 +1,5 @@
 class dsLegend extends HTMLElement {
-  constructor( { 
+  constructor( {
     title = '',
     type = 'grade',
     cssClass = ''
@@ -14,7 +14,7 @@ class dsLegend extends HTMLElement {
 
     let legendStyles = document.createElement("link")
     legendStyles.setAttribute("rel", "stylesheet");
-    legendStyles.setAttribute("href", `/js/components/ds-legend/ds_legend.css`); //?disableCache=${new Date().getTime()}`);
+    legendStyles.setAttribute("href", `./js/components/ds-legend/ds_legend.css`); //?disableCache=${new Date().getTime()}`);
 
     this.shadow.append(legendStyles);
 
@@ -34,7 +34,7 @@ class dsLegend extends HTMLElement {
     let buttonClasses = [
       `legend-${this.type}`,
       this.cssClass
-      ]; 
+      ];
 
       button.classList.add(...buttonClasses);
 
