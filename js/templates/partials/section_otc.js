@@ -7,7 +7,7 @@ import { user } from '../../shared/user.js';
 class otc {
   constructor() {
     let container = dce({el: 'DIV', cssClass: 'otc-navigation'});
-
+	let adminCheck = false;
     let otcLinksContainer = dce({el: 'DIV', cssClass: 'otc-links-container'});
 
     let loginInfo = dce({el: 'DIV', cssClass: 'login-info mb'});
@@ -46,6 +46,16 @@ class otc {
       let userName = getAuth().currentUser.displayName;
       loginInfo.querySelector('H3.username').innerHTML = `Logged in as ${userName} 😻`;
       updateProfile.classList.add('hidden');
+
+	let isAdmin = getAuth().currentUser ? getAuth().currentUser.admin : false;
+	if(isAdmin && !adminCheck){
+		adminCheck = true;
+		let btnSetup = dce({el: 'A', cssStyle: 'color: var(--color-theme-redpoint); background: var(--color-black);', content: 'Board Setup' });
+		btnSetup.addEventListener('click', () => {
+			document.location.href = "?setup";
+			}, false);
+		sideNavLinks.append(btnSetup);
+		}
     }
 
     storeObserver.add({
@@ -76,7 +86,6 @@ class otc {
       route('boardSelect');
       document.body.classList.remove('otc')
     }, false);
-
 
 	sideNavLinks.append(btnHistory, btnBoardSelect);
 

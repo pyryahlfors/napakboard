@@ -214,6 +214,11 @@ h3.bold {font-weight: 600;}
 	margin: 0 0 var(--padding-base);
 }
 
+.boards-container {
+    display: flex;
+    align-items: flex-end;
+}
+
 .profile-form,
 .board-select-form {
   margin: 0;

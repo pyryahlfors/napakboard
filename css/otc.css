@@ -72,7 +72,7 @@
 .otc-links-container .sidenav-links a:before {
 	content: "→";
 	position: absolute;
-	left: 0;
+	left: 8px;
 	}
 .otc-links-container .sidenav-links a.selected {
   background: var(--color-theme-accent-1);

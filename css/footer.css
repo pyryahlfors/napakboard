@@ -1,12 +1,12 @@
 footer {
-    background: var(--color-theme-color0);
+    background: var(--color-theme-background-dark);
     color: var(--color-white-dim);
     z-index: 2;
     position: absolute;
     bottom: 0;
     width: 100%;
   }
-  
+
 footer > nav {
   height: 40px;
   padding: 0 var(--padding-base);
