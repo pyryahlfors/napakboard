@@ -746,7 +746,7 @@ class systemBoard {
 
             randomize.addEventListener('click', (e)=>{
                 e.preventDefault();
-                routeName.value = randomName();
+				 document.querySelector('input[name="routename"]').value = randomName();
             }, false)
 
             let setter = new dsInput({label: 'Route setter', attrbs: [
@@ -804,7 +804,7 @@ class systemBoard {
                         cssClass: 'btn btn_small preferred',
                         thisOnClick: () => {
                             this.validateAndSave({
-                                routeName: routeName.value,
+                                routeName: document.querySelector('input[name="routename"]').value,
                                 setter: setter.value,
                                 setterID: setterid.value,
                                 grade: grade.value,
@@ -835,6 +835,7 @@ class systemBoard {
             });
 
             let routeReady = true;
+
 
             if(params.routeName === "" || params.setter === "") {
                 alert('Route name or setter name missing');
