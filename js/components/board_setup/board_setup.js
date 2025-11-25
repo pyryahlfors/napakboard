@@ -532,15 +532,15 @@ class systemBoard {
                         title: 'Confirm',
                         cssClass: 'btn btn_small preferred',
                         thisOnClick: () => {
-							( async () => {
-								const querySnapshot = await getDocs(collection(getFirestore(), "routes"));
-								querySnapshot.forEach((doc) => {
-									updateDoc(doc.ref, {'archived': true})
+							const dbQuery = query(collection(getFirestore(), 'routes'));
+							onSnapshot(dbQuery, (querySnapshot) => {
+							querySnapshot.forEach((doc) => {
+								if(doc.data().napakboard === globals.board) {
+									deleteDoc(doc.ref)
+									}
 								});
-							})();
-
-							alert('Routes archived');
-							modalWindow.close();
+							});
+                            modalWindow.close();
                         }
                     })
                 }],

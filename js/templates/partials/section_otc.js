@@ -55,7 +55,7 @@ class otc {
 			if(!otcLinksContainer.querySelector('.sidenav-links .btn-admin')){
 				let btnSetup = dce({el: 'A',cssClass: 'btn-admin', cssStyle: 'color: var(--color-theme-redpoint); background: var(--color-black);', content: 'Board Setup' });
 				btnSetup.addEventListener('click', () => {
-					document.location.href = "?setup";
+					route('setup');
 					}, false);
 				sideNavLinks.append(btnSetup);
 				}

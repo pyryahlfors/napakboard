@@ -42,6 +42,7 @@
   text-transform: uppercase;
   margin: 0 var(--padding-base-half);
   border: none;
+  height: 3em;
 }
 
 .btn_small.preferred {
