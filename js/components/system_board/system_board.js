@@ -108,7 +108,8 @@ class systemBoard {
                                 hold.classList.remove('selected', 'intermediate', 'foot', 'start', 'top');
                                 globals.standardMessage = [...globals.standardMessage, { message: `Removed hold from  route`, timeout: 1 }];
                                 this.updateBoard();
-                        }, false);
+	                        }, false);
+
                             gridCell.addEventListener('mouseup', (e) => {
                                 e.preventDefault();
                                 // prevent adding holds to route
@@ -232,8 +233,8 @@ class systemBoard {
 
                     // ... and then draw it
                     holdCanvasctx.save();
-                    holdCanvasctx.shadowColor = 'rgba(0,0,0,.2)';
-                    holdCanvasctx.shadowBlur = this.holdSize / 4;
+                    holdCanvasctx.shadowColor = 'rgba(0,0,0,.3)';
+                    holdCanvasctx.shadowBlur = this.holdSize / 8;
                     holdCanvasctx.fillStyle = holdColor || '#000';
                     holdCanvasctx.lineWidth = 1;
                     holdCanvasctx.fill(transformHold);
@@ -244,10 +245,10 @@ class systemBoard {
                 // Bolt
                 holdCanvasctx.shadowColor = 'transparent';
                 holdCanvasctx.shadowBlur = 0;
-                holdCanvasctx.arc(holdCanvas.width / 2, holdCanvas.width / 2, 1.5, 0, 2 * Math.PI, false);
+                holdCanvasctx.arc(holdCanvas.width / 2, holdCanvas.width / 2, 2.5, 0, 2 * Math.PI, false);
                 holdCanvasctx.fillStyle = 'rgba(255,255,255,.8)';
                 holdCanvasctx.strokeStyle = 'rgba(0,0,0,.5)';
-                holdCanvasctx.lineWidth = 1;
+                holdCanvasctx.lineWidth = 2;
                 holdCanvasctx.fill();
                 holdCanvasctx.stroke();
 

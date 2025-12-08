@@ -32,7 +32,6 @@ class viewHistory {
 		let userScore = 0;
 		let routeCount = 0;
 		let userID = getAuth().currentUser.uid;
-		console.log(userID);
 		const docRef = doc(getFirestore(), "users", userID);
 		const docSnap = await getDoc(docRef);
 
@@ -49,7 +48,7 @@ class viewHistory {
 			let selectedRoute = routes.find(({ id }) => id === route.routeId);
 			if(selectedRoute && selectedRoute.napakboard === globals.board) {
 				if(route.date && new Date(route.date).toLocaleDateString() !== new Date(currentDate).toLocaleDateString()) {
-				let dateEl = dce({el: 'h3', cssClass: 'mt mb', cssStyle: 'padding: 2px 8px; background: rgba(255,255,255,.2); border-radius: 2px;', content: new Date(route.date).toLocaleDateString("fi-FI", {weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric'})});
+				let dateEl = dce({el: 'h3', cssClass: 'mt mb', cssStyle: 'padding: 2px 8px; background: rgba(255,255,255,.2); border-radius: 2px;', content: new Date(route.date).toLocaleDateString("us-EN", {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'})});
 				tempContainer.appendChild(dateEl);
 				currentDate = route.date;
 				}

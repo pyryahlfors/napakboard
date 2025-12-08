@@ -25,12 +25,12 @@ let globalObjects = {
   storeObservers : [],
   lightsOn: false,
   selectedRoute: null,
-  routeSorting: 'name',
+  routeSorting: 'date',
   boardRoutes: [],
   sortedRoutes: [],
   board: localStorage.getItem("board") || 'Kantti',
   boardAngle: Number(0),
-  sortOrder: 'asc',
+  sortOrder: 'desc',
 
   boardSetupMode : document.location.search.substring(1) === 'setup',
 
