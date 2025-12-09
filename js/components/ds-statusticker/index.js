@@ -4,6 +4,7 @@ import { globals } from '../../shared/globals.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 
 import dsLegend from '../ds-legend/index.js';
+import dsIcon from '../ds-icon/index.js';
 
 class statusTicker {
   constructor(params) {
@@ -27,7 +28,8 @@ class statusTicker {
     messageContainer.appendChild(standardMessage);
 
     let currentTitle = dce({el: 'DIV', cssClass: 'current'});
-    let prevButton = dce({el: 'DIV', cssClass: 'prevnext', content : "﹤"});
+	const prevButton = new dsIcon({icon: 'chevron-back', fill: '#fff', color: "#fff", width: 24, height: 24});
+
     prevButton.addEventListener('click', ()=>{nextPrev(-1)}, false);
 
     let currentTitleContent = dce({el: 'H3', cssStyle: 'display: flex; height: 100%; align-items: center;', content: globals.selectedRoute || 'No route selected'});
@@ -37,7 +39,7 @@ class statusTicker {
       window.mySystemBoard.list();
     }, false);
 
-    let nextButton = dce({el: 'DIV', cssClass: 'prevnext', content : "﹥"});
+	const nextButton = new dsIcon({icon: 'chevron-forward', fill: '#fff', color: "#fff", width: 24, height: 24});
     nextButton.addEventListener('click', ()=>{nextPrev(1)}, false);
 
     currentTitle.append(prevButton, currentTitleContent, nextButton);
