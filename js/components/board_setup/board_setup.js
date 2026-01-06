@@ -5,6 +5,7 @@ import dsButton from '../../components/ds-button/index.js';
 import dsInput from '../../components/ds-input/index.js';
 import { collection, doc, getFirestore, getDoc, getDocs, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 
+
 class systemBoard {
     constructor( ) {
         this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper'});
@@ -304,13 +305,29 @@ class systemBoard {
 
 								colorContainer.append(color);
 
+								/** mirror setup */
+								let mirrorContainer = dce({el: 'div', cssStyle: 'display: flex'});
+								mirrorContainer.append(dce({el: 'h3', cssStyle: 'width: 50%; margin-bottom: 20px;', content: 'Has mirrored counterpart'}));
+
+								let mirror = document.createElement("input");
+								mirror.name="mirror"
+								mirror.style.margin = '0 0 20px' ;
+								mirror.type = 'checkbox';
+								mirror.checked = globals.boardSetup.holdSetup[hold.id]?.mirror || false;
+								mirror.addEventListener('input', (e) => {
+									holdTransform['mirror'] = e.target.checked;
+									updateBoardJSON(hold);
+								}, false);
+								mirrorContainer.append(mirror);
+
 								holdsTransformContainer.append(holdsContainer,
 									rotationContainer,
 									offsetXContainer,
 									offsetYContainer,
 									scaleXContainer,
 									scaleYContainer,
-									colorContainer
+									colorContainer,
+									mirrorContainer
 									)
 
 								let mother = document.querySelector('.app');
@@ -490,7 +507,6 @@ class systemBoard {
 				if (docSnap.exists() && docSnap.data().boardSetup ) {
 					this.drawHolds(fromGlobals ? fromGlobals : docSnap.data().boardSetup);
 				} else {
-
 					// fetch hold setup
 					fetch(`/hold_setup.json?doUpdate=${new Date().getTime()}`)
 					.then(response => response.json())
@@ -532,15 +548,15 @@ class systemBoard {
                         title: 'Confirm',
                         cssClass: 'btn btn_small preferred',
                         thisOnClick: () => {
-							const dbQuery = query(collection(getFirestore(), 'routes'));
-							onSnapshot(dbQuery, (querySnapshot) => {
-							querySnapshot.forEach((doc) => {
-								if(doc.data().napakboard === globals.board) {
-									deleteDoc(doc.ref)
-									}
+							( async () => {
+								const querySnapshot = await getDocs(collection(getFirestore(), "routes"));
+								querySnapshot.forEach((doc) => {
+									updateDoc(doc.ref, {'archived': true})
 								});
-							});
-                            modalWindow.close();
+							})();
+
+							alert('Routes archived');
+							modalWindow.close();
                         }
                     })
                 }],

@@ -196,8 +196,11 @@ class systemBoard {
 
                 let holdCanvasctx = holdCanvas.getContext("2d");
 
-                const { hold, rotation, scaleY, scaleX, holdColor, offsetX, offsetY } = data.holdSetup[holds];
+                const { hold, rotation, scaleY, scaleX, holdColor, offsetX, offsetY, mirror } = data.holdSetup[holds];
 
+				if(mirror) {
+					document.getElementById(holds).classList.add('mirrored');
+				}
                 if(hold || holdColor) {
                     // scale
                     const scaleHold = new Path2D();

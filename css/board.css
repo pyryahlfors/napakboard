@@ -31,6 +31,15 @@
   position: absolute;
 }
 
+.mirrored::before {
+	content: '';
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,.05);
+	border-radius: 3px;;
+}
+
 .board-container .grid-cell.row-name {
   color: #222;
   opacity: 1;
