@@ -566,11 +566,12 @@ class systemBoard {
                         let routeName = dce({el: 'h3', content: routeData.name});
                         let routeDetails = dce({el: 'div'});
                         let routeGrade = new dsLegend({title: globals.grades.font[routeData.grade], type: 'grade', cssClass: globals.difficulty[routeData.grade]})
+                        let routeMirror = new dsLegend({title: 'M', type: 'routeType', cssClass: 'mirror'})
 
                         let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
                         let routeSetter = dce({el: 'div', content: `by ${routeData.setter}`});
                         let routeRepeats = dce({el: 'div', content: (routeData.ticks ? `- ${routeData.ticks.length} repeat${routeData.ticks.length > 1 ? 's' : ''}` : null)});
-                        routeDetails.append(routeGrade, routeAdded, routeSetter, routeRepeats);
+                        routeDetails.append(routeGrade, ((routeData.mirror) ? routeMirror : ''), routeAdded, routeSetter, routeRepeats);
                         routeItem.append(routeName, routeDetails);
                         routeItem.addEventListener('click', () => {
                             let toggleSelected = listDialog.querySelectorAll('.selected');
@@ -830,7 +831,11 @@ class systemBoard {
             let selected = this.boardContainer.querySelectorAll('.selected');
 
             let holdSetup = {};
+			let mirrorCalc = 1;
             selected.forEach( (hold) => {
+				if( !hold.classList.contains('mirrored') ) {
+					mirrorCalc = -1;
+				}
                 let holdType = 'intermediate';
                 if(hold.classList.contains('top')) {holdType = 'top'}
                 if(hold.classList.contains('start')) {holdType = 'start'}
@@ -839,7 +844,6 @@ class systemBoard {
             });
 
             let routeReady = true;
-
 
             if(params.routeName === "" || params.setter === "") {
                 alert('Route name or setter name missing');
@@ -862,6 +866,7 @@ class systemBoard {
                         "holdSetup": holdSetup,
 						"napakboard": globals.board,
                         "angle": Number(params.angle),
+						"mirror": mirrorCalc === 1 ? true : false,
                     });
 
                     if( params.callBack ) {

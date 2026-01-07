@@ -65,3 +65,19 @@
   background: var(--color-theme-flash);
   color: var(--color-black)
 }
+
+.legend-routeType.mirror {
+	border-radius: 2px;
+	display: inline-block;
+	font-family: 'IBM Plex Mono';
+	font-size: 0.75rem;
+	font-weight: 400;
+	height: 1rem;
+	line-height: 1rem;
+	padding: 0 3px;
+	min-width: 2ch;
+	text-align: center;
+	text-transform: uppercase;
+	background-color: var(--color-white);
+	color: var(--color-black);
+}

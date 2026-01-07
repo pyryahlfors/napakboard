@@ -14,7 +14,8 @@ class dsLegend extends HTMLElement {
 
     let legendStyles = document.createElement("link")
     legendStyles.setAttribute("rel", "stylesheet");
-    legendStyles.setAttribute("href", `/projects/napakboard/js/components/ds-legend/ds_legend.css`); //?disableCache=${new Date().getTime()}`);
+//    legendStyles.setAttribute("href", `/projects/napakboard/js/components/ds-legend/ds_legend.css?disableCache=${new Date().getTime()}`);
+    legendStyles.setAttribute("href", `/projects/napakboard/js/components/ds-legend/ds_legend.css?disableCache=1`);
 
     this.shadow.append(legendStyles);
 
