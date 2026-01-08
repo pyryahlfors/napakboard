@@ -56,6 +56,7 @@ class otc {
 				let btnSetup = dce({el: 'A',cssClass: 'btn-admin', cssStyle: 'color: var(--color-theme-redpoint); background: var(--color-black);', content: 'Board Setup' });
 				btnSetup.addEventListener('click', () => {
 					route('setup');
+					document.body.classList.remove('otc')
 					}, false);
 				sideNavLinks.append(btnSetup);
 				}

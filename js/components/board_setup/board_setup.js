@@ -177,7 +177,11 @@ class systemBoard {
 
 								/** rotation */
 								let rotationContainer = dce({el: 'div', cssStyle: 'display: flex; position: relative; z-index: 1'});
-								rotationContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Rotation'}));
+
+								let rotationTitle = dce({el: 'h3', cssStyle: 'width: 50%', content: 'Rotation'});
+								let rotationValue = dce({el: 'span', content: ` (${globals.boardSetup.holdSetup[hold.id]?.rotation || 0}°)`});
+								rotationTitle.append(rotationValue);
+								rotationContainer.append(rotationTitle);
 
 								let rotateHold = new dsInput({
 									attrbs: [
@@ -190,6 +194,7 @@ class systemBoard {
 									oninput: (e) => {
 										holdTransform['rotation'] = Number(e.target.value);
 										updateBoardJSON(hold);
+										rotationTitle.querySelector('span').innerText = ` (${e.target.value}°)`;
 										},
 									onchange: (e) => {}
 								});
@@ -198,7 +203,11 @@ class systemBoard {
 
 								/** Offset X */
 								let offsetXContainer = dce({el: 'div', cssStyle: 'display: flex; position: relative; z-index: 1'});
-								offsetXContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Offset X'}));
+
+								let offsetXTitle = dce({el: 'h3', cssStyle: 'width: 50%', content: 'Offset X'});
+								let offsetXValue = dce({el: 'span', content: ` (${globals.boardSetup.holdSetup[hold.id]?.offsetX || 0})`});
+								offsetXTitle.append(offsetXValue);
+								offsetXContainer.append(offsetXTitle);
 
 								let offsetX = new dsInput({
 									attrbs: [
@@ -211,6 +220,7 @@ class systemBoard {
 									oninput: (e) => {
 										holdTransform['offsetX'] = Number(e.target.value);
 										updateBoardJSON(hold);
+										offsetXTitle.querySelector('span').innerText = ` (${e.target.value})`;
 										},
 										onchange: (e) => {}
 								});
@@ -219,7 +229,11 @@ class systemBoard {
 
 								/** Offset Y */
 								let offsetYContainer = dce({el: 'div', cssStyle: 'display: flex; position: relative; z-index: 1'});
-								offsetYContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Offset Y'}));
+
+								let offsetYTitle = dce({el: 'h3', cssStyle: 'width: 50%', content: 'Offset Y '});
+								let offsetYValue = dce({el: 'span', content: `(${globals.boardSetup.holdSetup[hold.id]?.offsetY || 0})`});
+								offsetYTitle.append(offsetYValue);
+								offsetYContainer.append(offsetYTitle);
 
 								let offsetY = new dsInput({
 									attrbs: [
@@ -232,6 +246,7 @@ class systemBoard {
 									oninput: (e) => {
 										holdTransform['offsetY'] = Number(e.target.value);
 										updateBoardJSON(hold);
+										offsetYTitle.querySelector('span').innerText = ` (${e.target.value})`;
 										},
 										onchange: (e) => {}
 								});
@@ -241,7 +256,11 @@ class systemBoard {
 
 								/** Scale X */
 								let scaleXContainer = dce({el: 'div', cssStyle: 'display: flex'});
-								scaleXContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Scale X'}));
+
+								let scaleXTitle = dce({el: 'h3', cssStyle: 'width: 50%', content: 'Scale X '});
+								let scaleXValue = dce({el: 'span', content: `(${globals.boardSetup.holdSetup[hold.id]?.scaleX / 100|| 0})`});
+								scaleXTitle.append(scaleXValue);
+								scaleXContainer.append(scaleXTitle);
 
 								let scaleX = new dsInput({
 									attrbs: [
@@ -254,6 +273,7 @@ class systemBoard {
 									oninput: (e) => {
 										holdTransform['scaleX'] = Number(e.target.value);
 										updateBoardJSON(hold);
+										scaleXTitle.querySelector('span').innerText = ` (${e.target.value/100})`;
 									},
 									onchange: (e) => {}
 								});
@@ -262,7 +282,11 @@ class systemBoard {
 
 								/** Scale Y */
 								let scaleYContainer = dce({el: 'div', cssStyle: 'display: flex'});
-								scaleYContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Scale Y'}));
+
+								let scaleYTitle = dce({el: 'h3', cssStyle: 'width: 50%', content: 'Scale Y '});
+								let scaleYValue = dce({el: 'span', content: `(${globals.boardSetup.holdSetup[hold.id]?.scaleY / 100|| 0})`});
+								scaleYTitle.append(scaleYValue);
+								scaleYContainer.append(scaleYTitle);
 
 								let scaleY = new dsInput({
 									attrbs: [
@@ -275,6 +299,7 @@ class systemBoard {
 									oninput: (e) => {
 										holdTransform['scaleY'] = Number(e.target.value);
 										updateBoardJSON(hold);
+										scaleYTitle.querySelector('span').innerText = ` (${e.target.value/100})`;
 										},
 										onchange: (e) => {}
 								});
@@ -422,7 +447,11 @@ class systemBoard {
 
 				let holdCanvasctx = holdCanvas.getContext("2d");
 
-				const { hold, rotation, scaleY, scaleX, holdColor, offsetX, offsetY } = data.holdSetup[holds];
+				const { hold, rotation, scaleY, scaleX, holdColor, offsetX, offsetY , mirror} = data.holdSetup[holds];
+
+				if(mirror) {
+					document.getElementById(holds).classList.add('mirrored');
+				}
 
 				if(hold || holdColor) {
 					// scale
