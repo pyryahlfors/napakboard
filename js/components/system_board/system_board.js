@@ -857,6 +857,29 @@ class systemBoard {
 
             if(routeReady) {
                 ( async () => {
+					/** Create mirror route automagically */
+					if(mirrorCalc === 1) {
+						const holdSetupMirror = {};
+						for( let hold in holdSetup ) {
+							let colId = hold.toString().replace(/[0-9]/g, '');
+							let colNbr = hold.toString().replace(/\D/g,'');
+
+							let mirroredHold = `${globals.boardSetup.mirrorCols[colId]}${colNbr}`;
+							holdSetupMirror[mirroredHold] = holdSetup[hold];
+						}
+
+					const newRoute = await addDoc(collection(this.db, "routes"), {
+                        "added": new Date(),
+                        "name": `${params.routeName} (M)`,
+                        "grade": params.grade,
+                        "setter": `${params.setter}`,
+                        "setterID": params.setterID,
+                        "holdSetup": holdSetupMirror,
+						"napakboard": globals.board,
+                        "angle": Number(params.angle),
+						"mirror": mirrorCalc === 1 ? true : false,
+                    });
+					}
                     const newRoute = await addDoc(collection(this.db, "routes"), {
                         "added": new Date(),
                         "name": `${params.routeName}`,

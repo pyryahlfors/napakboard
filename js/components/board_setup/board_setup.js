@@ -579,7 +579,8 @@ class systemBoard {
                         thisOnClick: () => {
 							( async () => {
 								const querySnapshot = await getDocs(collection(getFirestore(), "routes"));
-								querySnapshot.forEach((doc) => {
+								const routesToArchive = querySnapshot.docs.filter(doc => doc.data().napakboard === globals.board );
+								routesToArchive.forEach((doc) => {
 									updateDoc(doc.ref, {'archived': true})
 								});
 							})();
