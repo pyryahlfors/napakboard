@@ -77,3 +77,6 @@ const napakBoard = {
 }
 
 napakBoard.initialize();
+
+
+winfow.addEventListener("devicemotion", function(e) {e.preventDefault()}, false)
