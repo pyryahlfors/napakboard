@@ -72,5 +72,5 @@ let globalObjects = {
 };
 
 const globals = new Proxy(globalObjects, handler);
-
+window.globals = globals;
 export { globals }

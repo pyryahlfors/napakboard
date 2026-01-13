@@ -4,6 +4,7 @@ import systemBoard  from '../components/board_setup/board_setup.js';
 import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
 import statusTicker from '../components/ds-statusticker/index.js';
 import { globals } from '../shared/globals.js';
+import { route } from '../shared/route.js';
 
 class viewSetup {
   constructor() {
@@ -15,6 +16,12 @@ class viewSetup {
     window.mySystemBoard = mySystemBoard;
 
 	let footerNavi = new bottomNavi({options : {
+	      list: {
+    	    title: 'Climb',
+        	icon: 'climb',
+			link: () => {route('board')}
+			},
+
 		save: {
 			title: 'Save',
 			icon: 'save',

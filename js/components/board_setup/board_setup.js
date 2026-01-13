@@ -11,8 +11,7 @@ class systemBoard {
         this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper'});
         this.boardContainer = dce({el: 'div', cssClass:`board-container ${globals.board.toLowerCase()}`});
 
-
-		  storeObserver.add({
+		storeObserver.add({
 			store: globals,
 			key: 'board',
 			id: 'systemBoardSelect',
@@ -396,12 +395,12 @@ class systemBoard {
 							const holdSetup = {};
 							holdSetup[hold.id] = holdType;
 							(async () => {
-								const routeRef = doc(this.db, "current", `currentRoute`);
+								const routeRef = doc(this.db, "current", `currentRoute_${globals.board}`);
 
 								await setDoc( routeRef, {
 									routeData: {holdSetup: holdSetup},
-									routeName: globals.selectedRoute || 'Hold setup',
-									routeId: globals.selectedRouteId || null,
+									routeName: 'Hold setup',
+									routeId: null,
 								});
 							})();
 
@@ -545,12 +544,6 @@ class systemBoard {
 					})
 				}
 			})();
-
-
-
-            if(globals.selectedRouteId) {
-                this.loadRoute(globals.selectedRouteId)
-            }
         }
 
 
