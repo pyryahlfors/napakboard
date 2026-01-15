@@ -59,7 +59,7 @@ class statusTicker {
           currentTitleContent.appendChild(routeGrade)
 
           if ( climbed ) {
-            let climbedIcon = dce({el: 'SPAN', cssStyle: 'background: var(--color-theme-accent-1); color: var(--color-black); display: inline-block; width: 1.25em; height: 1.25em; border-radius: 100%; text-align: center;', content: '✔'});
+            let climbedIcon = dce({el: 'SPAN', cssStyle: 'background: var(--color-theme-accent-1); display: inline-block; width: 0.5em; height: 0.5em; border-radius: 100%; box-shadow: 0 0 0 2px #000; position: relative; left: -5px; top: -5px;'});
             currentTitleContent.appendChild(climbedIcon)
           }
         }

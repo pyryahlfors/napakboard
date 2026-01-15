@@ -554,6 +554,8 @@ class systemBoard {
 
                 // Hide archived routes
                 routes.forEach((routeData) => {
+					let isAdmin = getAuth().currentUser ? getAuth().currentUser.uid === globals.boardSetup.owner : false;
+
                     // exclude user ticks (if selected)
                     if( globals.excludeTicks && routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid) ||
                         routeData.archived
@@ -566,7 +568,7 @@ class systemBoard {
                         let routeName = dce({el: 'h3', content: routeData.name});
                         let routeDetails = dce({el: 'div'});
                         let routeGrade = new dsLegend({title: globals.grades.font[routeData.grade], type: 'grade', cssClass: globals.difficulty[routeData.grade]})
-                        let routeMirror = new dsLegend({title: 'M', type: 'routeType', cssClass: 'mirror'})
+                        let routeMirror = new dsLegend({title: 'MIRROR', type: 'routeType', cssClass: 'mirror'})
 
                         let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
                         let routeSetter = dce({el: 'div', content: `by ${routeData.setter}`});
@@ -579,7 +581,26 @@ class systemBoard {
                             routeItem.classList.add('selected');
                             selectedRoute = routeData.id;
                         }, false);
-                        routelistContainer.appendChild(routeItem);
+						if(isAdmin) {
+							let adminContainter = dce({el: 'DIV', cssStyle: 'position: relative'})
+							let removeButton = new dsButton({
+								title: 'Archive',
+								cssClass: 'btn btn_tiny',
+								cssStyle: 'position: absolute; top: 10px; right: 10px;',
+								thisOnClick: () => {
+									console.log(routeData.id)
+									const routeReg = doc(this.db, "routes", routeData.id);
+									updateDoc(routeReg, { 'archived': true}, {merge: true});
+									alert('Route archived');
+								}
+							});
+							adminContainter.append(routeItem, removeButton);
+							routelistContainer.append(adminContainter);
+						}
+						else {
+						routelistContainer.appendChild(routeItem);
+						}
+
                         globals.sortedRoutes.push(routeData)
                     }
                 });

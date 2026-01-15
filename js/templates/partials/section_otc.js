@@ -8,7 +8,6 @@ import { globals } from '../../shared/globals.js';
 class otc {
   constructor() {
     let container = dce({el: 'DIV', cssClass: 'otc-navigation'});
-	let adminCheck = false;
     let otcLinksContainer = dce({el: 'DIV', cssClass: 'otc-links-container'});
 
     let loginInfo = dce({el: 'DIV', cssClass: 'login-info mb'});
