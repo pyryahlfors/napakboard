@@ -850,6 +850,9 @@ class systemBoard {
  */
         this.validateAndSave = ( params ) => {
             let selected = this.boardContainer.querySelectorAll('.selected');
+			let hasStart = this.boardContainer.querySelectorAll('.selected.start');
+			let hasEnd = this.boardContainer.querySelectorAll('.selected.top');
+
 
             let holdSetup = {};
 			let mirrorCalc = 1;
@@ -873,6 +876,11 @@ class systemBoard {
 
             if(selected.length <= 0) {
                 alert('no holds?');
+                routeReady = false;
+            }
+
+			if(hasStart.length <= 0 || hasEnd.length <= 0) {
+                alert('Missing start or top hold(s)');
                 routeReady = false;
             }
 
