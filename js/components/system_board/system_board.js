@@ -591,7 +591,7 @@ class systemBoard {
 									console.log(routeData.id)
 									const routeReg = doc(this.db, "routes", routeData.id);
 									updateDoc(routeReg, { 'archived': true}, {merge: true});
-									alert('Route archived');
+									alert(`Route ${routeData.id} archived`);
 								}
 							});
 							adminContainter.append(routeItem, removeButton);
