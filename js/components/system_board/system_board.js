@@ -588,7 +588,6 @@ class systemBoard {
 								cssClass: 'btn btn_tiny',
 								cssStyle: 'position: absolute; top: 10px; right: 10px;',
 								thisOnClick: () => {
-									console.log(routeData.id)
 									const routeReg = doc(this.db, "routes", routeData.id);
 									updateDoc(routeReg, { 'archived': true}, {merge: true});
 									alert(`Route ${routeData.id} archived`);

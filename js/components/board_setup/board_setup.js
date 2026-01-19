@@ -100,6 +100,11 @@ class systemBoard {
 */
 
 							gridCell.addEventListener('click', (e) => {
+								e.preventDefault();
+
+                                let hold = e.target;
+                                hold.classList.add('selected');
+
 								let setupTemp = JSON.parse(JSON.stringify(globals.boardSetup))
 
 								const holdTransform = {};
@@ -114,8 +119,6 @@ class systemBoard {
 										globals.boardSetup.holdSetup[params.id] = {...globals.boardSetup.holdSetup[params.id], ...holdTransform}
 									}
 								}
-
-								const hold = e.target;
 
 								let holdImages = svg({el: 'svg', attrbs: [["viewBox","0 0 30 30"]]});
 								let holdsTransformContainer = dce({el: 'div'});
@@ -372,6 +375,7 @@ class systemBoard {
 											title: 'Cancel',
 											cssClass: 'btn btn_small',
 											thisOnClick: () => {
+												console.log(hold)
 												modalWindow.close();
 												this.loadBoardSetup(setupTemp);
 											}
