@@ -588,9 +588,12 @@ class systemBoard {
 								cssClass: 'btn btn_tiny',
 								cssStyle: 'position: absolute; top: 10px; right: 10px;',
 								thisOnClick: () => {
-									const routeReg = doc(this.db, "routes", routeData.id);
-									updateDoc(routeReg, { 'archived': true}, {merge: true});
-									alert(`Route ${routeData.id} archived`);
+									if(window.confirm('Are you sure?')) {
+										const routeReg = doc(this.db, "routes", routeData.id);
+										updateDoc(routeReg, { 'archived': true}, {merge: true});
+										alert(`Route ${routeData.id} archived`);									}
+									else {
+									}
 								}
 							});
 							adminContainter.append(routeItem, removeButton);
