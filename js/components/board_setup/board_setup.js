@@ -375,7 +375,6 @@ class systemBoard {
 											title: 'Cancel',
 											cssClass: 'btn btn_small',
 											thisOnClick: () => {
-												console.log(hold)
 												modalWindow.close();
 												this.loadBoardSetup(setupTemp);
 											}
@@ -404,7 +403,8 @@ class systemBoard {
 								await setDoc( routeRef, {
 									routeData: {holdSetup: holdSetup},
 									routeName: 'Hold setup',
-									routeId: null,
+									routeId: 'No id',
+									boardId: globals.board
 								});
 							})();
 
