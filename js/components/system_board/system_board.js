@@ -805,7 +805,7 @@ class systemBoard {
             });
 
             let gradeOptions = Array();
-			if(globals.board === 'Pattice') {
+			if(globals.board === 'Pattice' || 'MoistyBoi') {
                 gradeOptions.push(['Patrick on gae', 5]);
 			}
 			else {
