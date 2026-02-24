@@ -805,9 +805,14 @@ class systemBoard {
             });
 
             let gradeOptions = Array();
-            for(let i=0, j=globals.grades.font.length; i<j; i++) {
-                gradeOptions.push([globals.grades.font[i], i]);
-            }
+			if(globals.board === 'Pattice') {
+                gradeOptions.push(['Patrick on gae', 5]);
+			}
+			else {
+				for(let i=0, j=globals.grades.font.length; i<j; i++) {
+					gradeOptions.push([globals.grades.font[i], i]);
+				}
+			}
 
             let grade = new dsSelect({label: 'Grade', options: gradeOptions})
 
