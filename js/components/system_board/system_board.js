@@ -198,7 +198,7 @@ class systemBoard {
 
                 const { hold, rotation, scaleY, scaleX, holdColor, offsetX, offsetY, mirror } = data.holdSetup[holds];
 
-				if(mirror) {
+				if(mirror && document.getElementById(holds)) {
 					document.getElementById(holds).classList.add('mirrored');
 				}
                 if(hold || holdColor) {
@@ -805,8 +805,9 @@ class systemBoard {
             });
 
             let gradeOptions = Array();
-			if(globals.board === 'Pattice' || 'MoistyBoi') {
+			if(globals.board === 'Pattice' || globals.board === 'MoistyBoi') {
                 gradeOptions.push(['Patrick on gae', 5]);
+                gradeOptions.push(['Kai Tonikin on vähän gae', 4]);
 			}
 			else {
 				for(let i=0, j=globals.grades.font.length; i<j; i++) {
