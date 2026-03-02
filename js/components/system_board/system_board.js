@@ -740,10 +740,44 @@ class systemBoard {
         this.save = ( params ) => {
             let saveDialog = dce({el:'FORM', cssStyle: 'padding: 10px 0'});
 
-           const names = [["Funky", "Stinky", "Dusty", "Spicy", "Slippery", "Gnarly", "Chunky", "Gritty", "Wobbly", "Crispy", "Spooky", "Feisty", "Sticky", "Groovy", "Rowdy", "Wild", "Sketchy", "Crunchy", "Pumpy", "Greasy"],
-                ["crimp", "sloper", "jug", "pinch", "heelhook", "toe", "finger", "forearms", "feet", "elbows", "dyno", "hangboard", "mantle", "arete", "pocket", "ledge", "volume", "crux", "beta", "campus", "ass"],
-                [ "fest", "party", "mayhem", "madness", "parade", "circus", "riot", "fiesta", "meltdown", "jam", "explosion", "showdown", "shuffle", "brawl", "derby", "hustle", "grind", "saga", "odyssey", "storm", "fuck", "shit"]
-            ];
+			const names = [
+				[
+					"Cursed", "Funky", "Stinky", "Dusty", "Spicy", "Slippery", "Gnarly", "Chunky",
+					"Gritty", "Wobbly", "Crispy", "Spooky", "Feisty", "Sticky", "Groovy", "Rowdy",
+					"Wild", "Sketchy", "Crunchy", "Pumpy", "Greasy", "Bouncy", "Shady", "Frosty",
+					"Toasty", "Janky", "Zesty", "Mellow", "Savage", "Nasty", "Saucy", "Floppy",
+					"Clumsy", "Sneaky", "Bizarre", "Loud", "Quiet", "Turbo", "Hyper", "Lazy", "Chaotic"
+				],
+				[
+					"crimp", "sloper", "jug", "pinch", "heelhook", "toe", "finger", "forearms", "feet",
+					"elbows", "dyno", "hangboard", "mantle", "arete", "pocket", "ledge", "volume", "crux",
+					"beta", "campus", "ass", "smear", "gaston", "undercling", "sidepull", "match",
+					"sequence", "flash", "project", "send", "whipper", "kneebar", "jam", "stack", "bridge",
+					"rail", "edge", "slab", "overhang", "roof", "compression",
+
+					"meatballs", "spaghetti", "noodles", "ramen", "dumplings", "sausage", "bacon", "burger", "cheeseburger", "pickle",
+					"onion", "garlic", "kebab", "taco", "burrito", "pizza", "lasagna", "macaroni", "cheese", "hotdog",
+					"fries", "waffles", "pancakes", "syrup", "donut", "cupcake", "brownie", "chocolate", "marshmallow", "icecream",
+
+					"toaster", "microwave", "blender", "fork", "spoon", "ladle", "bucket", "shovel", "hammer", "sock",
+					"underwear", "helmet", "toothbrush", "keyboard", "monitor", "mouse", "cable", "battery", "brick", "rock",
+
+					"rat", "pigeon", "goose", "lizard", "slug", "snail", "worm", "crab", "monkey", "yak",
+					"alien", "goblin", "troll", "wizard", "ghost", "skeleton", "zombie", "robot", "mutant", "gremlin",
+
+					"butt", "elbowgrease", "sweat", "tears", "regret", "mistake", "chaos", "trash", "garbage", "nonsense",
+					"vibes", "energy", "juice", "sauce", "flavor", "spice", "crust", "goo", "slime", "gunk",
+				],
+				[
+					"fest", "party", "mayhem", "madness", "parade", "circus", "riot", "fiesta", "meltdown", "jam",
+					"explosion", "showdown", "shuffle", "brawl", "derby", "hustle", "grind", "saga", "odyssey",
+					"storm", "fuck", "shit", "chaos", "bonanza", "bash", "throwdown", "clash", "rampage",
+					"stampede", "rave", "uproar", "frenzy", "spectacle", "skirmish", "onslaught", "blitz", "quake",
+					"eruption", "disaster", "panic", "wreckage", "apocalypse", "jesus", "bullshit", "horseshit",
+					"ass", "asshole", "dumbass", "jackass", "bastard", "sonofabitch", "motherfucker", "shitshow",
+					"clusterfuck", "fuckfest", "dipshit", "shitbag", "douche", "douchebag", "wanker", "prick"
+				]
+			];
 
             let randomName = () => {
                 let name = "";
