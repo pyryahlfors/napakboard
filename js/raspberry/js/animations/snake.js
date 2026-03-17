@@ -62,11 +62,6 @@ export default function snake(board, pixels){
   }
 
   board.snakeSteps++;
-
-  if(board.snakeSteps > 220){
-    board.snakeBody = null;
-    board.stopScreensaver();
-  }
 }
 
 

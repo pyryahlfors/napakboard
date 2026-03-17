@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            font-family: monospace;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #0052a3;
+        }
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .animation-select {
+            padding: 8px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #0066cc;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        #ledCanvas {
+            border: 2px solid #0066cc;
+            background: #000;
+            max-width: 90vw;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .info {
+            background: #222;
+            padding: 15px;
+            border-radius: 4px;
+            max-width: 600px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .status {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .status.running {
+            color: #00ff00;
+        }
+
+        .status.stopped {
+            color: #ff9999;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 LED Animation Tester</h1>
+
+    <div class="controls">
+        <select id="animationSelect" class="animation-select">
+            <option value="">-- Select Animation --</option>
+        </select>
+        <button id="startBtn">Start</button>
+        <button id="stopBtn" disabled>Stop</button>
+        <button id="randomBtn">Random</button>
+        <button id="clearBtn">Clear</button>
+    </div>
+
+    <div class="status stopped" id="status">Stopped</div>
+
+    <canvas id="ledCanvas"></canvas>
+
+    <div class="info">
+        <strong>Board Dimensions:</strong> 17 × 23 (399 LEDs)<br>
+        <strong>Animations:</strong> <span id="animationCount">0</span><br>
+        <strong>Available:</strong> snake, matrix, sparkle, scanner, fire, balls, aurora
+    </div>
+
+    <script type="module">
+        import snakeAnimation from './js/animations/snake.js';
+        import matrixAnimation from './js/animations/matrix.js';
+        import sparkleAnimation from './js/animations/sparkle.js';
+        import scannerAnimation from './js/animations/scanner.js';
+        import fireAnimation from './js/animations/fire.js';
+        import ballsAnimation from './js/animations/balls.js';
+        import auroraAnimation from './js/animations/aurora.js';
+
+        const animations = {
+            snake: snakeAnimation,
+            matrix: matrixAnimation,
+            sparkle: sparkleAnimation,
+            scanner: scannerAnimation,
+            fire: fireAnimation,
+            balls: ballsAnimation,
+            aurora: auroraAnimation,
+        };
+
+        class AnimationTester {
+            constructor() {
+                this.canvas = document.getElementById('ledCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.statusDiv = document.getElementById('status');
+
+                // Board dimensions
+                this.boardWidth = 17;
+                this.boardHeight = 23;
+                this.ledCount = 399;
+
+                // LED size in pixels
+                this.ledSize = 20;
+                this.ledGap = 2;
+
+                // Canvas setup
+                this.canvas.width = this.boardWidth * (this.ledSize + this.ledGap);
+                this.canvas.height = this.boardHeight * (this.ledSize + this.ledGap);
+
+                // Animation state
+                this.running = false;
+                this.currentAnimation = null;
+                this.pixels = new Uint32Array(this.ledCount);
+                this.board = null;
+                this.animationFrame = null;
+
+                this.resetBoard();
+                this.setupUI();
+                this.render();
+            }
+
+            resetBoard() {
+                this.board = this.createBoardMock();
+            }
+
+            createBoardMock() {
+                return {
+                    boardWidth: this.boardWidth,
+                    boardHeight: this.boardHeight,
+                    boardCols: "abcdefghijklmnopqrstuvwxyz",
+                    boardOffset: this.boardWidth * this.boardHeight - 1,
+                    firstColumnReversed: this.boardWidth % 2 === 0,
+                    snakeLength: 10,
+                    config: {
+                        leds: this.ledCount
+                    },
+
+                    getLedIndex: (x, y) => {
+                        let reversed = this.board.firstColumnReversed ? x % 2 === 0 : x % 2 !== 0;
+                        let row = reversed ? this.boardHeight - 1 - y : y;
+                        let led = (x * this.boardHeight) + row;
+                        return Math.abs(led - this.board.boardOffset);
+                    },
+
+                    stopScreensaver: () => {
+                        this.stop();
+                    }
+                };
+            }
+
+            setupUI() {
+                const select = document.getElementById('animationSelect');
+                Object.keys(animations).forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+                    select.appendChild(option);
+                });
+
+                document.getElementById('animationCount').textContent = Object.keys(animations).length;
+                document.getElementById('startBtn').addEventListener('click', () => this.startSelected());
+                document.getElementById('stopBtn').addEventListener('click', () => this.stop());
+                document.getElementById('randomBtn').addEventListener('click', () => this.startRandom());
+                document.getElementById('clearBtn').addEventListener('click', () => this.clear());
+
+                select.addEventListener('change', () => {
+                    if (!select.value) {
+                        return;
+                    }
+
+                    if (this.running) {
+                        this.switchAnimation(select.value);
+                        return;
+                    }
+
+                    this.startSelected();
+                });
+            }
+
+            switchAnimation(animationName) {
+                if (!animations[animationName] || this.currentAnimation === animationName) {
+                    return;
+                }
+
+                this.resetBoard();
+                this.currentAnimation = animationName;
+                this.pixels.fill(0);
+                this.statusDiv.textContent = `Running: ${animationName}`;
+            }
+
+            startSelected() {
+                const select = document.getElementById('animationSelect');
+                if (select.value) {
+                    this.start(select.value);
+                }
+            }
+
+            start(animationName) {
+                if (!animations[animationName]) {
+                    console.error(`Animation "${animationName}" not found`);
+                    return;
+                }
+
+                if (this.running) {
+                    this.switchAnimation(animationName);
+                    return;
+                }
+
+                this.running = true;
+                this.currentAnimation = animationName;
+                this.resetBoard();
+                this.pixels.fill(0);
+
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+
+                this.statusDiv.textContent = `Running: ${animationName}`;
+                this.statusDiv.className = 'status running';
+
+                console.log(`Started animation: ${animationName}`);
+                this.tick();
+            }
+
+            startRandom() {
+                const names = Object.keys(animations);
+                const random = names[Math.floor(Math.random() * names.length)];
+                document.getElementById('animationSelect').value = random;
+                this.start(random);
+            }
+
+            stop() {
+                this.running = false;
+                this.currentAnimation = null;
+
+                this.resetBoard();
+
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+
+                this.statusDiv.textContent = 'Stopped';
+                this.statusDiv.className = 'status stopped';
+
+                this.pixels.fill(0);
+                this.render();
+
+                if (this.animationFrame) {
+                    clearTimeout(this.animationFrame);
+                    this.animationFrame = null;
+                }
+            }
+
+            clear() {
+                this.pixels.fill(0);
+                this.render();
+            }
+
+            tick() {
+                if (!this.running) return;
+
+                this.pixels.fill(0);
+                const anim = animations[this.currentAnimation];
+
+                if (anim) {
+                    anim(this.board, this.pixels);
+                }
+
+                this.render();
+
+                // 80ms tick like the original
+                this.animationFrame = setTimeout(() => this.tick(), 80);
+            }
+
+            render() {
+                const imageData = this.ctx.createImageData(this.canvas.width, this.canvas.height);
+                const data = imageData.data;
+
+                // Clear canvas
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = 0;      // R
+                    data[i + 1] = 0;  // G
+                    data[i + 2] = 0;  // B
+                    data[i + 3] = 255; // A
+                }
+
+                // Draw each LED
+                for (let ledIndex = 0; ledIndex < this.ledCount; ledIndex++) {
+                    const color = this.pixels[ledIndex];
+                    if (color === 0) continue;
+
+                    // Find grid position from LED index
+                    const gridPos = this.ledIndexToGrid(ledIndex);
+                    if (!gridPos) continue;
+
+                    const x = gridPos.x;
+                    const y = gridPos.y;
+
+                    // Extract RGB from 0xRRGGBB format (stored as 0x00RRGGBB in Uint32Array)
+                    const r = (color >> 16) & 0xFF;
+                    const g = (color >> 8) & 0xFF;
+                    const b = color & 0xFF;
+
+                    // Draw LED square
+                    const startX = x * (this.ledSize + this.ledGap);
+                    const startY = y * (this.ledSize + this.ledGap);
+
+                    for (let py = 0; py < this.ledSize; py++) {
+                        for (let px = 0; px < this.ledSize; px++) {
+                            const canvasX = startX + px;
+                            const canvasY = startY + py;
+                            const pixelIndex = (canvasY * this.canvas.width + canvasX) * 4;
+
+                            data[pixelIndex] = r;      // R
+                            data[pixelIndex + 1] = g;  // G
+                            data[pixelIndex + 2] = b;  // B
+                            data[pixelIndex + 3] = 255; // A
+                        }
+                    }
+                }
+
+                this.ctx.putImageData(imageData, 0, 0);
+            }
+
+            ledIndexToGrid(ledIndex) {
+                // Reverse the getLedIndex calculation
+                const reverseIndex = Math.abs(ledIndex - this.board.boardOffset);
+
+                for (let x = 0; x < this.boardWidth; x++) {
+                    for (let y = 0; y < this.boardHeight; y++) {
+                        const reversed = this.board.firstColumnReversed ? x % 2 === 0 : x % 2 !== 0;
+                        const row = reversed ? this.boardHeight - 1 - y : y;
+                        const led = (x * this.boardHeight) + row;
+
+                        if (led === reverseIndex) {
+                            return { x, y };
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+
+        // Initialize when page loads
+        new AnimationTester();
+    </script>
+</body>
+</html>
