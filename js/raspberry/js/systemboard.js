@@ -1,4 +1,5 @@
 import ws281x from 'rpi-ws281x';
+import fs from 'node:fs';
 
 import snakeAnimation from './animations/snake.js';
 import matrixAnimation from './animations/matrix.js';
@@ -7,6 +8,8 @@ import scannerAnimation from './animations/scanner.js';
 import fireAnimation from './animations/fire.js';
 import ballsAnimation from './animations/balls.js';
 import auroraAnimation from './animations/aurora.js';
+import rippleAnimation from './animations/ripple.js';
+import textScrollAnimation from './animations/textscroll.js';
 
 const animations = {
   snake: snakeAnimation,
@@ -15,8 +18,41 @@ const animations = {
   scanner: scannerAnimation,
   fire: fireAnimation,
   balls: ballsAnimation,
-  aurora: auroraAnimation
+  aurora: auroraAnimation,
+  ripple: rippleAnimation,
+  textscroll: textScrollAnimation
 };
+
+function loadBoardEnv(){
+  const envPath = new URL('../.env', import.meta.url);
+
+  try {
+    const content = fs.readFileSync(envPath, 'utf8');
+    const lines = content.split(/\r?\n/);
+
+    for(const rawLine of lines){
+      const line = rawLine.trim();
+      if(!line || line.startsWith('#')) continue;
+
+      const separator = line.indexOf('=');
+      if(separator <= 0) continue;
+
+      const key = line.slice(0, separator).trim();
+      const value = line.slice(separator + 1).trim().replace(/^['"]|['"]$/g, '');
+
+      if(!(key in process.env)){
+        process.env[key] = value;
+      }
+    }
+  } catch {
+    // .env is optional; defaults below are used when file is missing.
+  }
+}
+
+function toInt(value, fallback){
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
 
 class systemBoard {
   constructor() {
@@ -27,29 +63,35 @@ class systemBoard {
     this.screensaverStartedAt = 0;
     this.screensaverDuration = 30000;
     this.screensaverBreak = 30000;
+    this.activateScreenSaverDuration = 600000;
     this.lastScreensaverMode = null;
     this.animationContexts = {};
   }
 
   initialize() {
-    /** LED config */
-    this.config = {};
-    this.config.leds = 399;
-    this.config.dma = 10;
-    this.config.gpio = 18;
-    this.config.stripType = 'grb';
+    loadBoardEnv();
+
+    this.screensaverDuration = toInt(process.env.BOARD_SCREENSAVER_DURATION, this.screensaverDuration);
+    this.screensaverBreak = toInt(process.env.BOARD_SCREENSAVER_BREAK, this.screensaverBreak);
+    this.activateScreenSaverDuration = toInt(process.env.BOARD_SCREENSAVER_IDLE, this.activateScreenSaverDuration);
 
     /** board config */
-    this.boardId = "PCB";
-    this.boardWidth = 17;
-    this.boardHeight = 23;
+    this.boardId = process.env.BOARD_ID || 'PCB';
+    this.boardWidth = toInt(process.env.BOARD_WIDTH, 17);
+    this.boardHeight = toInt(process.env.BOARD_HEIGHT, 23);
+    this.scrollText = process.env.BOARD_SCROLL_TEXT || 'Kakkapylly';
+
+    /** LED config */
+    this.config = {};
+    this.config.leds = toInt(process.env.BOARD_LED_COUNT, this.boardWidth * this.boardHeight);
+    this.config.dma = toInt(process.env.BOARD_DMA, 10);
+    this.config.gpio = toInt(process.env.BOARD_GPIO, 18);
+    this.config.stripType = (process.env.BOARD_STRIP_TYPE || 'grb').toLowerCase();
 
     this.boardCols = "abcdefghijklmnopqrstuvwxyz";
 
     this.boardOffset = this.boardWidth * this.boardHeight - 1 ;
     this.firstColumnReversed = this.boardWidth % 2 === 0;
-
-    this.snakeLength = 10;
 
     this.holdColors = {
       start: "00ff00",
@@ -99,7 +141,7 @@ class systemBoard {
   /** MAIN LOOP */
   tick() {
     /** start screensaver if idle */
-    if(!this.screensaverRunning && Date.now() - this.lastAction > 600000 && Date.now() > this.nextScreensaverAllowed){
+    if(!this.screensaverRunning && Date.now() - this.lastAction > this.activateScreenSaverDuration && Date.now() > this.nextScreensaverAllowed){
       this.startScreensaver();
     }
 

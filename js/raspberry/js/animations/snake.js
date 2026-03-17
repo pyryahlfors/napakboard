@@ -1,4 +1,6 @@
 export default function snake(board, pixels){
+  const snakeLength = Number.isFinite(board.snakeLength) ? board.snakeLength : 10;
+
   if(!board.snakeBody){
     board.snakeBody = [{
       x: Math.floor(Math.random()*board.boardWidth),
@@ -43,7 +45,7 @@ export default function snake(board, pixels){
 
   board.snakeBody.unshift(newHead);
 
-  if(board.snakeBody.length > board.snakeLength)
+  if(board.snakeBody.length > snakeLength)
     board.snakeBody.pop();
 
   board.snakeHue += 3;

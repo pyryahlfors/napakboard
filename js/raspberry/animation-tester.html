@@ -102,6 +102,7 @@
         <select id="animationSelect" class="animation-select">
             <option value="">-- Select Animation --</option>
         </select>
+        <input id="scrollTextInput" type="text" placeholder="Scroll text (for textscroll)" value="PCB" style="padding: 8px; background: #333; color: #fff; border: 1px solid #0066cc; border-radius: 4px; font-family: monospace; font-size: 14px; min-width: 220px;" />
         <button id="startBtn">Start</button>
         <button id="stopBtn" disabled>Stop</button>
         <button id="randomBtn">Random</button>
@@ -115,7 +116,7 @@
     <div class="info">
         <strong>Board Dimensions:</strong> 17 × 23 (399 LEDs)<br>
         <strong>Animations:</strong> <span id="animationCount">0</span><br>
-        <strong>Available:</strong> snake, matrix, sparkle, scanner, fire, balls, aurora
+        <strong>Available:</strong> snake, matrix, sparkle, scanner, fire, balls, aurora, ripple, textscroll
     </div>
 
     <script type="module">
@@ -126,6 +127,8 @@
         import fireAnimation from './js/animations/fire.js';
         import ballsAnimation from './js/animations/balls.js';
         import auroraAnimation from './js/animations/aurora.js';
+        import rippleAnimation from './js/animations/ripple.js';
+        import textScrollAnimation from './js/animations/textscroll.js';
 
         const animations = {
             snake: snakeAnimation,
@@ -135,6 +138,8 @@
             fire: fireAnimation,
             balls: ballsAnimation,
             aurora: auroraAnimation,
+            ripple: rippleAnimation,
+            textscroll: textScrollAnimation,
         };
 
         class AnimationTester {
@@ -174,6 +179,8 @@
 
             createBoardMock() {
                 return {
+                    boardId: 'PCB',
+                    scrollText: this.getScrollText(),
                     boardWidth: this.boardWidth,
                     boardHeight: this.boardHeight,
                     boardCols: "abcdefghijklmnopqrstuvwxyz",
@@ -199,6 +206,7 @@
 
             setupUI() {
                 const select = document.getElementById('animationSelect');
+                const textInput = document.getElementById('scrollTextInput');
                 Object.keys(animations).forEach(name => {
                     const option = document.createElement('option');
                     option.value = name;
@@ -212,6 +220,16 @@
                 document.getElementById('randomBtn').addEventListener('click', () => this.startRandom());
                 document.getElementById('clearBtn').addEventListener('click', () => this.clear());
 
+                textInput.addEventListener('input', () => {
+                    if (this.board) {
+                        this.board.scrollText = this.getScrollText();
+                    }
+
+                    if (this.running && this.currentAnimation === 'textscroll') {
+                        this.resetBoard();
+                    }
+                });
+
                 select.addEventListener('change', () => {
                     if (!select.value) {
                         return;
@@ -224,6 +242,11 @@
 
                     this.startSelected();
                 });
+            }
+
+            getScrollText() {
+                const input = document.getElementById('scrollTextInput');
+                return input && input.value.trim() ? input.value.trim() : 'PCB';
             }
 
             switchAnimation(animationName) {
