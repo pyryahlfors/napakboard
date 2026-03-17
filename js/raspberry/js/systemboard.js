@@ -28,6 +28,7 @@ class systemBoard {
     this.screensaverDuration = 30000;
     this.screensaverBreak = 30000;
     this.lastScreensaverMode = null;
+    this.animationContexts = {};
   }
 
   initialize() {
@@ -111,10 +112,21 @@ class systemBoard {
 
     const pixels = new Uint32Array(this.config.leds);
     const anim = animations[this.screensaverMode];
+    const animBoard = this.getAnimationContext(this.screensaverMode);
 
-    if(anim) anim(this, pixels);
+    if(anim) anim(animBoard, pixels);
 
     ws281x.render(pixels);
+  }
+
+  getAnimationContext(mode){
+    if(!mode) return this;
+
+    if(!this.animationContexts[mode]){
+      this.animationContexts[mode] = Object.create(this);
+    }
+
+    return this.animationContexts[mode];
   }
 
   /** SCREENSAVER */
@@ -134,29 +146,9 @@ class systemBoard {
     console.log("Stop animation");
     this.lastScreensaverMode = this.screensaverMode;
 
-    /** reset animation state */
-    this.snakeBody = null;
-    this.snakeDirX = null;
-    this.snakeDirY = null;
-    this.snakeSteps = 0;
-    this.snakeHue = null;
-    this.matrixDrops = null;
-    this.matrixFrame = 0;
-    this.sparkle = null;
-    this.sparkleColors = null;
-    this.scanRow = undefined;
-    this.scanFrame = 0;
-    this.scanHits = [];
-    this.fire = null;
-    this.fireFrame = 0;
-    this.fireMaxHeight = null;
-    this.fireBaseHeights = null;
-    this.firePhases = null;
-    this.fireTargetHeights = null;
-    this.fireCurrentHeights = null;
-    this.balls = null;
-    this.ballsFrame = 0;
-    this.auroraTime = undefined;
+    if(this.screensaverMode){
+      delete this.animationContexts[this.screensaverMode];
+    }
 
     this.screensaverRunning = false;
     this.screensaverMode = null;

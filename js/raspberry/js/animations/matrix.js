@@ -3,6 +3,8 @@ export default function matrix(board, pixels){
   if(!board.matrixDrops){
 
     board.matrixDrops = new Array(board.boardWidth).fill(-1);
+    board.matrixStepEvery = new Array(board.boardWidth).fill(1);
+    board.matrixStepCountdown = new Array(board.boardWidth).fill(1);
     board.matrixFrame = 0;
   }
 
@@ -13,6 +15,8 @@ export default function matrix(board, pixels){
     // Only start new drops from columns that are ready
     if(row === -1 && Math.random() < 0.05){
       board.matrixDrops[col] = 0;
+      board.matrixStepEvery[col] = 1 + Math.floor(Math.random() * 3); // 1..3 ticks per step
+      board.matrixStepCountdown[col] = board.matrixStepEvery[col];
       row = 0;
     }
 
@@ -34,13 +38,19 @@ export default function matrix(board, pixels){
         }
 
         let g = Math.floor(255*brightness);
-        pixels[led] = (g<<16); // GREEN
+        pixels[led] = (g<<8); // GREEN
       }
 
-      board.matrixDrops[col]++;
+      board.matrixStepCountdown[col]--;
+      if(board.matrixStepCountdown[col] <= 0){
+        board.matrixDrops[col]++;
+        board.matrixStepCountdown[col] = board.matrixStepEvery[col];
+      }
     } else if(row >= board.boardHeight + 5){
       // Reset column after fade is complete so new drops can start
       board.matrixDrops[col] = -1;
+      board.matrixStepEvery[col] = 1;
+      board.matrixStepCountdown[col] = 1;
     }
   }
 
