@@ -102,6 +102,8 @@
         <select id="animationSelect" class="animation-select">
             <option value="">-- Select Animation --</option>
         </select>
+        <input id="boardWidthInput" type="number" min="1" max="26" step="1" value="17" style="padding: 8px; width: 88px; background: #333; color: #fff; border: 1px solid #0066cc; border-radius: 4px; font-family: monospace; font-size: 14px;" title="Board width" />
+        <input id="boardHeightInput" type="number" min="1" max="64" step="1" value="23" style="padding: 8px; width: 88px; background: #333; color: #fff; border: 1px solid #0066cc; border-radius: 4px; font-family: monospace; font-size: 14px;" title="Board height" />
         <input id="scrollTextInput" type="text" placeholder="Scroll text (for textscroll)" value="PCB" style="padding: 8px; background: #333; color: #fff; border: 1px solid #0066cc; border-radius: 4px; font-family: monospace; font-size: 14px; min-width: 220px;" />
         <button id="startBtn">Start</button>
         <button id="stopBtn" disabled>Stop</button>
@@ -114,7 +116,7 @@
     <canvas id="ledCanvas"></canvas>
 
     <div class="info">
-        <strong>Board Dimensions:</strong> 17 × 23 (399 LEDs)<br>
+        <strong>Board Dimensions:</strong> <span id="boardDimensions">17 × 23 (399 LEDs)</span><br>
         <strong>Animations:</strong> <span id="animationCount">0</span><br>
         <strong>Available:</strong> snake, matrix, sparkle, scanner, fire, balls, aurora, ripple, textscroll
     </div>
@@ -157,10 +159,6 @@
                 this.ledSize = 20;
                 this.ledGap = 2;
 
-                // Canvas setup
-                this.canvas.width = this.boardWidth * (this.ledSize + this.ledGap);
-                this.canvas.height = this.boardHeight * (this.ledSize + this.ledGap);
-
                 // Animation state
                 this.running = false;
                 this.currentAnimation = null;
@@ -168,8 +166,47 @@
                 this.board = null;
                 this.animationFrame = null;
 
+                this.updateCanvasSize();
                 this.resetBoard();
                 this.setupUI();
+                this.updateBoardInfo();
+                this.render();
+            }
+
+            updateCanvasSize() {
+                this.canvas.width = this.boardWidth * (this.ledSize + this.ledGap);
+                this.canvas.height = this.boardHeight * (this.ledSize + this.ledGap);
+            }
+
+            updateBoardInfo() {
+                const label = document.getElementById('boardDimensions');
+                if (label) {
+                    label.textContent = `${this.boardWidth} × ${this.boardHeight} (${this.ledCount} LEDs)`;
+                }
+            }
+
+            applyBoardSizeFromInputs() {
+                const widthInput = document.getElementById('boardWidthInput');
+                const heightInput = document.getElementById('boardHeightInput');
+
+                const nextWidth = Math.max(1, Math.min(26, Number.parseInt(widthInput.value, 10) || this.boardWidth));
+                const nextHeight = Math.max(1, Math.min(64, Number.parseInt(heightInput.value, 10) || this.boardHeight));
+
+                widthInput.value = String(nextWidth);
+                heightInput.value = String(nextHeight);
+
+                if (nextWidth === this.boardWidth && nextHeight === this.boardHeight) {
+                    return;
+                }
+
+                this.boardWidth = nextWidth;
+                this.boardHeight = nextHeight;
+                this.ledCount = this.boardWidth * this.boardHeight;
+                this.pixels = new Uint32Array(this.ledCount);
+
+                this.updateCanvasSize();
+                this.resetBoard();
+                this.updateBoardInfo();
                 this.render();
             }
 
@@ -207,6 +244,8 @@
             setupUI() {
                 const select = document.getElementById('animationSelect');
                 const textInput = document.getElementById('scrollTextInput');
+                const widthInput = document.getElementById('boardWidthInput');
+                const heightInput = document.getElementById('boardHeightInput');
                 Object.keys(animations).forEach(name => {
                     const option = document.createElement('option');
                     option.value = name;
@@ -219,6 +258,9 @@
                 document.getElementById('stopBtn').addEventListener('click', () => this.stop());
                 document.getElementById('randomBtn').addEventListener('click', () => this.startRandom());
                 document.getElementById('clearBtn').addEventListener('click', () => this.clear());
+
+                widthInput.addEventListener('change', () => this.applyBoardSizeFromInputs());
+                heightInput.addEventListener('change', () => this.applyBoardSizeFromInputs());
 
                 textInput.addEventListener('input', () => {
                     if (this.board) {
