@@ -104,7 +104,7 @@
         </select>
         <input id="boardWidthInput" type="number" min="1" max="26" step="1" value="17" style="padding: 8px; width: 88px; background: #333; color: #fff; border: 1px solid #0066cc; border-radius: 4px; font-family: monospace; font-size: 14px;" title="Board width" />
         <input id="boardHeightInput" type="number" min="1" max="64" step="1" value="23" style="padding: 8px; width: 88px; background: #333; color: #fff; border: 1px solid #0066cc; border-radius: 4px; font-family: monospace; font-size: 14px;" title="Board height" />
-        <input id="scrollTextInput" type="text" placeholder="Scroll text (for textscroll)" value="PCB" style="padding: 8px; background: #333; color: #fff; border: 1px solid #0066cc; border-radius: 4px; font-family: monospace; font-size: 14px; min-width: 220px;" />
+        <input id="scrollTextInput" type="text" placeholder="Scroll text (for textscroll)" value="NAPAK ❤ PCB" style="padding: 8px; background: #333; color: #fff; border: 1px solid #0066cc; border-radius: 4px; font-family: monospace; font-size: 14px; min-width: 220px;" />
         <button id="startBtn">Start</button>
         <button id="stopBtn" disabled>Stop</button>
         <button id="randomBtn">Random</button>
@@ -156,8 +156,8 @@
                 this.ledCount = 399;
 
                 // LED size in pixels
-                this.ledSize = 20;
-                this.ledGap = 2;
+                this.ledSize = 12;
+                this.ledGap = 4;
 
                 // Animation state
                 this.running = false;
@@ -385,16 +385,8 @@
             }
 
             render() {
-                const imageData = this.ctx.createImageData(this.canvas.width, this.canvas.height);
-                const data = imageData.data;
-
-                // Clear canvas
-                for (let i = 0; i < data.length; i += 4) {
-                    data[i] = 0;      // R
-                    data[i + 1] = 0;  // G
-                    data[i + 2] = 0;  // B
-                    data[i + 3] = 255; // A
-                }
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
                 // Draw each LED
                 for (let ledIndex = 0; ledIndex < this.ledCount; ledIndex++) {
@@ -413,25 +405,18 @@
                     const g = (color >> 8) & 0xFF;
                     const b = color & 0xFF;
 
-                    // Draw LED square
+                    // Draw LED as a circle to better match real diodes
                     const startX = x * (this.ledSize + this.ledGap);
                     const startY = y * (this.ledSize + this.ledGap);
+                    const centerX = startX + this.ledSize / 2;
+                    const centerY = startY + this.ledSize / 2;
+                    const radius = this.ledSize * 0.45;
 
-                    for (let py = 0; py < this.ledSize; py++) {
-                        for (let px = 0; px < this.ledSize; px++) {
-                            const canvasX = startX + px;
-                            const canvasY = startY + py;
-                            const pixelIndex = (canvasY * this.canvas.width + canvasX) * 4;
-
-                            data[pixelIndex] = r;      // R
-                            data[pixelIndex + 1] = g;  // G
-                            data[pixelIndex + 2] = b;  // B
-                            data[pixelIndex + 3] = 255; // A
-                        }
-                    }
+                    this.ctx.beginPath();
+                    this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    this.ctx.fill();
                 }
-
-                this.ctx.putImageData(imageData, 0, 0);
             }
 
             ledIndexToGrid(ledIndex) {

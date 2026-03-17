@@ -14,6 +14,9 @@ const FONT_5X7 = {
   '?': [
     '11110','00001','00010','00100','00100','00000','00100'
   ],
+  '❤': [
+    '01010','11111','11111','11111','01110','00100','00000'
+  ],
   '0': ['01110','10001','10011','10101','11001','10001','01110'],
   '1': ['00100','01100','00100','00100','00100','00100','01110'],
   '2': ['01110','10001','00001','00110','01000','10000','11111'],
@@ -54,17 +57,20 @@ const FONT_5X7 = {
 
 export default function textscroll(board, pixels){
   if(!board.textScrollState){
-    const sourceText = (board.scrollText && board.scrollText.trim())
-      ? board.scrollText
+    const hasCustomText = Boolean(board.scrollText && board.scrollText.trim());
+    const sourceText = hasCustomText
+      ? board.scrollText.trim()
       : (board.boardId || 'BOARD');
 
-    const message = sourceText.toUpperCase();
+    const message = hasCustomText
+      ? sourceText.toUpperCase()
+      : `NAPAK ❤ ${sourceText.toUpperCase()}`;
 
     board.textScrollState = {
       message,
       columns: buildColumns(message),
       offset: board.boardWidth,
-      speed: 0.35,
+      speed: 1.56,
       frame: 0,
       hueOffset: Math.random() * 360,
       scale: 2
@@ -82,7 +88,10 @@ export default function textscroll(board, pixels){
   }
 
   const fontHeight = 7 * state.scale;
-  const yOffset = Math.max(0, Math.floor((board.boardHeight - fontHeight) / 2));
+  const baselineY = Math.floor((board.boardHeight - fontHeight) / 2);
+  const minY = 0;
+  const maxY = Math.max(0, board.boardHeight - fontHeight);
+  const yOffset = Math.max(minY, Math.min(maxY, baselineY));
 
   for(let colIndex = 0; colIndex < state.columns.length; colIndex++){
     const drawX = Math.floor(colIndex + state.offset);
