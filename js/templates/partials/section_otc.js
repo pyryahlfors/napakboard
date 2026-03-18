@@ -131,6 +131,7 @@ class otc {
 			<div class="mb"><h3>Status</h3><span style="color: ${statusColor}">${onlineLabel}</span></div>
 		</div>
 		<div class="mb"><h3>Route</h3> ${status.routeName || '-'}</div>
+		<div class="mb"><h3>Route ID</h3>${status.routeId || '-'}</div>
 		<div class="mb"><h3>Screensaver</h3> ${status.screensaverOn ? 'On' : 'Off'} ${status.screensaverMode ? `(${status.screensaverMode})` : ''}</div>
 		<div class="mb"><h3>Last seen</h3> ${lastSeen}</div>
 		`;

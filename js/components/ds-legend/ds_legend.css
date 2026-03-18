@@ -66,6 +66,17 @@
   color: var(--color-black)
 }
 
+.legend-ascent.good {
+	background-color: var(--color-legend-green);
+	color: var(--color-white);
+}
+
+.legend-ascent.bad {
+	background-color: var(--color-legend-red);
+	color: var(--color-white);
+}
+
+
 .legend-routeType.mirror {
 	border-radius: 2px;
 	display: inline-block;

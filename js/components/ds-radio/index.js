@@ -18,10 +18,10 @@ class dsRadio extends HTMLElement {
     radioContainer.className = this.params.cssClass || null;
 
     // add label
-    radioContainer.appendChild(document.createTextNode(`${this.params.label || ''}`))
+    radioContainer.appendChild(dce({el: 'h3', content: `${this.params.title || ''}`}))
 
     let radioGroupContainer = dce({el: 'ul'});
-    
+
     this.params.options.forEach(option => {
         let radioItemContainer = dce({el: 'li'});
         let item = dce({el: 'input', id: `${this.params.name}-${option.title}`, attrbs: [['type', 'radio'], ['value', option.value], ['name', this.params.name]]});

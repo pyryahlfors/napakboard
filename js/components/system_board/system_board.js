@@ -7,10 +7,9 @@ import dsInput from '../../components/ds-input/index.js';
 import dsSelect from '../../components/ds-select/index.js';
 import dsToggle from '../../components/ds-toggle/index.js';
 import dsRadio from '../ds-radio/index.js';
+import dsLegend from '../ds-legend/index.js';
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
-
-import dsLegend from '../ds-legend/index.js';
 
 class systemBoard {
     constructor( ) {
@@ -420,23 +419,22 @@ class systemBoard {
             // Sort by
             let sortMenu = new dsRadio({
                 cssClass: 'radio-menu',
-                title: 'Sort by',
                 name: 'sort',
                 options: [
                     {
-                        title: "name",
-                        value: "name",
-                        checked: globals.routeSorting === 'name' ? true : false
-                    },
-                    {
                         title: "grade",
                         value: "grade",
-                        checked: globals.routeSorting === 'grade' ? true : false
+                        checked: (globals.routeSorting === 'grade' || globals.routeSorting === 'name' || !globals.routeSorting) ? true : false
                     },
                     {
                         title: "date",
                         value: "date",
                         checked: globals.routeSorting === 'date' ? true : false
+                    },
+                    {
+                        title: "approval",
+                        value: "approval",
+                        checked: globals.routeSorting === 'approval' ? true : false
                     }
                 ],
                 onchange: () => { globals.routeSorting = document.forms['routesort'].sort.value }
@@ -453,7 +451,6 @@ class systemBoard {
             // order
             let order = new dsRadio({
                 cssClass: 'radio-menu',
-                title: 'Order',
                 name: 'order',
                 options: [
                     {
@@ -524,6 +521,47 @@ class systemBoard {
             listDialog.append(sortOptionsContainer, routeCountContainer, showFiltersContainer);
             listDialog.append(dce({el: 'div', cssClass: 'loading', content: 'Loading routes...'}));
 
+            const ROUTE_SCORE_BASE = 100;
+            const ROUTE_SCORE_K = 30;
+            const ROUTE_SCORE_M = 7;
+
+            const calculateRouteScore = (routeData) => {
+                if(!routeData || !Array.isArray(routeData.approvals)) {
+                    return null;
+                }
+
+                let upvotes = 0;
+                let downvotes = 0;
+
+                routeData.approvals.forEach((approval) => {
+                    const value = typeof approval === 'number'
+                        ? approval
+                        : Number(approval && approval.value);
+
+                    if(value > 0) { upvotes++; }
+                    if(value < 0) { downvotes++; }
+                });
+
+                const n = upvotes + downvotes;
+                if(n === 0) {
+                    return null;
+                }
+
+                const score = ROUTE_SCORE_BASE + ROUTE_SCORE_K * (upvotes - downvotes) / (n + ROUTE_SCORE_M);
+
+                return {
+                    score: Math.round(score * 10) / 10,
+                    upvotes,
+                    downvotes,
+                    votes: n
+                };
+            };
+
+            const getRouteSortScore = (routeData) => {
+                const scoreData = calculateRouteScore(routeData);
+                return scoreData ? scoreData.score : ROUTE_SCORE_BASE;
+            };
+
 
             const updateRouteList = ( ) => {
                 let loader = listDialog.querySelector('.loading');
@@ -535,9 +573,9 @@ class systemBoard {
 
                 let routes = globals.boardRoutes;
                 globals.sortedRoutes = [];
-                if(globals.routeSorting === 'name')  { routes = globals.boardRoutes.sort((a, b) => a.name.localeCompare(b.name)) }
                 if(globals.routeSorting === 'grade') { routes = globals.boardRoutes.sort((a,b) => a.grade - b.grade) }
                 if(globals.routeSorting === 'date')  { routes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)) }
+                if(globals.routeSorting === 'approval') { routes = globals.boardRoutes.sort((a, b) => getRouteSortScore(a) - getRouteSortScore(b)) }
 
                 if(globals.sortOrder === 'desc')  { routes.reverse() }
 
@@ -572,8 +610,20 @@ class systemBoard {
 
                         let routeAdded = dce({el: 'div', content: handleDate({dateString: new Date(routeData.added.toDate())})});
                         let routeSetter = dce({el: 'div', content: `by ${routeData.setter}`});
-                        let routeRepeats = dce({el: 'div', content: (routeData.ticks ? `- ${routeData.ticks.length} repeat${routeData.ticks.length > 1 ? 's' : ''}` : null)});
-                        routeDetails.append(routeGrade, ((routeData.mirror) ? routeMirror : ''), routeAdded, routeSetter, routeRepeats);
+                        let routeRepeats = dce({el: 'div', content: (routeData.ticks ? `- ${routeData.ticks.length} repeat${routeData.ticks.length > 1 ? 's' : ''}` : '')});
+                        const routeScoreData = calculateRouteScore(routeData);
+                        let routeScore = null;
+                        if(routeScoreData) {
+							routeScore = new dsLegend({title: routeScoreData.score, type: 'ascent', cssClass: Number(routeScoreData.score) < 100 ? 'bad' : 'good'})
+                        }
+
+                        routeDetails.append(routeGrade, routeAdded, routeSetter, routeRepeats);
+                        if(routeData.mirror) {
+                            routeDetails.append(routeMirror);
+                        }
+                        if(routeScore) {
+                            routeDetails.append(routeScore);
+                        }
                         routeItem.append(routeName, routeDetails);
                         routeItem.addEventListener('click', () => {
                             let toggleSelected = listDialog.querySelectorAll('.selected');
@@ -618,10 +668,9 @@ class systemBoard {
 
 // Sorting options
             const updateRouteListSorting = ( ) => {
-                if(globals.routeSorting === 'name')  { globals.boardRoutes = globals.boardRoutes.sort((a, b) => a.name.localeCompare(b.name)) }
                 if(globals.routeSorting === 'grade') { globals.boardRoutes = globals.boardRoutes.sort((a,b) => a.grade - b.grade) }
                 if(globals.routeSorting === 'date')  { globals.boardRoutes = globals.boardRoutes.sort((a,b) => (a.added > b.added) ? 1 : ((b.added > a.added) ? -1 : 0)) }
-                if(globals.routeSorting === 'grade') { globals.boardRoutes = globals.boardRoutes.sort((a,b) => a.grade - b.grade) }
+                if(globals.routeSorting === 'approval') { globals.boardRoutes = globals.boardRoutes.sort((a, b) => getRouteSortScore(a) - getRouteSortScore(b)) }
             }
 
             storeObserver.add({
@@ -998,7 +1047,27 @@ class systemBoard {
                         }
                     ]});
 
-                routeTickForm.append(tickType);
+				let approval = new dsRadio({
+				cssClass: 'radio-menu mt',
+				title: 'Did you like it',
+				name: 'approval',
+				options: [
+					{
+						title: "👎",
+						value: -1,
+					},
+					{
+						title: "🫤",
+						value: 0,
+						checked: true
+					},
+					{
+						title: "👍",
+						value: 1
+					}
+				]});
+
+				routeTickForm.append(tickType, approval);
                 tickDialog.appendChild(routeTickForm);
 
             }
@@ -1015,47 +1084,81 @@ class systemBoard {
                     tick: new dsButton({
                         title: climbed ? 'Remove tick' : 'Tick',
                         cssClass: 'btn btn_small preferred',
-                        thisOnClick: () => {
-                            if(globals.selectedRouteId) {
+                        thisOnClick: async () => {
+                            if(!globals.selectedRouteId) {
+                                modalWindow.close();
+                                return;
+                            }
 
-                                // remove tick
-                                if ( climbed ) {
-                                    ( async () => {
-                                        const routeReg = doc(this.db, "routes", globals.selectedRouteId);
-                                        updateDoc(routeReg, { 'ticks': arrayRemove(getAuth().currentUser.uid)}, {merge: true});
-                                    })();
-                                    ( async () => {
-                                        const userRef = doc(this.db, "users", getAuth().currentUser.uid);
-                                        const docSnap = await getDoc(userRef);
+                            const userId = getAuth().currentUser.uid;
+                            const routeRef = doc(this.db, "routes", globals.selectedRouteId);
+                            const userRef = doc(this.db, "users", userId);
 
-                                        let ticks = docSnap.data().ticks.filter(route => route.routeId != globals.selectedRouteId);
-                                        updateDoc(userRef, { 'ticks': ticks}, {merge: true});
-                                    })();
+                            try {
+                                // remove tick + remove this user's approval
+                                if(climbed) {
+                                    await updateDoc(routeRef, { ticks: arrayRemove(userId) });
+
+                                    const [routeSnap, userSnap] = await Promise.all([
+                                        getDoc(routeRef),
+                                        getDoc(userRef)
+                                    ]);
+
+                                    const currentApprovals = routeSnap.exists() && Array.isArray(routeSnap.data().approvals)
+                                        ? routeSnap.data().approvals
+                                        : [];
+                                    const nextApprovals = currentApprovals.filter((item) => item && item.userId !== userId);
+                                    await updateDoc(routeRef, { approvals: nextApprovals });
+
+                                    const currentTicks = userSnap.exists() && Array.isArray(userSnap.data().ticks)
+                                        ? userSnap.data().ticks
+                                        : [];
+                                    const nextTicks = currentTicks.filter((route) => route.routeId !== globals.selectedRouteId);
+                                    await updateDoc(userRef, { ticks: nextTicks });
 
                                     globals.standardMessage.push({message : `Tick removed`, timeout: 1});
                                     globals.standardMessage = globals.standardMessage;
                                 }
 
-                                // Add tick
+                                // add tick + store this user's approval
                                 else {
-                                    ( async () => {
-                                        const routeReg = doc(this.db, "routes", globals.selectedRouteId);
-                                        updateDoc(routeReg, { 'ticks': arrayUnion(getAuth().currentUser.uid)}, {merge: true});
-                                    })();
-                                    ( async () => {
-                                        const userRef = doc(this.db, "users", getAuth().currentUser.uid);
-                                        updateDoc(userRef, { 'ticks': arrayUnion(
-                                            {
-                                                'routeId': globals.selectedRouteId,
-                                                'type': document.forms['tick-form'].tick.value,
-                                                'date': new Date().getTime(),
-                                            })}, {merge: true});
-                                    })();
+                                    const form = document.forms['tick-form'];
+                                    const tickType = form && form.tick ? form.tick.value : 'flash';
+                                    const approvalValue = form && form.approval ? Number(form.approval.value) : 0;
+                                    const now = new Date().getTime();
+
+                                    await updateDoc(routeRef, { ticks: arrayUnion(userId) });
+
+                                    const routeSnap = await getDoc(routeRef);
+                                    const currentApprovals = routeSnap.exists() && Array.isArray(routeSnap.data().approvals)
+                                        ? routeSnap.data().approvals
+                                        : [];
+                                    const filteredApprovals = currentApprovals.filter((item) => item && item.userId !== userId);
+                                    filteredApprovals.push({
+                                        userId: userId,
+                                        value: approvalValue,
+                                        date: now
+                                    });
+                                    await updateDoc(routeRef, { approvals: filteredApprovals });
+
+                                    await updateDoc(userRef, { ticks: arrayUnion(
+                                        {
+                                            routeId: globals.selectedRouteId,
+                                            type: tickType,
+                                            approval: approvalValue,
+                                            date: now,
+                                        })
+                                    });
 
                                     globals.standardMessage.push({message : `${globals.selectedRoute} ticked`, timeout: 1});
                                     globals.standardMessage = globals.standardMessage;
                                 }
+                            } catch(error) {
+                                console.error('Tick update failed:', error);
+                                globals.standardMessage.push({message : `Tick update failed`, timeout: 1});
+                                globals.standardMessage = globals.standardMessage;
                             }
+
                             modalWindow.close()
                         }
                     })
