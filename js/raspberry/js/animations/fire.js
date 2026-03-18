@@ -65,24 +65,24 @@ export default function fire(board, pixels){
     }
   }
 
-  // Render fire with color gradient (red -> yellow)
+  // Render fire with color gradient (red -> orange)
   for(let i = 0; i < board.config.leds; i++){
     const heat = board.fire[i];
     if(heat < 20) continue;
 
     let r, g, b;
     if(heat < 85){
-      r = Math.floor(heat * 3);
-      g = 0;
+      r = Math.floor(heat * 2.4);
+      g = Math.floor(heat * 0.25);
       b = 0;
     } else if(heat < 170){
-      r = 255;
-      g = Math.floor((heat - 85) * 3);
+      r = Math.min(255, Math.floor(200 + (heat - 85) * 0.65));
+      g = Math.floor(20 + (heat - 85) * 1.3);
       b = 0;
     } else {
       r = 255;
-      g = 255;
-      b = Math.floor((heat - 170) * 1.5);
+      g = Math.min(210, Math.floor(130 + (heat - 170) * 1.1));
+      b = 0;
     }
 
     pixels[i] = (r << 16) | (g << 8) | b;

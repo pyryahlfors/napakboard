@@ -9,8 +9,30 @@ mySystemBoard.initialize();
 const db = new fireStore().initialize();
 
 let current = null;
+let currentRouteMeta = {
+  routeId: null,
+  routeName: null
+};
 
 const routeDoc = db.collection('current').doc(`currentRoute_${mySystemBoard.boardId}`);
+const boardStatusDoc = db.collection('boardStatus').doc(`boardStatus_${mySystemBoard.boardId}`);
+
+async function syncBoardStatus(extra = {}) {
+  try {
+    await boardStatusDoc.set({
+      boardId: mySystemBoard.boardId,
+      status: 'online',
+      lastSeenAt: Date.now(),
+      routeId: currentRouteMeta.routeId,
+      routeName: currentRouteMeta.routeName,
+      screensaverOn: mySystemBoard.screensaverRunning,
+      screensaverMode: mySystemBoard.screensaverMode,
+      ...extra
+    }, { merge: true });
+  } catch (error) {
+    console.error('Failed to sync board status:', error);
+  }
+}
 
 function renderRouteAscii(route, board) {
   const width = board.boardWidth;
@@ -38,23 +60,41 @@ function renderRouteAscii(route, board) {
   }
 
   const lines = [];
-  lines.push('ASCII board:');
-  for (let y = height - 1; y >= 0; y--) {
+  const colLabels = cols.slice(0, width);
+
+  for (let y = 0; y < height; y++) {
     lines.push(`${String(y + 1).padStart(2, ' ')}|${grid[y].join('')}`);
   }
   lines.push(`   ${'-'.repeat(width)}`);
-  lines.push(`   ${cols.slice(0, width)}`);
+  lines.push(`   ${colLabels}`);
 
   return lines.join('\n');
 }
 
+mySystemBoard.setStatusChangeHandler((status) => {
+  syncBoardStatus({
+    screensaverOn: status.screensaverOn,
+    screensaverMode: status.screensaverMode,
+    statusReason: status.reason
+  });
+});
+
+syncBoardStatus({ statusReason: 'board-online' });
+
 routeDoc.onSnapshot(
-  (doc) => {
+  async (doc) => {
     if(!doc.exists) return;
     const { routeId, routeName, routeData } = doc.data();
     if(!routeData) return;
 
     if(JSON.stringify(routeData) === JSON.stringify(current)) return;
+    currentRouteMeta = { routeId, routeName };
+    await syncBoardStatus({
+      routeId,
+      routeName,
+      statusReason: 'route-updated'
+    });
+    console.clear();
     console.log(`Name: ${routeName} - ID: ${routeId}`);
     console.log(renderRouteAscii(routeData, mySystemBoard));
     mySystemBoard.lit(routeData);

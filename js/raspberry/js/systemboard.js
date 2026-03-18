@@ -66,6 +66,7 @@ class systemBoard {
     this.activateScreenSaverDuration = 600000;
     this.lastScreensaverMode = null;
     this.animationContexts = {};
+    this.statusChangeHandler = null;
   }
 
   initialize() {
@@ -103,6 +104,7 @@ class systemBoard {
     ws281x.configure(this.config);
     console.log(`Board started: ${this.boardId}`);
     setInterval(() => this.tick(), 80);
+    this.notifyStatusChange('online');
   }
 
   /** LED GRID MAPPING */
@@ -126,7 +128,14 @@ class systemBoard {
   /** ROUTE LIGHTING */
   lit(route) {
     this.lastAction = Date.now();
+
+    if(this.screensaverMode){
+      delete this.animationContexts[this.screensaverMode];
+    }
+
     this.screensaverRunning = false;
+    this.screensaverMode = null;
+    this.screensaverStartedAt = 0;
     if(!route) return;
     const pixels = new Uint32Array(this.config.leds);
     const holdSetup = route.holdSetup;
@@ -136,6 +145,7 @@ class systemBoard {
       pixels[ledPosition] = `0x${this.holdColors[holdSetup[node]]}`;
     }
     ws281x.render(pixels);
+    this.notifyStatusChange('route-lit');
   }
 
   /** MAIN LOOP */
@@ -171,6 +181,27 @@ class systemBoard {
     return this.animationContexts[mode];
   }
 
+  setStatusChangeHandler(handler){
+    this.statusChangeHandler = handler;
+  }
+
+  getStatusSnapshot(){
+    return {
+      boardId: this.boardId,
+      screensaverOn: this.screensaverRunning,
+      screensaverMode: this.screensaverMode
+    };
+  }
+
+  notifyStatusChange(reason = 'state-changed'){
+    if(typeof this.statusChangeHandler !== 'function') return;
+
+    this.statusChangeHandler({
+      reason,
+      ...this.getStatusSnapshot()
+    });
+  }
+
   /** SCREENSAVER */
   startScreensaver(){
     const modes = Object.keys(animations);
@@ -182,6 +213,7 @@ class systemBoard {
     this.screensaverRunning = true;
     this.screensaverStartedAt = Date.now();
     console.log(`Running ${this.screensaverMode} animation`);
+    this.notifyStatusChange('screensaver-started');
   }
 
   stopScreensaver(){
@@ -200,6 +232,7 @@ class systemBoard {
     /** clear board */
     const pixels = new Uint32Array(this.config.leds);
     ws281x.render(pixels);
+    this.notifyStatusChange('screensaver-stopped');
   }
 }
 
