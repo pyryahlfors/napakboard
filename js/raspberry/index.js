@@ -21,7 +21,6 @@ async function syncBoardStatus(extra = {}) {
   try {
     await boardStatusDoc.set({
       boardId: mySystemBoard.boardId,
-      status: 'online',
       lastSeenAt: Date.now(),
       routeId: currentRouteMeta.routeId,
       routeName: currentRouteMeta.routeName,

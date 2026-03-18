@@ -2,9 +2,11 @@ import { dce, storeObserver } from '../../shared/helpers.js';
 //import toggleSwitch from '/js/components/toggleswitch.js';
 import { route } from '../../shared/route.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
-import { doc, getDoc, getFirestore } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
+import { doc, getFirestore, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
 import { user } from '../../shared/user.js';
 import { globals } from '../../shared/globals.js';
+
+const OFFLINE_THRESHOLD_MS = 12 * 60 * 1000;
 
 class otc {
   constructor() {
@@ -113,48 +115,64 @@ class otc {
 
 	let nakki = dce({el: 'div'});
   	nakki.innerHTML = "Loading board status...";
+	let statusUnsubscribe = null;
 
-	const renderBoardStatus = async () => {
-		try {
-			const boardId = globals.board;
-			const statusRef = doc(getFirestore(), 'boardStatus', `boardStatus_${boardId}`);
-			const statusSnap = await getDoc(statusRef);
-
-			if(!statusSnap.exists()){
-			nakki.innerHTML = `
-				<div class="mb"><strong>Board Status</strong></div>
-				<div>Board: ${boardId}</div>
-				<div>Status: Offline / no heartbeat yet</div>
-			`;
-			return;
-			}
-
-			const status = statusSnap.data();
-			const lastSeen = status.lastSeenAt
-			? new Date(status.lastSeenAt).toLocaleString("fi-FI")
+	const renderStatusFromData = (boardId, status) => {
+		const lastSeenAt = Number(status.lastSeenAt) || 0;
+		const now = Date.now();
+		const isOnline = lastSeenAt > 0 && (now - lastSeenAt) <= OFFLINE_THRESHOLD_MS;
+		const onlineLabel = isOnline ? 'Online' : 'Offline (stale)';
+		const lastSeen = lastSeenAt
+			? new Date(lastSeenAt).toLocaleString("fi-FI")
 			: 'Unknown';
 
-			nakki.innerHTML = `
-			<div>Board: ${status.boardId || boardId}</div>
-			<div>Status: ${status.status || 'unknown'}</div>
-			<div>Route: ${status.routeName || '-'} (${status.routeId || '-'})</div>
-			<div>Screensaver: ${status.screensaverOn ? 'On' : 'Off'} ${status.screensaverMode ? `(${status.screensaverMode})` : ''}</div>
-			<div>Last seen: ${lastSeen}</div>
-			`;
-		}
-		catch(err){
-			nakki.innerHTML = `<div>Board status fetch failed</div>`;
-			console.error(err);
-		}
+		nakki.innerHTML = `
+		<div>Board: ${status.boardId || boardId}</div>
+		<div>Status: ${onlineLabel}</div>
+		<div>Route: ${status.routeName || '-'} (${status.routeId || '-'})</div>
+		<div>Screensaver: ${status.screensaverOn ? 'On' : 'Off'} ${status.screensaverMode ? `(${status.screensaverMode})` : ''}</div>
+		<div>Last seen: ${lastSeen}</div>
+		`;
 	};
 
-	renderBoardStatus();
+	const subscribeBoardStatus = () => {
+		if(statusUnsubscribe){
+			statusUnsubscribe();
+			statusUnsubscribe = null;
+		}
+
+		const boardId = globals.board;
+		nakki.innerHTML = "Loading board status...";
+		const statusRef = doc(getFirestore(), 'boardStatus', `boardStatus_${boardId}`);
+
+		statusUnsubscribe = onSnapshot(
+			statusRef,
+			(statusSnap) => {
+				if(!statusSnap.exists()){
+					nakki.innerHTML = `
+						<div class="mb"><strong>Board Status</strong></div>
+						<div>Board: ${boardId}</div>
+						<div>Status: Offline / no heartbeat yet</div>
+					`;
+					return;
+				}
+
+				renderStatusFromData(boardId, statusSnap.data());
+			},
+			(err) => {
+				nakki.innerHTML = `<div>Board status fetch failed</div>`;
+				console.error(err);
+			}
+		);
+	};
+
+	subscribeBoardStatus();
 
 	storeObserver.add({
 	store: globals,
 	key: 'board',
 	id: 'otcBoardStatus',
-	callback: renderBoardStatus
+	callback: subscribeBoardStatus
 	});
 
 	container.append(nakki, tempContainer);
