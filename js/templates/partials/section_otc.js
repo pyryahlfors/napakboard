@@ -113,7 +113,7 @@ class otc {
 	tempContainer.append(loginInfo, otcLinksContainer)
 
 
-	let nakki = dce({el: 'div'});
+	let nakki = dce({el: 'div', cssClass: 'board-status'});
   	nakki.innerHTML = "Loading board status...";
 	let statusUnsubscribe = null;
 
@@ -122,16 +122,17 @@ class otc {
 		const now = Date.now();
 		const isOnline = lastSeenAt > 0 && (now - lastSeenAt) <= OFFLINE_THRESHOLD_MS;
 		const onlineLabel = isOnline ? 'Online' : 'Offline (stale)';
-		const lastSeen = lastSeenAt
-			? new Date(lastSeenAt).toLocaleString("fi-FI")
-			: 'Unknown';
+		const statusColor = isOnline ? 'var(--color-theme-green, #55d66b)' : 'var(--color-theme-redpoint, #ff5a5a)';
+		const lastSeen = lastSeenAt ? `${new Date(lastSeenAt).toLocaleDateString('fi-FI')} ${new Date(lastSeenAt).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit', hour12: false })}` : 'Unknown';
 
 		nakki.innerHTML = `
-		<div>Board: ${status.boardId || boardId}</div>
-		<div>Status: ${onlineLabel}</div>
-		<div>Route: ${status.routeName || '-'} (${status.routeId || '-'})</div>
-		<div>Screensaver: ${status.screensaverOn ? 'On' : 'Off'} ${status.screensaverMode ? `(${status.screensaverMode})` : ''}</div>
-		<div>Last seen: ${lastSeen}</div>
+		<div style="display: inline-flex; gap: var(--padding-base)">
+			<div class="mb"><h3>Board</h3>${status.boardId || boardId}</div>
+			<div class="mb"><h3>Status</h3><span style="color: ${statusColor}">${onlineLabel}</span></div>
+		</div>
+		<div class="mb"><h3>Route</h3> ${status.routeName || '-'}</div>
+		<div class="mb"><h3>Screensaver</h3> ${status.screensaverOn ? 'On' : 'Off'} ${status.screensaverMode ? `(${status.screensaverMode})` : ''}</div>
+		<div class="mb"><h3>Last seen</h3> ${lastSeen}</div>
 		`;
 	};
 

@@ -17,6 +17,7 @@
   -webkit-backdrop-filter: blur(5px);
   will-change: transform;
   padding-top: env(safe-area-inset-top, 0);
+  justify-content: space-between;
 }
 
 
@@ -204,4 +205,11 @@ body.otc .navi-shadow {
 form[name="boardselect"] ul {
   flex-direction: column;
   align-items: start;
+}
+
+
+.otc .board-status {
+ width: 100%;
+ padding: var(--padding-base);
+ text-align: right;
 }
