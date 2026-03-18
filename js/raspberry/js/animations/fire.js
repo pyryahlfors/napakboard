@@ -1,3 +1,5 @@
+import { rgbToGrb } from './colorUtils.js';
+
 export default function fire(board, pixels){
 
   if(!board.fire){
@@ -85,7 +87,7 @@ export default function fire(board, pixels){
       b = 0;
     }
 
-    pixels[i] = (r << 16) | (g << 8) | b;
+    pixels[i] = rgbToGrb(r, g, b);
   }
 
   board.fireFrame++;

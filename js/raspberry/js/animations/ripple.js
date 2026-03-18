@@ -1,3 +1,5 @@
+import { rgbToGrb } from './colorUtils.js';
+
 export default function ripple(board, pixels){
 
   if(!board.ripples){
@@ -48,15 +50,15 @@ export default function ripple(board, pixels){
         const addB = Math.floor(255 * ringStrength * wave.tint.b);
 
         const current = pixels[led];
-        const currentR = (current >> 16) & 0xFF;
-        const currentG = (current >> 8) & 0xFF;
+        const currentG = (current >> 16) & 0xFF;
+        const currentR = (current >> 8) & 0xFF;
         const currentB = current & 0xFF;
 
         const r = Math.min(255, currentR + addR);
         const g = Math.min(255, currentG + addG);
         const b = Math.min(255, currentB + addB);
 
-        pixels[led] = (r << 16) | (g << 8) | b;
+        pixels[led] = rgbToGrb(r, g, b);
       }
     }
 

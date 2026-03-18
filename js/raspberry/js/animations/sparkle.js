@@ -60,9 +60,9 @@ function applyGlow(board, pixels, x, y, width, height, centerBrightness){
 
 function addWhite(pixels, index, addValue){
   const current = pixels[index];
-  const currentR = (current >> 16) & 0xFF;
-  const next = Math.min(255, currentR + addValue);
-  pixels[index] = (next << 16) | (next << 8) | next;
+  const brightness = (current >> 16) & 0xFF;
+  const newBrightness = Math.min(255, brightness + addValue);
+  pixels[index] = (newBrightness<<16)|(newBrightness<<8)|newBrightness;
 }
 
 function ledIndexToXY(board, ledIndex, width, height){

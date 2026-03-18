@@ -1,3 +1,5 @@
+import { rgbToGrb } from './colorUtils.js';
+
 export default function aurora(board, pixels){
 
   if(board.auroraTime === undefined){
@@ -35,7 +37,7 @@ export default function aurora(board, pixels){
         }
 
         const led = board.getLedIndex(x, y);
-        pixels[led] = (r << 16) | (g << 8) | b;
+        pixels[led] = rgbToGrb(r, g, b);
       }
     }
   }

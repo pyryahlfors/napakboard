@@ -1,3 +1,5 @@
+import { rgbToGrb } from './colorUtils.js';
+
 export default function matrix(board, pixels){
 
   if(!board.matrixDrops){
@@ -38,7 +40,7 @@ export default function matrix(board, pixels){
         }
 
         let g = Math.floor(255*brightness);
-        pixels[led] = (g<<8); // GREEN
+        pixels[led] = rgbToGrb(0, g, 0); // GREEN (GRB format)
       }
 
       board.matrixStepCountdown[col]--;

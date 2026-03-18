@@ -1,3 +1,5 @@
+import { rgbToGrb, colorToGrb } from './colorUtils.js';
+
 const RADAR = {
   beamColor: { r: 215, g: 235, b: 225 },
   beamIntensity: 0.42,
@@ -72,11 +74,7 @@ export default function scanner(board, pixels){
 }
 
 function colorWithIntensity(color, intensity){
-  const clamped = Math.max(0, Math.min(1, intensity));
-  const r = Math.floor(color.r * clamped);
-  const g = Math.floor(color.g * clamped);
-  const b = Math.floor(color.b * clamped);
-  return (r << 16) | (g << 8) | b;
+  return colorToGrb(color, intensity);
 }
 
 function buildHoldHitPalette(board){

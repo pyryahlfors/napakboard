@@ -1,3 +1,5 @@
+import { rgbToGrb } from './colorUtils.js';
+
 export default function snake(board, pixels){
   const snakeLength = Number.isFinite(board.snakeLength) ? board.snakeLength : 10;
 
@@ -60,7 +62,7 @@ export default function snake(board, pixels){
 
     let [r,g,b] = hsvToRgb(hue/360,1,brightness);
 
-    pixels[led] = (r<<16)|(g<<8)|b;
+    pixels[led] = rgbToGrb(r, g, b);
   }
 
   board.snakeSteps++;

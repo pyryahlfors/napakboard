@@ -1,3 +1,5 @@
+import { rgbToGrb } from './colorUtils.js';
+
 const FONT_5X7 = {
   ' ': [
     '00000','00000','00000','00000','00000','00000','00000'
@@ -111,7 +113,7 @@ export default function textscroll(board, pixels){
           if(px < 0 || px >= board.boardWidth || py < 0 || py >= board.boardHeight) continue;
 
           const led = board.getLedIndex(px, py);
-          pixels[led] = (r << 16) | (g << 8) | b;
+          pixels[led] = rgbToGrb(r, g, b);
         }
       }
     }

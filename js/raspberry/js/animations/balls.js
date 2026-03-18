@@ -1,3 +1,5 @@
+import { rgbToGrb } from './colorUtils.js';
+
 export default function balls(board, pixels){
 
   if(!board.balls){
@@ -81,7 +83,7 @@ export default function balls(board, pixels){
 
         if(drawX >= 0 && drawX < board.boardWidth && drawY >= 0 && drawY < board.boardHeight){
           const led = board.getLedIndex(drawX, drawY);
-          pixels[led] = (r << 16) | (g << 8) | b;
+          pixels[led] = rgbToGrb(r, g, b);
         }
       }
     }
