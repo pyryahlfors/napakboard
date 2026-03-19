@@ -154,7 +154,6 @@ h3.bold {font-weight: 600;}
     background: var(--color-theme-background-dark);
     border-radius: 4px;
     position: relative;
-    overflow: hidden;
 	width: 100%;
 }
 .route-list-item > DIV {
@@ -283,4 +282,32 @@ hr {
   height: 100%;
   justify-content: center;
   max-height: 50vh;
+}
+
+
+.ribbon {
+	position: absolute;
+	top: -3px;
+	left: 50%;
+}
+
+.ribbon:before,
+.ribbon:after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 5px;
+    border: 4.5px solid var(--color-theme-redpoint);
+ }
+.ribbon:before {
+    border-bottom-color: transparent;
+    bottom: -13px;
+}
+
+.ribbon:after {
+    bottom: -4px;
+	height: 5px;
+	width: 9px;
+	background: linear-gradient(to bottom, transparent 0%,var(--color-theme-redpoint) 100%);
+	border: none;
 }

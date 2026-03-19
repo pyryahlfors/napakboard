@@ -344,6 +344,33 @@ class systemBoard {
         this.list = () => {
             // get routes from DB
 
+            let userTodoRouteIds = new Set();
+
+            const loadUserTodos = async () => {
+                const currentUser = getAuth().currentUser;
+                if(!currentUser) {
+                    userTodoRouteIds = new Set();
+                    return;
+                }
+
+                try {
+                    const userRef = doc(this.db, 'users', currentUser.uid);
+                    const userSnap = await getDoc(userRef);
+                    const todos = userSnap.exists() && Array.isArray(userSnap.data().todos)
+                        ? userSnap.data().todos
+                        : [];
+
+                    userTodoRouteIds = new Set(
+                        todos
+                            .map((todo) => (todo && typeof todo === 'object' ? todo.routeId : null))
+                            .filter(Boolean)
+                    );
+                } catch(error) {
+                    console.error('Failed to load TODO routes:', error);
+                    userTodoRouteIds = new Set();
+                }
+            };
+
             const dbQuery = query(collection(getFirestore(), 'routes'));
             onSnapshot(dbQuery, (querySnapshot) => {
             const routes = [];
@@ -601,10 +628,12 @@ class systemBoard {
                     else{
                         // doc.data() is never undefined for query doc snapshots
                         let routeItem = dce({el: 'DIV', cssClass: 'route-list-item'});
+                        routeItem.style.position = 'relative';
                         if( globals.selectedRouteId === routeData.id ) { routeItem.classList.add('selected'); }
                         if( routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid) ) { routeItem.classList.add('climbed'); }
                         let routeName = dce({el: 'h3', content: routeData.name});
-                        let routeDetails = dce({el: 'div'});
+
+						let routeDetails = dce({el: 'div'});
                         let routeGrade = new dsLegend({title: globals.grades.font[routeData.grade], type: 'grade', cssClass: globals.difficulty[routeData.grade]})
                         let routeMirror = new dsLegend({title: 'MIRROR', type: 'routeType', cssClass: 'mirror'})
 
@@ -618,40 +647,100 @@ class systemBoard {
                         }
 
                         routeDetails.append(routeGrade, routeAdded, routeSetter, routeRepeats);
-                        if(routeData.mirror) {
-                            routeDetails.append(routeMirror);
+
+						let routeTags = dce({el: 'div', cssStyle: 'display: flex', cssStyle: 'margin-top: 8px'});
+
+						if(routeData.mirror) { routeTags.append(routeMirror);}
+                        if(routeScore) {routeTags.append(routeScore);}
+
+						routeItem.append(routeName, routeDetails);
+
+                        if(userTodoRouteIds.has(routeData.id)) {
+                            let todoRibbon = dce({el: 'div', cssClass: 'ribbon'});
+                            routeItem.append(todoRibbon);
                         }
-                        if(routeScore) {
-                            routeDetails.append(routeScore);
-                        }
-                        routeItem.append(routeName, routeDetails);
+
+						if(routeData.mirror || routeScore) routeItem.append(routeTags);
+
                         routeItem.addEventListener('click', () => {
                             let toggleSelected = listDialog.querySelectorAll('.selected');
                             toggleSelected.forEach( ( el) => {el.classList.remove('selected')});
                             routeItem.classList.add('selected');
                             selectedRoute = routeData.id;
                         }, false);
-						if(isAdmin) {
-							let adminContainter = dce({el: 'DIV', cssStyle: 'position: relative'})
-							let removeButton = new dsButton({
-								title: 'Archive',
-								cssClass: 'btn btn_tiny',
-								cssStyle: 'position: absolute; top: 10px; right: 10px;',
-								thisOnClick: () => {
-									if(window.confirm('Are you sure?')) {
-										const routeReg = doc(this.db, "routes", routeData.id);
-										updateDoc(routeReg, { 'archived': true}, {merge: true});
-										alert(`Route ${routeData.id} archived`);									}
-									else {
-									}
-								}
-							});
-							adminContainter.append(routeItem, removeButton);
-							routelistContainer.append(adminContainter);
-						}
-						else {
-						routelistContainer.appendChild(routeItem);
-						}
+
+                        let routeItemContainer = dce({el: 'DIV', cssStyle: 'position: relative'});
+                        let todoButton = new dsButton({
+                            title: 'TODO',
+                            cssClass: 'btn btn_tiny',
+                            cssStyle: 'position: absolute; bottom: 10px; right: 10px;',
+                            thisOnClick: async () => {
+                                const userId = getAuth().currentUser && getAuth().currentUser.uid;
+                                if(!userId) { return; }
+
+                                try {
+                                    const userRef = doc(this.db, 'users', userId);
+                                    const userSnap = await getDoc(userRef);
+                                    const currentTodos = userSnap.exists() && Array.isArray(userSnap.data().todos)
+                                        ? userSnap.data().todos
+                                        : [];
+
+                                    const hasTodoAlready = currentTodos.some((todo) => todo && todo.routeId === routeData.id);
+
+                                    let nextTodos;
+                                    let message;
+
+                                    if(hasTodoAlready) {
+                                        // Remove from TODO
+                                        nextTodos = currentTodos.filter((todo) => todo && todo.routeId !== routeData.id);
+                                        message = `${routeData.name} removed from TODO`;
+                                        userTodoRouteIds.delete(routeData.id);
+                                    } else {
+                                        // Add to TODO
+                                        nextTodos = [
+                                            ...currentTodos,
+                                            {
+                                                routeId: routeData.id,
+                                                date: new Date().getTime()
+                                            }
+                                        ];
+                                        message = `${routeData.name} added to TODO`;
+                                        userTodoRouteIds.add(routeData.id);
+                                    }
+
+                                    await setDoc(userRef, {
+                                        todos: nextTodos
+                                    }, { merge: true });
+
+                                    updateRouteList();
+
+                                    globals.standardMessage.push({message, timeout: 1});
+                                    globals.standardMessage = globals.standardMessage;
+                                } catch(error) {
+                                    console.error('Failed to toggle TODO:', error);
+                                }
+                            }
+                        });
+
+                        routeItemContainer.append(routeItem, todoButton);
+
+                        if(isAdmin) {
+                            let removeButton = new dsButton({
+                                title: 'Archive',
+                                cssClass: 'btn btn_tiny destructive',
+                                cssStyle: 'position: absolute; top: 10px; right: 10px;',
+                                thisOnClick: () => {
+                                    if(window.confirm('Are you sure?')) {
+                                        const routeReg = doc(this.db, "routes", routeData.id);
+                                        updateDoc(routeReg, { 'archived': true}, {merge: true});
+                                        alert(`Route ${routeData.id} archived`);
+                                    }
+                                }
+                            });
+                            routeItemContainer.append(removeButton);
+                        }
+
+                        routelistContainer.appendChild(routeItemContainer);
 
                         globals.sortedRoutes.push(routeData)
                     }
@@ -703,6 +792,10 @@ class systemBoard {
                 key: 'routeSorting',
                 id: 'sortRoutesBy',
                 callback: () => {updateRouteListSorting()}
+            });
+
+            loadUserTodos().then(() => {
+                updateRouteList();
             });
 
 
@@ -1149,6 +1242,14 @@ class systemBoard {
                                             date: now,
                                         })
                                     });
+
+                                    // Remove route from user's TODO list when climbed
+                                    const userSnap = await getDoc(userRef);
+                                    const currentTodos = userSnap.exists() && Array.isArray(userSnap.data().todos)
+                                        ? userSnap.data().todos
+                                        : [];
+                                    const nextTodos = currentTodos.filter((todo) => todo && todo.routeId !== globals.selectedRouteId);
+                                    await updateDoc(userRef, { todos: nextTodos });
 
                                     globals.standardMessage.push({message : `${globals.selectedRoute} ticked`, timeout: 1});
                                     globals.standardMessage = globals.standardMessage;

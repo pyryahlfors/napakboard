@@ -44,6 +44,17 @@ class bottomNavi {
             else {document.querySelector(`#footer-${item}`).classList.remove('keep-selected')}
         }
 
+        this.setDisabled = ( item, disabled ) => {
+            const element = document.querySelector(`#footer-${item}`);
+            if(element) {
+                if(disabled) {
+                    element.classList.add('disabled');
+                } else {
+                    element.classList.remove('disabled');
+                }
+            }
+        }
+
         let toggleOtc = dce({el: 'A', cssClass: 'more'});
         let toggleSpan = dce({el: 'SPAN', content: '→'});
         toggleOtc.appendChild(toggleSpan)

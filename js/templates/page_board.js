@@ -1,4 +1,4 @@
-import { dce } from '../shared/helpers.js';
+import { dce, storeObserver } from '../shared/helpers.js';
 
 import systemBoard  from '../components/system_board/system_board.js';
 import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
@@ -18,32 +18,45 @@ class viewBoard {
 		save: {
 			title: 'save',
 			icon: 'save',
+			disabled: !!globals.selectedRouteId,
 			link: () => {mySystemBoard.save()}
+			},
+		tick: {
+			title: 'tick',
+			icon: 'tick',
+			disabled: !globals.selectedRouteId,
+			link: () => {mySystemBoard.tick()}
 			},
 		clear: {
 			title: 'clear',
 			icon: 'clear',
 			link: () => {mySystemBoard.clear()}
 			},
-		tick: {
-			title: 'tick',
-			icon: 'tick',
-			link: () => {mySystemBoard.tick()}
-			},
 		light: {
 			title: 'light up',
 			icon: 'light',
 			selected: globals.lightsOn,
 			link: () => {
-			globals.lightsOn =! globals.lightsOn;
-			footerNavi.toggle('light', globals.lightsOn);
-			}
+				globals.lightsOn =! globals.lightsOn;
+				footerNavi.toggle('light', globals.lightsOn);
+				}
 			},
 		}
 	});
 
+	storeObserver.add({
+		store: globals,
+		key: 'selectedRouteId',
+		id: 'pageBoardSaveDisable',
+		callback: () => {
+			const hasSaveDisabled = !!globals.selectedRouteId;
+			const hasTickDisabled = !globals.selectedRouteId;
+			footerNavi.setDisabled('save', hasSaveDisabled);
+			footerNavi.setDisabled('tick', hasTickDisabled);
+		}
+	});
 
-    tickPage.append(ticker.render(), mySystemBoard.render(),footerNavi.render());
+    tickPage.append(ticker.render(), mySystemBoard.render(), footerNavi.render());
     mySystemBoard.getHoldSetup();
 
     this.render = () => {
