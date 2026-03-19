@@ -2,4 +2,6 @@
     display: flex;
     align-items: center;
     padding: var(--padding-base);
+	flex-direction: column;
+	gap: var(--padding-base);
 }

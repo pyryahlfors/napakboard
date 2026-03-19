@@ -52,7 +52,9 @@ class otc {
     }
 
 	const showAdminLinks = () => {
-		let isAdmin = getAuth().currentUser ? getAuth().currentUser.uid === globals.boardSetup.owner : false;
+		if(!sideNavLinks) { return; }
+		const ownerId = globals.boardSetup && globals.boardSetup.owner ? globals.boardSetup.owner : null;
+		let isAdmin = getAuth().currentUser && ownerId ? getAuth().currentUser.uid === ownerId : false;
 		if(isAdmin){
 			if(!otcLinksContainer.querySelector('.sidenav-links .btn-admin')){
 				let btnSetup = dce({el: 'A',cssClass: 'btn-admin', cssStyle: 'color: var(--color-theme-redpoint); background: var(--color-black);', content: 'Board Setup' });
@@ -71,29 +73,45 @@ class otc {
 			}
 		}
 
+	const hasVisibleAdminLink = () => {
+		return Boolean(otcLinksContainer.querySelector('.sidenav-links .btn-admin'));
+	}
+
     storeObserver.add({
       store: user,
       key: 'login',
       id: 'userLogin',
-      callback: loginStatus
+			callback: () => {
+		loginStatus();
+		showAdminLinks();
+		refreshStatusForAdminState();
+	  }
     });
 
     storeObserver.add({
       store: user,
       key: 'name',
       id: 'userDetails',
-      callback: loginStatus
+			callback: () => {
+		loginStatus();
+		showAdminLinks();
+		refreshStatusForAdminState();
+	  }
     });
 
 	storeObserver.add({
       store: globals,
       key: 'boardSetup',
       id: 'checkBoardOwner',
-      callback: showAdminLinks
+	      callback: () => {
+			showAdminLinks();
+			refreshStatusForAdminState();
+		}
     });
 
-    let tempContainer = dce({el: 'DIV', cssStyle: 'display: flex; flex-direction: column'});
-    let sideNavLinks = dce({el: 'SECTION', cssClass: 'sidenav-links'});
+	let tempContainer = dce({el: 'DIV', cssStyle: 'display: flex; flex-direction: column'});
+	let sideNavLinks = null;
+	sideNavLinks = dce({el: 'SECTION', cssClass: 'sidenav-links'});
 
     let btnHistory = dce({el: 'A', content: 'History' });
     btnHistory.addEventListener('click', () => {
@@ -111,13 +129,21 @@ class otc {
 
 	otcLinksContainer.append(sideNavLinks);
 	tempContainer.append(loginInfo, otcLinksContainer)
+	showAdminLinks();
 
 
 	let nakki = dce({el: 'div', cssClass: 'board-status'});
   	nakki.innerHTML = "Loading board status...";
 	let statusUnsubscribe = null;
+	let latestBoardId = null;
+	let latestBoardStatus = null;
 
 	const renderStatusFromData = (boardId, status) => {
+		latestBoardId = boardId;
+		latestBoardStatus = status;
+		const ownerId = globals.boardSetup && globals.boardSetup.owner ? globals.boardSetup.owner : null;
+		const isAdminByOwner = getAuth().currentUser && ownerId ? getAuth().currentUser.uid === ownerId : false;
+		const isAdmin = isAdminByOwner || hasVisibleAdminLink();
 		const lastSeenAt = Number(status.lastSeenAt) || 0;
 		const now = Date.now();
 		const isOnline = lastSeenAt > 0 && (now - lastSeenAt) <= OFFLINE_THRESHOLD_MS;
@@ -131,10 +157,16 @@ class otc {
 			<div class="mb"><h3>Status</h3><span style="color: ${statusColor}">${onlineLabel}</span></div>
 		</div>
 		<div class="mb"><h3>Route</h3> ${status.routeName || '-'}</div>
-		<div class="mb"><h3>Route ID</h3>${status.routeId || '-'}</div>
-		<div class="mb"><h3>Screensaver</h3> ${status.screensaverOn ? 'On' : 'Off'} ${status.screensaverMode ? `(${status.screensaverMode})` : ''}</div>
+		${isAdmin ? `<div class="mb"><h3>Route ID</h3>${status.routeId || '-'}</div>` : ''}
+		${isAdmin ? `<div class="mb"><h3>Screensaver</h3> ${status.screensaverOn ? 'On' : 'Off'} ${status.screensaverMode ? `(${status.screensaverMode})` : ''}</div>` : ''}
 		<div class="mb"><h3>Last seen</h3> ${lastSeen}</div>
 		`;
+	};
+
+	const refreshStatusForAdminState = () => {
+		if(latestBoardId && latestBoardStatus && latestBoardId === globals.board) {
+			renderStatusFromData(latestBoardId, latestBoardStatus);
+		}
 	};
 
 	const subscribeBoardStatus = () => {
@@ -144,6 +176,8 @@ class otc {
 		}
 
 		const boardId = globals.board;
+		latestBoardId = null;
+		latestBoardStatus = null;
 		nakki.innerHTML = "Loading board status...";
 		const statusRef = doc(getFirestore(), 'boardStatus', `boardStatus_${boardId}`);
 

@@ -45,6 +45,10 @@ class bottomNavi {
         }
 
         this.setDisabled = ( item, disabled ) => {
+            if(params.options[item]) {
+                params.options[item].disabled = !!disabled;
+            }
+
             const element = document.querySelector(`#footer-${item}`);
             if(element) {
                 if(disabled) {
