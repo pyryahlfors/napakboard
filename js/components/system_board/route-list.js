@@ -12,7 +12,7 @@ import dsSelect from '../../components/ds-select/index.js';
 import dsToggle from '../../components/ds-toggle/index.js';
 import dsRadio from '../ds-radio/index.js';
 import dsLegend from '../ds-legend/index.js';
-import { collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
+import { collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc, setDoc, where } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
 import { calculateRouteScore, getRouteSortScore } from './route-utils.js';
 
@@ -207,17 +207,14 @@ export class RouteListManager {
         listDialog.append(dce({el: 'div', cssClass: 'loading', content: 'Loading routes...'}));
 
         // Database listener for routes
-        const dbQuery = query(collection(getFirestore(), 'routes'));
-        onSnapshot(dbQuery, (querySnapshot) => {
+        const dbQuery = query(collection(getFirestore(), 'routes'), where('napakboard', '==', globals.board));
+        let routesUnsubscribe = onSnapshot(dbQuery, (querySnapshot) => {
             const routes = [];
             querySnapshot.forEach((doc) => {
                 let routeData = doc.data();
-                if(routeData.napakboard === globals.board) {
-                    routeData.id = doc.id;
-                    routes.push(routeData);
-                }
+                routeData.id = doc.id;
+                routes.push(routeData);
             });
-
             globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
             globals.sortedRoutes = globals.boardRoutes;
         });
@@ -440,6 +437,7 @@ export class RouteListManager {
                     cssClass: 'btn btn_small',
                     thisOnClick: () => {
                         globals.sortedRoutes = [];
+                        if(routesUnsubscribe) { routesUnsubscribe(); routesUnsubscribe = null; }
                         modalWindow.close();
                     }
                 }),
@@ -447,6 +445,7 @@ export class RouteListManager {
                     title: 'Load',
                     cssClass: 'btn btn_small preferred',
                     thisOnClick: () => {
+                        if(routesUnsubscribe) { routesUnsubscribe(); routesUnsubscribe = null; }
                         if(selectedRoute) {
                             this.onLoadRoute(selectedRoute);
                         }
