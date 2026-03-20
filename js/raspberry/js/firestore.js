@@ -7,7 +7,7 @@ class firestore {
             "type": "service_account",
             "project_id": "napak-board",
             "private_key_id": "e01fdfdf8f2a41d7af909db55234358312bd6ccd",
-            "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC3nhunqAPCgpIv\nt2id7MR1TIDygn4QdykBHub6h>
+            "private_key": "-----BEGIN PRIVATE KEY-----",
             "client_email": "firebase-adminsdk-2bukn@napak-board.iam.gserviceaccount.com",
             "client_id": "107554878182031135368",
             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
