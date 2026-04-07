@@ -19,8 +19,8 @@ class viewProfile {
     let loginFormContainer = dce({el: 'SECTION', cssClass: 'profile-form'});
 
     let userProfileForm = dce({el: 'FORM', attrbs: [['name', 'napak-profile']]});
-    let userNameTitle = dce({el: 'H3', cssClass: 'mb', content: 'User name: '});
-    let userName = dce({el: 'INPUT', attrbs: [['placeholder', 'user name'], ['name', 'username'], ['value', getAuth().currentUser.displayName ]]});
+    let userNameTitle = dce({el: 'H3', cssClass: 'mb', content: 'User name '});
+    let userName = dce({el: 'INPUT', cssClass: 'mb', attrbs: [['placeholder', 'user name'], ['name', 'username'], ['value', getAuth().currentUser.displayName ]]});
     let updateProfileButton = dce({el: 'BUTTON', cssClass: 'mb btn_small preferred', content: 'Update'});
 
     let errorMessage = dce({el: 'DIV', cssClass : 'error'});

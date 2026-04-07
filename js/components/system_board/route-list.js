@@ -72,7 +72,7 @@ export class RouteListManager {
             }
         });
 
-        let routeNameContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 10px 0;  justify-content: space-between; align-items: center;'})
+        let routeNameContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 0;  justify-content: space-between; align-items: center;'})
         routeNameContainer.append(
             dce({el: 'h3', content: 'Route Name', cssStyle: 'text-align: center; color: #aaa; font-weight: 300'}),
             name

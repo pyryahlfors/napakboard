@@ -104,10 +104,10 @@ export class RouteEditor {
 
         let saveDialog = dce({el:'FORM', cssStyle: 'padding: 10px 0'});
 
-        let routeNameContainer = dce({el:'div', cssStyle: 'display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: var(--padding-base)'});
+        let routeNameContainer = dce({el:'div', cssClass: 'mb', cssStyle: 'display: flex; align-items: flex-end; justify-content: space-between;'});
 
         let routeName = new dsInput({
-            label: 'Route name',
+            label: 'ROUTE NAME',
             attrbs: [
                 ['placeholder', ''],
                 ['name', 'routename']
@@ -117,8 +117,7 @@ export class RouteEditor {
 
         let randomize = new dsButton({
             title: 'Randomize',
-            cssClass: 'btn btn_small',
-            cssStyle: 'margin: 0 0 var(--padding-base) var(--padding-base);'
+            cssClass: 'btn btn_small'
         });
 
         randomize.addEventListener('click', (e)=>{
@@ -126,7 +125,7 @@ export class RouteEditor {
             document.querySelector('input[name="routename"]').value = randomName();
         }, false)
 
-        let setter = new dsInput({label: 'Route setter', attrbs: [
+        let setter = new dsInput({label: 'SETTER', attrbs: [
             ['placeholder', ''],
             ['name', 'routesetter'],
             ['value', getAuth().currentUser.displayName || 'Anonymous']
@@ -144,7 +143,7 @@ export class RouteEditor {
         }
 
         let angle = new dsSelect({
-            label: 'Route angle',
+            label: 'ANGLE',
             options: angles,
             change: (e) => {
                 globals.boardAngle = Number(e);
@@ -157,7 +156,7 @@ export class RouteEditor {
             gradeOptions.push([globals.grades.font[i], i]);
         }
 
-        let grade = new dsSelect({label: 'Grade', options: gradeOptions})
+        let grade = new dsSelect({label: 'GRADE', options: gradeOptions, cssClass: 'mb'})
 
         routeNameContainer.append(routeName, randomize);
         saveDialog.append(routeNameContainer, grade, setter, setterid);
