@@ -44,3 +44,39 @@ export const getRouteSortScore = (routeData) => {
     const scoreData = calculateRouteScore(routeData);
     return scoreData ? scoreData.score : routeScoreConstants.BASE;
 };
+
+export const calculateRouteDifficulty = (routeData) => {
+    if(!routeData || !Array.isArray(routeData.approvals)) {
+        return null;
+    }
+
+    let easierVotes = 0;
+    let sandbagVotes = 0;
+
+    routeData.approvals.forEach((approval) => {
+        const value = Number(approval && approval.difficulty);
+        if(value < 0) { easierVotes++; }
+        if(value > 0) { sandbagVotes++; }
+    });
+
+    const totalVotes = easierVotes + sandbagVotes;
+    if(totalVotes === 0) {
+        return null;
+    }
+
+    if(easierVotes === sandbagVotes) {
+        return {
+            label: null,
+            easierVotes,
+            sandbagVotes,
+            votes: totalVotes
+        };
+    }
+
+    return {
+        label: easierVotes > sandbagVotes ? 'Soft' : 'Sandbag',
+        easierVotes,
+        sandbagVotes,
+        votes: totalVotes
+    };
+};

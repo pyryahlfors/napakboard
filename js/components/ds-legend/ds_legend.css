@@ -76,6 +76,16 @@
 	color: var(--color-white);
 }
 
+.legend-ascent.shit {
+	background-color: #c4a176;
+	color: var(--color-white);
+}
+
+.legend-ascent.nice {
+	background-color: #76c483;
+	color: var(--color-white);
+}
+
 
 .legend-routeType.mirror {
 	border-radius: 2px;

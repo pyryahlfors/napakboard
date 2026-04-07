@@ -76,7 +76,27 @@ export class RouteTicker {
                     }
                 ]});
 
-            routeTickForm.append(tickType, approval);
+            let difficulty = new dsRadio({
+                cssClass: 'radio-menu mt',
+                title: 'Route difficulty',
+                name: 'difficulty',
+                options: [
+                    {
+                        title: 'Easier',
+                        value: -1,
+                    },
+                    {
+                        title: 'On grade',
+                        value: 0,
+                        checked: true
+                    },
+                    {
+                        title: 'Sandbag',
+                        value: 1
+                    }
+                ]});
+
+            routeTickForm.append(tickType, approval, difficulty);
             tickDialog.appendChild(routeTickForm);
         }
 
@@ -133,6 +153,7 @@ export class RouteTicker {
                                 const form = document.forms['tick-form'];
                                 const tickType = form && form.tick ? form.tick.value : 'flash';
                                 const approvalValue = form && form.approval ? Number(form.approval.value) : 0;
+                                const difficultyValue = form && form.difficulty ? Number(form.difficulty.value) : 0;
                                 const now = new Date().getTime();
 
                                 await updateDoc(routeRef, { ticks: arrayUnion(userId) });
@@ -145,6 +166,7 @@ export class RouteTicker {
                                 filteredApprovals.push({
                                     userId: userId,
                                     value: approvalValue,
+                                    difficulty: difficultyValue,
                                     date: now
                                 });
                                 await updateDoc(routeRef, { approvals: filteredApprovals });
@@ -154,6 +176,7 @@ export class RouteTicker {
                                         routeId: globals.selectedRouteId,
                                         type: tickType,
                                         approval: approvalValue,
+                                        difficulty: difficultyValue,
                                         date: now,
                                     })
                                 });

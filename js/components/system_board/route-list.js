@@ -14,7 +14,7 @@ import dsRadio from '../ds-radio/index.js';
 import dsLegend from '../ds-legend/index.js';
 import { collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc, setDoc, where } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
-import { calculateRouteScore, getRouteSortScore } from './route-utils.js';
+import { calculateRouteDifficulty, calculateRouteScore, getRouteSortScore } from './route-utils.js';
 
 export class RouteListManager {
     constructor(db, onLoadRoute) {
@@ -50,6 +50,10 @@ export class RouteListManager {
 
     open() {
         let selectedRoute = null;
+        const boardSetup = globals.boardSetup || {};
+        const boardCharacteristics = boardSetup.characteristics || {};
+        const isAdjustableBoard = Boolean(boardCharacteristics.adjustable);
+        const boardOwner = boardSetup.owner || null;
         delete globals.routeNameSearch;
         let listDialog = dce({el:'div'});
         let sortOptionsContainer = dce({el: 'form', cssClass: 'routefilters', cssStyle: 'z-index: 2; margin-left: -20px; margin-right: -20px; padding: 10px 20px; background: rgb(32,32,32)', attrbs: [["name", "routesort"]]});
@@ -100,7 +104,7 @@ export class RouteListManager {
             angle
         );
 
-        if(globals.boardSetup.characteristics.adjustable) {
+        if(isAdjustableBoard) {
             sortOptionsContainer.append(routeAnglContainer, document.createElement("hr") );
         }
 
@@ -241,7 +245,7 @@ export class RouteListManager {
             if(searchString) { routes = globals.boardRoutes.filter( (route) => route.name.toLowerCase().indexOf(searchString.toLowerCase()) !== -1)}
 
             // angle
-            if(globals.boardSetup.characteristics.adjustable) {
+            if(isAdjustableBoard) {
                 if(globals.boardAngle !== 0) {
                     routes = routes.filter( (route) => route.angle === globals.boardAngle);
                 }
@@ -249,7 +253,7 @@ export class RouteListManager {
 
             // Hide archived routes
             routes.forEach((routeData) => {
-                let isAdmin = getAuth().currentUser ? getAuth().currentUser.uid === globals.boardSetup.owner : false;
+                let isAdmin = getAuth().currentUser ? getAuth().currentUser.uid === boardOwner : false;
 
                 // exclude user ticks (if selected)
                 if( globals.excludeTicks && routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid) ||
@@ -272,37 +276,30 @@ export class RouteListManager {
                     const routeScoreData = calculateRouteScore(routeData);
                     let routeScore = null;
                     if(routeScoreData) {
-                        routeScore = new dsLegend({title: routeScoreData.score, type: 'ascent', cssClass: Number(routeScoreData.score) < 100 ? 'bad' : 'good'})
+                        if(routeScoreData.upvotes > routeScoreData.downvotes) {
+                            routeScore = new dsLegend({title: '♥️⁠', type: 'ascent', cssClass: 'nice'});
+                        } else if(routeScoreData.downvotes > routeScoreData.upvotes) {
+                            routeScore = new dsLegend({title: '💩', type: 'ascent', cssClass: 'shit'});
+                        }
+                    }
+                    const routeDifficultyData = calculateRouteDifficulty(routeData);
+                    let routeDifficulty = null;
+                    if(routeDifficultyData && routeDifficultyData.label) {
+                        routeDifficulty = new dsLegend({
+                            title: routeDifficultyData.label,
+                            type: 'ascent',
+                            cssClass: routeDifficultyData.label === 'Sandbag' ? 'bad' : 'good'
+                        });
                     }
 
                     routeDetails.append(routeGrade, routeAdded, routeSetter, routeRepeats);
 
-                    let routeTags = dce({el: 'div', cssStyle: 'display: flex', cssStyle: 'margin-top: 8px'});
+                    let routeTags = dce({el: 'div', cssStyle: 'display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px;'});
+                    let routeActions = dce({el: 'div', cssClass: 'route-actions', cssStyle: 'display: flex; gap: 6px; margin-left: auto;'});
 
-                    if(routeData.mirror) { routeTags.append(routeMirror);}
-                    if(routeScore) {routeTags.append(routeScore);}
-
-                    routeItem.append(routeName, routeDetails);
-
-                    if(this.userTodoRouteIds.has(routeData.id)) {
-                        let todoRibbon = dce({el: 'div', cssClass: 'ribbon'});
-                        routeItem.append(todoRibbon);
-                    }
-
-                    if(routeData.mirror || routeScore) routeItem.append(routeTags);
-
-                    routeItem.addEventListener('click', () => {
-                        let toggleSelected = listDialog.querySelectorAll('.selected');
-                        toggleSelected.forEach( ( el) => {el.classList.remove('selected')});
-                        routeItem.classList.add('selected');
-                        selectedRoute = routeData.id;
-                    }, false);
-
-                    let routeItemContainer = dce({el: 'DIV', cssStyle: 'position: relative'});
                     let todoButton = new dsButton({
                         title: 'TODO',
                         cssClass: 'btn btn_tiny',
-                        cssStyle: 'position: absolute; bottom: 10px; right: 10px;',
                         thisOnClick: async () => {
                             const userId = getAuth().currentUser && getAuth().currentUser.uid;
                             if(!userId) { return; }
@@ -351,13 +348,15 @@ export class RouteListManager {
                         }
                     });
 
-                    routeItemContainer.append(routeItem, todoButton);
+                    if(routeData.mirror) { routeTags.append(routeMirror);}
+                    if(routeScore) {routeTags.append(routeScore);}
+                    if(routeDifficulty) {routeTags.append(routeDifficulty);}
+                    routeActions.append(todoButton);
 
                     if(isAdmin) {
                         let removeButton = new dsButton({
                             title: 'Archive',
                             cssClass: 'btn btn_tiny destructive',
-                            cssStyle: 'position: absolute; top: 10px; right: 10px;',
                             thisOnClick: () => {
                                 if(window.confirm('Are you sure?')) {
                                     const routeReg = doc(this.db, "routes", routeData.id);
@@ -366,10 +365,28 @@ export class RouteListManager {
                                 }
                             }
                         });
-                        routeItemContainer.append(removeButton);
+                        routeActions.append(removeButton);
                     }
 
-                    routelistContainer.appendChild(routeItemContainer);
+                    routeTags.append(routeActions);
+
+                    routeItem.append(routeName, routeDetails);
+
+                    if(this.userTodoRouteIds.has(routeData.id)) {
+                        let todoRibbon = dce({el: 'div', cssClass: 'ribbon'});
+                        routeItem.append(todoRibbon);
+                    }
+
+                    routeItem.append(routeTags);
+
+                    routeItem.addEventListener('click', () => {
+                        let toggleSelected = listDialog.querySelectorAll('.selected');
+                        toggleSelected.forEach( ( el) => {el.classList.remove('selected')});
+                        routeItem.classList.add('selected');
+                        selectedRoute = routeData.id;
+                    }, false);
+
+                    routelistContainer.appendChild(routeItem);
 
                     globals.sortedRoutes.push(routeData)
                 }
