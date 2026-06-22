@@ -96,6 +96,16 @@ class systemBoard {
                 let routeData = docSnap.data();
                 let holdSetup = routeData.holdSetup;
 
+                // Keep board route cache in sync so ticker can render route legend immediately.
+                const routeWithId = { ...routeData, id: routeId };
+                const existingRouteIndex = globals.boardRoutes.findIndex((route) => route.id === routeId);
+                if(existingRouteIndex >= 0) {
+                    globals.boardRoutes[existingRouteIndex] = routeWithId;
+                    globals.boardRoutes = [...globals.boardRoutes];
+                } else {
+                    globals.boardRoutes = [...globals.boardRoutes, routeWithId];
+                }
+
                 globals.selectedRoute = routeData['name'];
                 globals.selectedRouteId = routeId;
 
