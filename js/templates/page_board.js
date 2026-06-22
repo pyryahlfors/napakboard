@@ -57,7 +57,10 @@ class viewBoard {
 	});
 
     tickPage.append(ticker.render(), mySystemBoard.render(), footerNavi.render());
-    mySystemBoard.getHoldSetup();
+    // Ensure hold images are ready (they're also loaded in loadBoardSetup)
+    mySystemBoard.getHoldSetup().catch((error) => {
+        console.warn('Hold setup refresh failed:', error);
+    });
 
     this.render = () => {
       return tickPage;

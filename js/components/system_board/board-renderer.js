@@ -14,6 +14,7 @@ export class BoardRenderer {
         this.boardCols = 'abcdefghijklmnopqrstuvwxyz';
         this.timerStart = 0;
         this.timerEnd = 0;
+        this.holdSetupPromise = null;
     }
 
     notifyBoardChanged() {
@@ -23,14 +24,31 @@ export class BoardRenderer {
     }
 
     getHoldSetup() {
+        // Return cached promise if already loading
+        if (this.holdSetupPromise) {
+            return this.holdSetupPromise;
+        }
+
         this.holdImages = svg({el: 'svg', attrbs: [["viewBox", "0 0 0 0"]]});
 
-        fetch('/projects/napakboard/images/holds.svg?update=true')
-            .then((r) => r.text())
+        this.holdSetupPromise = fetch('/projects/napakboard/images/holds.svg?update=true')
+            .then((r) => {
+                if (!r.ok) {
+                    throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+                }
+                return r.text();
+            })
             .then((text) => {
                 this.holdImages.innerHTML = text;
+                return this.holdImages;
             })
-            .catch(console.error.bind(console));
+            .catch((error) => {
+                console.error('Failed to load hold images:', error);
+                // Still resolve with the empty holdImages element so rendering can continue with color-only fallback
+                return this.holdImages;
+            });
+
+        return this.holdSetupPromise;
     }
 
     drawHolds(boardContainer, data) {

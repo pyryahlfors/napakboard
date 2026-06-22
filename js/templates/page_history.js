@@ -44,11 +44,25 @@ class viewHistory {
 		  tempContainer.appendChild(boardName);
 
 		  let currentDate = null;
+
+		  // First pass: count routes per date
+		  const routeCountByDate = {};
+		  userTicks.forEach(route => {
+		    let selectedRoute = routes.find(({ id }) => id === route.routeId);
+		    if(selectedRoute && selectedRoute.napakboard === globals.board) {
+		      const dateKey = route.date ? new Date(route.date).toLocaleDateString() : 'no-date';
+		      routeCountByDate[dateKey] = (routeCountByDate[dateKey] || 0) + 1;
+		    }
+		  });
+
 		  userTicks.forEach( route => {
 			let selectedRoute = routes.find(({ id }) => id === route.routeId);
 			if(selectedRoute && selectedRoute.napakboard === globals.board) {
 				if(route.date && new Date(route.date).toLocaleDateString() !== new Date(currentDate).toLocaleDateString()) {
-				let dateEl = dce({el: 'h3', cssClass: 'mt mb', cssStyle: 'padding: 2px 8px; background: rgba(255,255,255,.2); border-radius: 2px;', content: new Date(route.date).toLocaleDateString("us-EN", {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'})});
+				const dateStr = new Date(route.date).toLocaleDateString("us-EN", {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'});
+				const dateKey = new Date(route.date).toLocaleDateString();
+				const count = routeCountByDate[dateKey] || 0;
+				let dateEl = dce({el: 'h3', cssClass: 'mt mb', cssStyle: 'padding: 2px 8px; background: rgba(255,255,255,.2); border-radius: 2px;', content: `${dateStr} - ${count} route${count !== 1 ? 's' : ''}`});
 				tempContainer.appendChild(dateEl);
 				currentDate = route.date;
 				}

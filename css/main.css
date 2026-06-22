@@ -311,3 +311,16 @@ hr {
 	background: linear-gradient(to bottom, transparent 0%,var(--color-theme-redpoint) 100%);
 	border: none;
 }
+
+
+.sortby-container {
+	display: flex;
+	margin: 10px 0;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.sortby-container h3 {
+	color: #aaa;
+	align-self: flex-start;
+}

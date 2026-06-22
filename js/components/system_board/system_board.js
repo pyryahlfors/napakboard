@@ -46,7 +46,7 @@ class systemBoard {
     }
 
     getHoldSetup() {
-        this.boardRenderer.getHoldSetup();
+        return this.boardRenderer.getHoldSetup();
     }
 
     loadBoardSetup(fromGlobals) {
@@ -55,6 +55,15 @@ class systemBoard {
         this.boardContainerWrapper.append(this.boardContainer);
 
         ( async () => {
+            // Ensure hold setup is loaded before rendering
+            // Wait a bit for the SVG to load, but don't block forever
+            await Promise.race([
+                this.boardRenderer.getHoldSetup(),
+                new Promise(resolve => setTimeout(resolve, 100)) // 100ms timeout
+            ]).catch((error) => {
+                console.warn('Hold setup loading did not complete in time, rendering with fallback:', error);
+            });
+
             const docRef = doc(this.db, "boardSetup", globals.board);
             const docSnap = await getDoc(docRef);
 
@@ -68,11 +77,13 @@ class systemBoard {
                     this.boardRenderer.drawHolds(this.boardContainer, data);
                 })
             }
-        })();
 
-        if(globals.selectedRouteId) {
-            this.loadRoute(globals.selectedRouteId)
-        }
+            // Load route if one is selected (give board time to render first)
+            if(globals.selectedRouteId) {
+                await new Promise(resolve => setTimeout(resolve, 50));
+                this.loadRoute(globals.selectedRouteId)
+            }
+        })();
     }
 
     loadRoute(routeId) {

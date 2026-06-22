@@ -76,9 +76,9 @@ export class RouteListManager {
             }
         });
 
-        let routeNameContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 0;  justify-content: space-between; align-items: center;'})
+        let routeNameContainer = dce({el: 'div', cssClass: 'sortby-container'})
         routeNameContainer.append(
-            dce({el: 'h3', content: 'Route Name', cssStyle: 'text-align: center; color: #aaa; font-weight: 300'}),
+            dce({el: 'h3', content: 'Route Name'}),
             name
         );
 
@@ -100,7 +100,7 @@ export class RouteListManager {
 
         let routeAnglContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 10px 0;  justify-content: space-between; align-items: center;'})
         routeAnglContainer.append(
-            dce({el: 'h3', content: 'Angle', cssStyle: 'text-align: center; color: #aaa; font-weight: 300'}),
+            dce({el: 'h3', content: 'Angle'}),
             angle
         );
 
@@ -132,9 +132,9 @@ export class RouteListManager {
             onchange: () => { globals.routeSorting = document.forms['routesort'].sort.value }
         });
 
-        let sortByContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 10px 0; justify-content: space-between; align-items: center;'})
+        let sortByContainer = dce({el: 'div', cssClass: 'sortby-container'})
         sortByContainer.append(
-            dce({el: 'h3', content: 'Sort by', cssStyle: 'text-align: center; color: #aaa; font-weight: 300'}),
+            dce({el: 'h3', content: 'Sort by'}),
             sortMenu
         );
 
@@ -162,9 +162,9 @@ export class RouteListManager {
             }
         });
 
-        let orderContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 10px 0; justify-content: space-between; align-items: center;'})
+        let orderContainer = dce({el: 'div', cssClass: 'sortby-container'})
         orderContainer.append(
-            dce({el: 'h3', content: 'Order', cssStyle: 'text-align: center; color: #aaa; font-weight: 300'}),
+            dce({el: 'h3', content: 'Order'}),
             order);
 
         sortOptionsContainer.append(orderContainer, document.createElement("hr") );
@@ -180,9 +180,9 @@ export class RouteListManager {
             onToggle : () => { updateRouteListSorting() },
         });
 
-        let myTicksContainer = dce({el: 'div', cssStyle: 'display: flex; margin: 10px 0; justify-content: space-between; align-items: center;'})
+        let myTicksContainer = dce({el: 'div', cssClass: 'sortby-container'})
         myTicksContainer.append(
-            dce({el: 'h3', content: 'My ticks', cssStyle: 'text-align: center; margin: 0 0 10px 0; color: #aaa; font-weight: 300'}),
+            dce({el: 'h3', content: 'My ticks'}),
             toggleMyAscents.render()
         );
 
@@ -297,61 +297,67 @@ export class RouteListManager {
                     let routeTags = dce({el: 'div', cssStyle: 'display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px;'});
                     let routeActions = dce({el: 'div', cssClass: 'route-actions', cssStyle: 'display: flex; gap: 6px; margin-left: auto;'});
 
-                    let todoButton = new dsButton({
-                        title: 'TODO',
-                        cssClass: 'btn btn_tiny',
-                        thisOnClick: async () => {
-                            const userId = getAuth().currentUser && getAuth().currentUser.uid;
-                            if(!userId) { return; }
+                    // Only show TODO button if route has not been ticked yet
+                    const hasUserTicked = routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid);
 
-                            try {
-                                const userRef = doc(this.db, 'users', userId);
-                                const userSnap = await getDoc(userRef);
-                                const currentTodos = userSnap.exists() && Array.isArray(userSnap.data().todos)
-                                    ? userSnap.data().todos
-                                    : [];
+                    if (!hasUserTicked) {
+                        let todoButton = new dsButton({
+                            title: 'TODO',
+                            cssClass: 'btn btn_tiny',
+                            thisOnClick: async () => {
+                                const userId = getAuth().currentUser && getAuth().currentUser.uid;
+                                if(!userId) { return; }
 
-                                const hasTodoAlready = currentTodos.some((todo) => todo && todo.routeId === routeData.id);
+                                try {
+                                    const userRef = doc(this.db, 'users', userId);
+                                    const userSnap = await getDoc(userRef);
+                                    const currentTodos = userSnap.exists() && Array.isArray(userSnap.data().todos)
+                                        ? userSnap.data().todos
+                                        : [];
 
-                                let nextTodos;
-                                let message;
+                                    const hasTodoAlready = currentTodos.some((todo) => todo && todo.routeId === routeData.id);
 
-                                if(hasTodoAlready) {
-                                    // Remove from TODO
-                                    nextTodos = currentTodos.filter((todo) => todo && todo.routeId !== routeData.id);
-                                    message = `${routeData.name} removed from TODO`;
-                                    this.userTodoRouteIds.delete(routeData.id);
-                                } else {
-                                    // Add to TODO
-                                    nextTodos = [
-                                        ...currentTodos,
-                                        {
-                                            routeId: routeData.id,
-                                            date: new Date().getTime()
-                                        }
-                                    ];
-                                    message = `${routeData.name} added to TODO`;
-                                    this.userTodoRouteIds.add(routeData.id);
+                                    let nextTodos;
+                                    let message;
+
+                                    if(hasTodoAlready) {
+                                        // Remove from TODO
+                                        nextTodos = currentTodos.filter((todo) => todo && todo.routeId !== routeData.id);
+                                        message = `${routeData.name} removed from TODO`;
+                                        this.userTodoRouteIds.delete(routeData.id);
+                                    } else {
+                                        // Add to TODO
+                                        nextTodos = [
+                                            ...currentTodos,
+                                            {
+                                                routeId: routeData.id,
+                                                date: new Date().getTime()
+                                            }
+                                        ];
+                                        message = `${routeData.name} added to TODO`;
+                                        this.userTodoRouteIds.add(routeData.id);
+                                    }
+
+                                    await setDoc(userRef, {
+                                        todos: nextTodos
+                                    }, { merge: true });
+
+                                    updateRouteList();
+
+                                    globals.standardMessage.push({message, timeout: 1});
+                                    globals.standardMessage = globals.standardMessage;
+                                } catch(error) {
+                                    console.error('Failed to toggle TODO:', error);
                                 }
-
-                                await setDoc(userRef, {
-                                    todos: nextTodos
-                                }, { merge: true });
-
-                                updateRouteList();
-
-                                globals.standardMessage.push({message, timeout: 1});
-                                globals.standardMessage = globals.standardMessage;
-                            } catch(error) {
-                                console.error('Failed to toggle TODO:', error);
                             }
-                        }
-                    });
+                        });
+
+                        routeActions.append(todoButton);
+                    }
 
                     if(routeData.mirror) { routeTags.append(routeMirror);}
                     if(routeScore) {routeTags.append(routeScore);}
                     if(routeDifficulty) {routeTags.append(routeDifficulty);}
-                    routeActions.append(todoButton);
 
                     if(isAdmin) {
                         let removeButton = new dsButton({

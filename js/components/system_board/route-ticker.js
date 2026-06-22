@@ -33,7 +33,7 @@ export class RouteTicker {
         const routeData = routeSnap.exists() ? routeSnap.data() : {};
         let climbed = Array.isArray(routeData.ticks) && routeData.ticks.includes(currentUser.uid);
 
-        let tickDialog = dce({el:'div', cssStyle: 'padding: 10px 0 20px; text-align: center'});
+        let tickDialog = dce({el:'div', cssStyle: 'padding: 10px 0 20px;'});
         let confirm = dce({el: 'p', content: climbed ? 'You have already ticked this route. Want to remove it?' : ''});
         tickDialog.append(confirm);
 
@@ -118,6 +118,10 @@ export class RouteTicker {
                             return;
                         }
 
+                        // Disable both buttons to indicate processing
+                        const buttons = modalWindow.querySelectorAll('button');
+                        buttons.forEach(btn => btn.disabled = true);
+
                         const userId = currentUser.uid;
                         const routeRef = doc(this.db, "routes", globals.selectedRouteId);
                         const userRef = doc(this.db, "users", userId);
@@ -196,6 +200,11 @@ export class RouteTicker {
                             console.error('Tick update failed:', error);
                             globals.standardMessage.push({message : `Tick update failed`, timeout: 1});
                             globals.standardMessage = globals.standardMessage;
+
+                            // Re-enable buttons if there was an error
+                            const buttons = modalWindow.querySelectorAll('button');
+                            buttons.forEach(btn => btn.disabled = false);
+                            return;
                         }
 
                         modalWindow.close()

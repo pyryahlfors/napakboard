@@ -71,7 +71,6 @@ input[type=checkbox] {
   margin: 0;
   padding: 0;
   gap: 10px;
-  justify-content: center;
 }
 
 .radio-menu input[type=radio] {
@@ -144,4 +143,12 @@ input[type=checkbox] {
 
 .on-off-switch.switched-off::after {
   left: calc(100% - 9.5px);
+}
+
+
+form[name=tick-form] {
+	font-size: 1.25em;
+}
+form[name=tick-form] h3{
+	text-decoration: underline;
 }
