@@ -100,10 +100,10 @@ h3.bold {font-weight: 600;}
 .page-board {
     height: 100%;
     display: grid;
-    grid-template-rows: 40px minmax(100%, 1fr) 40px;
-    grid-template-areas: "header"
-      "board"
-      "footer";
+	grid-template-rows: 40px 1fr 40px;
+	grid-template-areas: "header"
+		"board"
+		"footer";
     background: rgba(0,0,0,.3);
     z-index: 2;
     position: relative;
