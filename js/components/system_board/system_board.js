@@ -16,7 +16,7 @@ class systemBoard {
 		this.routeCommentsHelp = dce({el: 'div', cssClass: 'swipe-help'});
 		this.routeCommentsHelp.innerHTML = "Swipe right for route info";
 
-        this.routeComments = dce({el: 'section', cssStyle: 'background: #111; width: 100vw; flex-shrink: 0; scroll-snap-align: start; padding: 2ch; box-sizing: border-box; min-height: calc(100vh - 80px);'});
+        this.routeComments = dce({el: 'section', cssStyle: 'background: #111; width: 100vw; flex-shrink: 0; scroll-snap-align: start; padding: 2ch; box-sizing: border-box; height: calc(100vh - 80px);'});
         this.routeCommentsBody = dce({el: 'div', cssStyle: 'max-width: 52rem; margin: 0 auto; display: grid; gap: 1rem;'});
         this.routeComments.append(this.routeCommentsBody);
 
