@@ -11,6 +11,8 @@
     scroll-snap-points-y: repeat(100vw);
     scrollbar-width: none;
     scroll-snap-stop: always;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
 }
 
 .swipe-help {
@@ -40,6 +42,9 @@
     scrollbar-width: none;
 	display: grid;
 	grid-template-columns: auto 30px;
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .board-container {
