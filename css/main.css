@@ -61,7 +61,7 @@ h3.bold {font-weight: 600;}
     display: flex;
     flex-direction: column;
     z-index: 2;
-    touch-action: manipulation;
+    touch-action: none;
   }
 
 
@@ -72,7 +72,7 @@ h3.bold {font-weight: 600;}
     flex: 1;
     transition: filter 300ms ease-in-out;
     overflow: hidden;
-    touch-action: pan-x pan-y;
+    touch-action: none;
     padding-top: env(safe-area-inset-top, 0);
 }
 
