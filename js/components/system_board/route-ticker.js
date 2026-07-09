@@ -96,7 +96,19 @@ export class RouteTicker {
                     }
                 ]});
 
-            routeTickForm.append(tickType, approval, difficulty);
+            const commentBlock = dce({el: 'div', cssStyle: 'margin-top: 1rem;'});
+            const commentLabel = dce({el: 'h3', cssStyle: 'margin: 0 0 0.5rem;', content: 'Comment'});
+            const commentInput = dce({
+                el: 'textarea',
+                cssStyle: 'width: 100%; min-height: 6rem; resize: vertical; padding: 0.75rem; box-sizing: border-box; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 10px; font: inherit;',
+                attrbs: [
+                    ['name', 'comment'],
+                    ['placeholder', 'Add a short note about the climb']
+                ]
+            });
+            commentBlock.append(commentLabel, commentInput);
+
+            routeTickForm.append(tickType, approval, difficulty, commentBlock);
             tickDialog.appendChild(routeTickForm);
         }
 
@@ -140,7 +152,11 @@ export class RouteTicker {
                                     ? routeSnap.data().approvals
                                     : [];
                                 const nextApprovals = currentApprovals.filter((item) => item && item.userId !== userId);
-                                await updateDoc(routeRef, { approvals: nextApprovals });
+                                const currentTickLog = routeSnap.exists() && Array.isArray(routeSnap.data().tickLog)
+                                    ? routeSnap.data().tickLog
+                                    : [];
+                                const nextTickLog = currentTickLog.filter((item) => item && item.userId !== userId);
+                                await updateDoc(routeRef, { approvals: nextApprovals, tickLog: nextTickLog });
 
                                 const currentTicks = userSnap.exists() && Array.isArray(userSnap.data().ticks)
                                     ? userSnap.data().ticks
@@ -158,6 +174,7 @@ export class RouteTicker {
                                 const tickType = form && form.tick ? form.tick.value : 'flash';
                                 const approvalValue = form && form.approval ? Number(form.approval.value) : 0;
                                 const difficultyValue = form && form.difficulty ? Number(form.difficulty.value) : 0;
+                                const commentValue = form && form.comment ? form.comment.value.trim() : '';
                                 const now = new Date().getTime();
 
                                 await updateDoc(routeRef, { ticks: arrayUnion(userId) });
@@ -167,13 +184,26 @@ export class RouteTicker {
                                     ? routeSnap.data().approvals
                                     : [];
                                 const filteredApprovals = currentApprovals.filter((item) => item && item.userId !== userId);
+                                const currentTickLog = routeSnap.exists() && Array.isArray(routeSnap.data().tickLog)
+                                    ? routeSnap.data().tickLog
+                                    : [];
+                                const filteredTickLog = currentTickLog.filter((item) => item && item.userId !== userId);
                                 filteredApprovals.push({
                                     userId: userId,
                                     value: approvalValue,
                                     difficulty: difficultyValue,
                                     date: now
                                 });
-                                await updateDoc(routeRef, { approvals: filteredApprovals });
+                                filteredTickLog.push({
+                                    userId: userId,
+                                    userName: currentUser.displayName || 'Anonymous',
+                                    type: tickType,
+                                    approval: approvalValue,
+                                    difficulty: difficultyValue,
+                                    comment: commentValue,
+                                    date: now
+                                });
+                                await updateDoc(routeRef, { approvals: filteredApprovals, tickLog: filteredTickLog });
 
                                 await updateDoc(userRef, { ticks: arrayUnion(
                                     {
@@ -181,6 +211,7 @@ export class RouteTicker {
                                         type: tickType,
                                         approval: approvalValue,
                                         difficulty: difficultyValue,
+                                        comment: commentValue,
                                         date: now,
                                     })
                                 });
@@ -195,6 +226,14 @@ export class RouteTicker {
 
                                 globals.standardMessage.push({message : `${globals.selectedRoute} ticked`, timeout: 1});
                                 globals.standardMessage = globals.standardMessage;
+                            }
+
+                            const updatedRouteSnap = await getDoc(routeRef);
+                            if(updatedRouteSnap.exists() && window.mySystemBoard && typeof window.mySystemBoard.syncRouteCache === 'function') {
+                                window.mySystemBoard.syncRouteCache(globals.selectedRouteId, updatedRouteSnap.data());
+                                if(typeof window.mySystemBoard.renderRouteComments === 'function') {
+                                    window.mySystemBoard.renderRouteComments();
+                                }
                             }
                         } catch(error) {
                             console.error('Tick update failed:', error);

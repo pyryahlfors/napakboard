@@ -1,15 +1,45 @@
 /**
 */
 
+.snap-container {
+    width: 100vw;
+	height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: row;
+    overflow: auto;
+    scroll-snap-type: x mandatory;
+    scroll-snap-points-y: repeat(100vw);
+    scrollbar-width: none;
+    scroll-snap-stop: always;
+}
+
+.swipe-help {
+	position: sticky;
+	top: 0;
+	right: 0;
+	text-align: center;
+	height: calc(100vh - 80px);
+	padding: 10px;
+	writing-mode: vertical-rl;
+	text-transform: uppercase;
+	font-family: 'IBM Plex Mono';
+	background: var(--color-theme-background-light);
+}
+
 .board-wrapper {
-  width: 100%;
-  overflow: auto;
-  position: absolute;
-  top: 40px;
-  bottom : 40px;
-  background-color: #fff;
-  scroll-behavior: smooth;
-  will-change: scroll-position;
+	width: 100%;
+    height: 100%;
+    overflow: auto;
+    position: relative;
+    background: #333;
+    overflow: auto;
+    transform: translate3d(0, 0, 0);
+    will-change: scroll-position;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    scrollbar-width: none;
+	display: grid;
+	grid-template-columns: auto 30px;
 }
 
 .board-container {

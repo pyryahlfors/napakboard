@@ -4,23 +4,15 @@ import fs from 'node:fs';
 import snakeAnimation from './animations/snake.js';
 import matrixAnimation from './animations/matrix.js';
 import sparkleAnimation from './animations/sparkle.js';
-import scannerAnimation from './animations/scanner.js';
-import fireAnimation from './animations/fire.js';
-import ballsAnimation from './animations/balls.js';
 import auroraAnimation from './animations/aurora.js';
 import rippleAnimation from './animations/ripple.js';
-import textScrollAnimation from './animations/textscroll.js';
 
 const animations = {
   snake: snakeAnimation,
   matrix: matrixAnimation,
   sparkle: sparkleAnimation,
-  scanner: scannerAnimation,
-  fire: fireAnimation,
-  balls: ballsAnimation,
   aurora: auroraAnimation,
-  ripple: rippleAnimation,
-  textscroll: textScrollAnimation
+  ripple: rippleAnimation
 };
 
 function loadBoardEnv(){
@@ -95,10 +87,10 @@ class systemBoard {
     this.firstColumnReversed = this.boardWidth % 2 === 0;
 
     this.holdColors = {
-      start: "00ff00",
-      intermediate: "aa00ff",
-      top: "ff0000",
-      foot: "a7ceb08"
+		start: "00ff00",
+		intermediate: "aa00ff",
+		top: "ff0000",
+		foot: "a7ceb08"
     };
 
     ws281x.configure(this.config);
