@@ -15,6 +15,7 @@ import viewBoardSelect
 import otc from './templates/partials/section_otc.js';
 
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
+import { AUTH_HINT_KEY } from './shared/user.js';
 import { collection, doc, getFirestore, onSnapshot, query } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 
 const napakBoard = {
@@ -65,11 +66,17 @@ const napakBoard = {
 
         getAuth().onAuthStateChanged(function(authUser) {
           if( authUser ) {
-			user.name.displayName = authUser.displayName;
+            localStorage.setItem(AUTH_HINT_KEY, '1');
+            user.name.displayName = authUser.displayName;
             user.name.id = authUser.uid;
             user.login.isLoggedIn = true;
 
             user.name = user.name;
+            user.login = user.login;
+          } else {
+            // Session expired or user signed out in another tab
+            localStorage.removeItem(AUTH_HINT_KEY);
+            user.login.isLoggedIn = false;
             user.login = user.login;
           }
         })

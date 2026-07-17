@@ -397,6 +397,11 @@ hr {
   font-weight: bold;
 }
 
+.bars-container span.redpoint:empty,
+.bars-container span.flash:empty {
+  display: none;
+}
+
 .bars-container span:first-of-type {
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;

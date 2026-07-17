@@ -1,5 +1,6 @@
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js'
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js';
+
+export const AUTH_HINT_KEY = 'napak_auth_hint';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -30,16 +31,16 @@ const handler = {
   }
 }
 
-let userFromStorage = getAuth().currentUser || {};
 let userObject = {
   storeObservers : [],
   name : {
-    displayName: userFromStorage.displayName,
-    id:  userFromStorage.uid
+    displayName: null,
+    id: null
   },
-
   login : {
-    isLoggedIn : userFromStorage.uid ? true : false,
+    // Use localStorage as a fast hint so returning users skip the login screen
+    // on load. onAuthStateChanged confirms or clears this in the background.
+    isLoggedIn : localStorage.getItem(AUTH_HINT_KEY) === '1',
   }
 };
 

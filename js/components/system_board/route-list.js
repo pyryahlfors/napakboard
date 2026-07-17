@@ -32,7 +32,10 @@ export class RouteListManager {
 
         try {
             const userRef = doc(this.db, 'users', currentUser.uid);
-            const userSnap = await getDoc(userRef);
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('loadUserTodos timeout')), 5000)
+            );
+            const userSnap = await Promise.race([getDoc(userRef), timeoutPromise]);
             const todos = userSnap.exists() && Array.isArray(userSnap.data().todos)
                 ? userSnap.data().todos
                 : [];
@@ -221,6 +224,9 @@ export class RouteListManager {
             });
             globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
             globals.sortedRoutes = globals.boardRoutes;
+        }, (error) => {
+            console.error('Failed to load routes:', error);
+            updateRouteList();
         });
 
         // Update route list
