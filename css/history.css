@@ -42,40 +42,43 @@
   overflow: hidden;
   margin: var(--padding-base);
   font-size: var(--font-size-base);
-}
-
-.session-header {
-  padding: var(--padding-base-half);
-  background: rgba(255, 255, 255, 0.05);
-  margin: 0 var(--padding-base-negative) var(--padding-base-half);
+  & .session-header {
+    padding: var(--padding-base-half);
+    background: rgba(255, 255, 255, 0.05);
+    margin: 0 var(--padding-base-negative) var(--padding-base-half);
+  }
 }
 
 .session-tick {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: var(--padding-base-half);
   padding: var(--padding-base-half);
-}
 
-.session-tick:nth-of-type(even) {
-  background: var(--color-theme-color1-accent);
-}
+  &:nth-of-type(even) {
+    background: var(--color-theme-color1-accent);
+  }
 
-.session-tick > .tick-grade {
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-}
-.session-tick > .tick-routename {
-  width: 50%;
-}
+  & > ds-legend {
+    flex: 0 0 60px;
+  }
 
-.session-tick > .tick-ascenttype {
-  text-transform: capitalize;
-  width: 30%;
-  text-align: right;
-}
+  & > .tick-routename {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
 
-.session-tick > .tick-ascentscore {
-  text-align: right;
-  font-family: 'IBM Plex Mono';
+  & > .tick-ascenttype {
+    flex: 0 0 115px;
+    display: flex;
+    justify-content: flex-end;
+    text-transform: capitalize;
+    text-align: right;
+  }
+
+  & > .tick-ascentscore {
+    flex: 0 0 40px;
+    text-align: right;
+    font-family: 'IBM Plex Mono';
+  }
 }

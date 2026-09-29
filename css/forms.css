@@ -14,10 +14,10 @@ BUTTON {
   width: 100%;
   -webkit-tap-highlight-color: var(--color-theme-accent-1);
   -webkit-appearance: none;
-}
 
-button:disabled {
-  background-color: var(--color-white-dim);
+  &:disabled {
+    background-color: var(--color-white-dim);
+  }
 }
 
 input,
@@ -41,28 +41,30 @@ select {
   padding-left: var(--padding-base-half);
 }
 
-input:disabled {
-  box-shadow: inset 0 0 0 1px var(--color-white-dim);
-  color: var(--color-white-dim);
-}
+input {
+  &:disabled {
+    box-shadow: inset 0 0 0 1px var(--color-white-dim);
+    color: var(--color-white-dim);
+  }
 
-input:focus {
-  box-shadow: inset 0 0 0 1px var(--color-theme-accent-1), 0 0 5px 0 var(--color-theme-accent-1-alpha);
-}
+  &:focus {
+    box-shadow: inset 0 0 0 1px var(--color-theme-accent-1), 0 0 5px 0 var(--color-theme-accent-1-alpha);
+  }
 
-input:invalid:not(:placeholder-shown) {
-  box-shadow: inset 0 0 0 1px var(--color-theme-redpoint);
-}
+  &:invalid:not(:placeholder-shown) {
+    box-shadow: inset 0 0 0 1px var(--color-theme-redpoint);
+  }
 
-input:invalid:not(:placeholder-shown):focus {
-  box-shadow: inset 0 0 0 1px var(--color--theme-redpoint), 0 0 5px 0 var(--color-theme-redpoint);
-}
+  &:invalid:not(:placeholder-shown):focus {
+    box-shadow: inset 0 0 0 1px var(--color--theme-redpoint), 0 0 5px 0 var(--color-theme-redpoint);
+  }
 
-input[type=checkbox] {
-  appearance: checkbox;
-  -webkit-appearance: checkbox;
-  width: unset;
-  height: unset;
+  &[type=checkbox] {
+    appearance: checkbox;
+    -webkit-appearance: checkbox;
+    width: unset;
+    height: unset;
+  }
 }
 
 .radio-menu UL {
@@ -73,13 +75,15 @@ input[type=checkbox] {
   gap: 10px;
 }
 
-.radio-menu input[type=radio] {
-  width: 1rem;
-  height: 1rem;
-  margin: 0 5px;
-  transition: all 60ms ease-in-out;
-  appearance: radio;
-  -webkit-appearance: radio;
+.radio-menu {
+  & input[type=radio] {
+    width: 1rem;
+    height: 1rem;
+    margin: 0 5px;
+    transition: all 60ms ease-in-out;
+    appearance: radio;
+    -webkit-appearance: radio;
+  }
 }
 
 
@@ -93,27 +97,22 @@ input[type=checkbox] {
   white-space: nowrap;
   position: relative;
   font-weight: 300;
-}
 
-.on-off-selector:not(:last-of-type) {
-  margin-bottom: 10px;
-}
+  &:not(:last-of-type) {
+    margin-bottom: 10px;
+  }
 
-.on-off-selector span {
-  color: var(--color-white);
-  text-align: right;
-  padding-right: var(--padding-base-half)
-}
+  & span {
+    color: var(--color-white);
+    text-align: right;
+    padding-right: var(--padding-base-half);
 
-.on-off-selector span:last-of-type {
-  color: var(--color-white);
-  text-align: right;
-  padding-left: var(--padding-base-half)
-}
-
-
-.on-off-selector span:last-of-type {
-  text-align: left;
+    &:last-of-type {
+      color: var(--color-white);
+      text-align: left;
+      padding-left: var(--padding-base-half)
+    }
+  }
 }
 
 .on-off-switch {
@@ -124,25 +123,25 @@ input[type=checkbox] {
   height: 18px;
   align-self: center;
   box-shadow:  0 0 0 1px rgba(255,255,255,.3)	;
-}
 
-.on-off-switch::after {
-  position: absolute;
-  top: 9px;
-  left: 9px;
-  content: '';
-  transform: translate3d(-50%, -50%, 0);
-  font-size: 0;
-  background: var(--color-theme-accent-1);
-  width: 16px;
-  height: 16px;
-  border-radius: 16px;
-  display: block;
-  transition: all 60ms ease-in-out;
-}
+  &::after {
+    position: absolute;
+    top: 9px;
+    left: 9px;
+    content: '';
+    transform: translate3d(-50%, -50%, 0);
+    font-size: 0;
+    background: var(--color-theme-accent-1);
+    width: 16px;
+    height: 16px;
+    border-radius: 16px;
+    display: block;
+    transition: all 60ms ease-in-out;
+  }
 
-.on-off-switch.switched-off::after {
-  left: calc(100% - 9.5px);
+  &.switched-off::after {
+    left: calc(100% - 9.5px);
+  }
 }
 
 

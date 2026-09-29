@@ -325,6 +325,20 @@ export class RouteListManager {
 
                     let routeTags = dce({el: 'div', cssStyle: 'display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px;'});
                     let routeActions = dce({el: 'div', cssClass: 'route-actions', cssStyle: 'display: flex; gap: 6px; margin-left: auto;'});
+                    const hasComments = Array.isArray(routeData.tickLog) && routeData.tickLog.some((entry) =>
+                        entry && typeof entry.comment === 'string' && entry.comment.trim()
+                    );
+
+                    if(hasComments) {
+                        routeTags.append(dce({
+                            el: 'span',
+                            content: '💬',
+                            attrbs: [
+                                ['aria-label', 'Has comments'],
+                                ['title', 'Has comments']
+                            ]
+                        }));
+                    }
 
                     // Only show TODO button if route has not been ticked yet
                     const hasUserTicked = routeData.ticks && routeData.ticks.includes(getAuth().currentUser.uid);
