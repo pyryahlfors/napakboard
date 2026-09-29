@@ -120,8 +120,8 @@ input[type=checkbox] {
   position: relative;
   width: 40px;
   background: var(--color-black-alpha40);
-  border-radius: 19px;
-  height: 19px;
+  border-radius: 18px;
+  height: 18px;
   align-self: center;
   box-shadow:  0 0 0 1px rgba(255,255,255,.3)	;
 }

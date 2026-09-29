@@ -421,8 +421,3 @@ hr {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
-.sortby-container h3 {
-	color: #aaa;
-	align-self: flex-start;
-}

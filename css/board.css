@@ -19,7 +19,7 @@
 	top: 0;
 	right: 0;
 	text-align: center;
-	height: calc(100vh - 80px);
+  height: calc(100vh - 80px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
 	padding: 10px;
 	writing-mode: vertical-rl;
 	text-transform: uppercase;

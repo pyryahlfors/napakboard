@@ -189,7 +189,26 @@ export class RouteListManager {
             toggleMyAscents.render()
         );
 
-        sortOptionsContainer.append(myTicksContainer );
+        sortOptionsContainer.append(myTicksContainer, document.createElement("hr"));
+
+        // TODO routes toggle
+        let toggleTodoRoutes = new dsToggle({
+            cssClass  : 'horizontal-menu justify-center full-width',
+            targetObj : 'todoRoutesOnly',
+            options   : [
+                {title: 'All', value: false, selected: globals.todoRoutesOnly !== true},
+                {title: 'TODO', value: true, selected: globals.todoRoutesOnly === true}
+            ],
+            onToggle : () => { updateRouteList() },
+        });
+
+        let todoRoutesContainer = dce({el: 'div', cssClass: 'sortby-container'})
+        todoRoutesContainer.append(
+            dce({el: 'h3', content: 'Routes'}),
+            toggleTodoRoutes.render()
+        );
+
+        sortOptionsContainer.append(todoRoutesContainer);
 
         let routeCountContainer = dce({el: 'h3', cssStyle: 'text-align: center; padding: 10px 0;', content: `Showing ${globals.sortedRoutes.length} routes`});
 
@@ -249,6 +268,10 @@ export class RouteListManager {
             // search by name
             const searchString = globals.routeNameSearch || null;
             if(searchString) { routes = globals.boardRoutes.filter( (route) => route.name.toLowerCase().indexOf(searchString.toLowerCase()) !== -1)}
+
+            if(globals.todoRoutesOnly) {
+                routes = routes.filter((route) => this.userTodoRouteIds.has(route.id));
+            }
 
             // angle
             if(isAdjustableBoard) {
