@@ -51,7 +51,8 @@
 
       & .isSticky button.show-filters {
         opacity: 1;
-        pointer-events: all
+        pointer-events: all;
+		box-shadow: 0 0 10px var(--color-theme-accent-1);
       }
     }
 

@@ -3,7 +3,7 @@
   color: #fff;
   width: 5ch;
   display: inline-flex;
-  border-radius: var(--padding-base);
+  border-radius: 999px;
   justify-content: center;
   align-items: center;
   font-size: var(--font-size-small);
@@ -47,7 +47,7 @@
 
 .legend-ascent {
   background: var(--color-theme-redpoint);
-  border-radius: 2px;
+  border-radius: 999px;
   color: var(--color-white);
   display: inline-block;
   font-family: 'IBM Plex Mono';
@@ -88,7 +88,7 @@
 
 
 .legend-routeType.mirror {
-	border-radius: 2px;
+	border-radius: 999px;
 	display: inline-block;
 	font-family: 'IBM Plex Mono';
 	font-size: 0.75rem;

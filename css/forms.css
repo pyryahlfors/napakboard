@@ -1,25 +1,3 @@
-BUTTON {
-  background: var(--color-theme-accent-1);
-  border: 0;
-  border-radius: var(--base-btn-border-radius);
-  color: var(--color-black);
-  display: block;
-  font-size: var(--font-size-bodytext);
-  font-family: 'Roboto';
-  line-height: 3em;
-  text-transform: uppercase;
-  text-align: center;
-  position: relative;
-  transition: all 300ms ease-in-out;
-  width: 100%;
-  -webkit-tap-highlight-color: var(--color-theme-accent-1);
-  -webkit-appearance: none;
-
-  &:disabled {
-    background-color: var(--color-white-dim);
-  }
-}
-
 input,
 select {
   background: var(--color-black);

@@ -48,39 +48,55 @@ class viewTraining {
     const holdIntervalInput = dce({el: 'INPUT'});
     holdIntervalInput.type = 'number';
     holdIntervalInput.name = 'training-hold-interval';
-    holdIntervalInput.min = '0.1';
+    holdIntervalInput.min = '1';
     holdIntervalInput.max = '60';
-    holdIntervalInput.step = '0.1';
+    holdIntervalInput.step = '1';
     holdIntervalInput.value = '1';
     holdIntervalLabel.appendChild(holdIntervalInput);
     settings.appendChild(restLabel);
     settings.appendChild(holdIntervalLabel);
 
+    const countdownShadow = dce({el: 'DIV', cssClass: 'modal-shadow training-countdown-shadow'});
+    countdownShadow.hidden = true;
     const countdownDisplay = dce({el: 'DIV', cssClass: 'training-countdown'});
-    countdownDisplay.hidden = true;
+    countdownDisplay.setAttribute('role', 'dialog');
+    countdownDisplay.setAttribute('aria-modal', 'true');
+    countdownDisplay.setAttribute('aria-labelledby', 'training-countdown-heading');
     const countdownNumber = dce({el: 'P', cssClass: 'training-countdown-number', content: '5'});
-    const countdownLabel = dce({el: 'P', cssClass: 'training-countdown-label', content: 'Put your phone away'});
-    countdownDisplay.append(countdownNumber, countdownLabel);
+    const countdownLabel = dce({el: 'P', id: 'training-countdown-heading', cssClass: 'training-countdown-label', content: 'Put your phone away'});
+    const cancelCountdownButton = dce({el: 'BUTTON', cssClass: 'btn btn_small training-countdown-cancel', content: 'Cancel'});
+    cancelCountdownButton.type = 'button';
+    countdownDisplay.append(countdownNumber, countdownLabel, cancelCountdownButton);
+    countdownShadow.appendChild(countdownDisplay);
+    countdownDisplay.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        stopSession();
+      } else if (event.key === 'Tab') {
+        event.preventDefault();
+        cancelCountdownButton.focus();
+      }
+    });
 
     const sessionStatus = dce({el: 'P', cssClass: 'training-session-status', content: 'Select routes to prepare a session.'});
     sessionStatus.setAttribute('role', 'status');
     sessionStatus.setAttribute('aria-live', 'off');
     const controls = dce({el: 'DIV', cssClass: 'training-session-controls'});
-    const playButton = dce({el: 'BUTTON', cssClass: 'training-play', content: 'Play'});
-    const pauseButton = dce({el: 'BUTTON', cssClass: 'training-pause', content: 'Pause'});
-    const stopButton = dce({el: 'BUTTON', cssClass: 'training-stop', content: 'Stop'});
+    const playButton = dce({el: 'BUTTON', cssClass: 'btn training-play', content: 'Play'});
+    const pauseButton = dce({el: 'BUTTON', cssClass: 'btn btn_white training-pause', content: 'Pause'});
+    const stopButton = dce({el: 'BUTTON', cssClass: 'btn destructive training-stop', content: 'Stop'});
     [playButton, pauseButton, stopButton].forEach((button) => { button.type = 'button'; });
     pauseButton.disabled = true;
     stopButton.disabled = true;
     controls.append(playButton, pauseButton, stopButton);
 
-    sessionSection.append(settingsHeading, settings, sessionHeading, routeStatus, routeList, selectedHeading, selectedRoutes, countdownDisplay, controls, sessionStatus);
+    sessionSection.append(settingsHeading, settings, sessionHeading, routeStatus, routeList, selectedHeading, selectedRoutes, controls, sessionStatus);
     content.appendChild(sessionSection);
 
     const footerNavi = new bottomNavi({options: {
       createTrainingRoute: {
         title: 'Create route',
-        icon: 'list',
+        icon: 'light',
         link: () => route('trainingRoute')
       },
       list: {
@@ -89,7 +105,7 @@ class viewTraining {
         link: () => route('board')
       }
     }});
-    page.append(ticker.render(), content, footerNavi.render());
+    page.append(ticker.render(), content, footerNavi.render(), countdownShadow);
 
     const db = getFirestore();
     let boardRoutes = [];
@@ -169,7 +185,7 @@ class viewTraining {
         if (!routeProgress.has(routeData.id)) routeProgress.set(routeData.id, 0);
         const controls = dce({el: 'DIV', cssClass: 'training-order-controls'});
 
-        const moveUp = dce({el: 'BUTTON', content: '↑'});
+        const moveUp = dce({el: 'BUTTON', cssClass: 'btn btn_tiny', content: '↑'});
         moveUp.type = 'button';
         moveUp.setAttribute('aria-label', `Move ${routeData.name} up`);
         moveUp.disabled = index === 0;
@@ -179,7 +195,7 @@ class viewTraining {
           renderRouteList();
         });
 
-        const moveDown = dce({el: 'BUTTON', content: '↓'});
+        const moveDown = dce({el: 'BUTTON', cssClass: 'btn btn_tiny', content: '↓'});
         moveDown.type = 'button';
         moveDown.setAttribute('aria-label', `Move ${routeData.name} down`);
         moveDown.disabled = index === selectedRouteIds.length - 1;
@@ -189,7 +205,7 @@ class viewTraining {
           renderRouteList();
         });
 
-        const remove = dce({el: 'BUTTON', content: 'Remove'});
+        const remove = dce({el: 'BUTTON', cssClass: 'btn btn_tiny destructive', content: 'Remove'});
         remove.type = 'button';
         remove.addEventListener('click', () => {
           selectedRouteIds = selectedRouteIds.filter((id) => id !== routeData.id);
@@ -224,12 +240,15 @@ class viewTraining {
       routeStatus.textContent = `${trainingRoutes.length} training route${trainingRoutes.length === 1 ? '' : 's'} available`;
       trainingRoutes.forEach((routeData) => {
         const item = dce({el: 'LI', cssClass: 'training-route-item'});
-        const choose = dce({el: 'BUTTON', cssClass: 'training-route-choice'});
+        const choose = dce({el: 'BUTTON', cssClass: 'btn btn_white training-route-choice'});
         choose.type = 'button';
         choose.textContent = `${routeData.name || 'Unnamed route'}${globals.grades.font[routeData.grade] ? ` · ${globals.grades.font[routeData.grade]}` : ''}`;
         const selected = selectedRouteIds.includes(routeData.id);
         choose.setAttribute('aria-pressed', String(selected));
-        if (selected) choose.classList.add('is-selected');
+        if (selected) {
+          choose.classList.remove('btn_white');
+          choose.classList.add('is-selected');
+        }
         choose.addEventListener('click', () => {
           selectedRouteIds = selectedRouteIds.includes(routeData.id)
             ? selectedRouteIds.filter((id) => id !== routeData.id)
@@ -289,7 +308,7 @@ class viewTraining {
         if (sessionTimer !== null) window.clearInterval(sessionTimer);
         sessionTimer = null;
         sessionState = 'complete';
-        countdownDisplay.hidden = true;
+        countdownShadow.hidden = true;
         activeRouteIndex = -1;
         sessionStatus.textContent = `Training complete · ${routes.length} routes finished.`;
         updateProgressRows();
@@ -300,6 +319,8 @@ class viewTraining {
 
       const routeData = routes[routeIndex];
       const groups = getRouteGroups(routeData);
+      countdownShadow.hidden = true;
+      pauseButton.focus();
       activeRouteIndex = routeIndex;
       currentStepIndex = 0;
       sessionState = 'running';
@@ -404,11 +425,12 @@ class viewTraining {
       phaseDurationMs = 5000;
       phaseDeadline = Date.now() + phaseDurationMs;
       lastCountdownValue = null;
-      countdownDisplay.hidden = false;
+      countdownShadow.hidden = false;
       countdownNumber.textContent = '5';
       sessionStatus.textContent = 'Training starts in five seconds.';
       updateControls();
       void writeSessionState('countdown');
+      cancelCountdownButton.focus();
       startSessionClock();
     };
 
@@ -418,7 +440,7 @@ class viewTraining {
         phaseDeadline = Date.now() + pausedRemainingMs;
         if (sessionState === 'running') routeStartedAt = Date.now() - (routeDurationMs - pausedRemainingMs);
         pausedPhase = null;
-        countdownDisplay.hidden = sessionState !== 'countdown';
+        countdownShadow.hidden = sessionState !== 'countdown';
         if (sessionState === 'countdown') countdownNumber.textContent = String(Math.ceil(pausedRemainingMs / 1000));
         sessionStatus.textContent = sessionState === 'countdown'
           ? 'Training starts when countdown ends.'
@@ -433,7 +455,7 @@ class viewTraining {
       pausedPhase = sessionState;
       pausedRemainingMs = Math.max(0, phaseDeadline - Date.now());
       if (sessionState === 'running') updateActiveProgress(routeDurationMs - pausedRemainingMs);
-      if (sessionState === 'countdown') countdownDisplay.hidden = true;
+      if (sessionState === 'countdown') countdownShadow.hidden = true;
       if (sessionTimer !== null) window.clearInterval(sessionTimer);
       sessionTimer = null;
       sessionState = 'paused';
@@ -450,7 +472,7 @@ class viewTraining {
       currentStepIndex = -1;
       pausedPhase = null;
       lastCountdownValue = null;
-      countdownDisplay.hidden = true;
+      countdownShadow.hidden = true;
       resetRouteProgress();
       sessionStatus.textContent = 'Training stopped. All route progress reset.';
       updateControls();
@@ -458,6 +480,7 @@ class viewTraining {
     };
 
     playButton.addEventListener('click', startSession);
+    cancelCountdownButton.addEventListener('click', stopSession);
     pauseButton.addEventListener('click', pauseOrResumeSession);
     stopButton.addEventListener('click', stopSession);
     restInput.addEventListener('input', () => {

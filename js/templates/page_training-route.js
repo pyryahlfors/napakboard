@@ -55,10 +55,10 @@ class viewTrainingRoute {
     status.setAttribute('role', 'status');
     status.setAttribute('aria-live', 'polite');
     const previewControls = dce({el: 'DIV', cssClass: 'training-preview-controls'});
-    const playPreviewButton = dce({el: 'BUTTON', cssClass: 'training-preview-play', content: 'Play sequence'});
+    const playPreviewButton = dce({el: 'BUTTON', cssClass: 'btn training-preview-play', content: 'Play sequence'});
     playPreviewButton.type = 'button';
     playPreviewButton.disabled = true;
-    const stopPreviewButton = dce({el: 'BUTTON', cssClass: 'training-preview-stop', content: 'Stop'});
+    const stopPreviewButton = dce({el: 'BUTTON', cssClass: 'btn destructive training-preview-stop', content: 'Stop'});
     stopPreviewButton.type = 'button';
     stopPreviewButton.disabled = true;
     const previewStatus = dce({el: 'P', cssClass: 'training-preview-status'});
@@ -72,7 +72,7 @@ class viewTrainingRoute {
     const orderSummary = dce({el: 'H2', content: 'Lighting order'});
     const orderList = dce({el: 'OL', cssClass: 'training-hold-order'});
     orderPanel.append(orderSummary, orderList);
-    const saveButton = dce({el: 'BUTTON', cssClass: 'training-save', content: 'Save lighting order'});
+    const saveButton = dce({el: 'BUTTON', cssClass: 'btn training-save', content: 'Save lighting order'});
     saveButton.type = 'button';
     saveButton.disabled = true;
     editorControls.append(routeLabel, status, previewControls, orderPanel, saveButton);
@@ -81,7 +81,7 @@ class viewTrainingRoute {
     const footerNavi = new bottomNavi({options: {
       list: {
         title: 'Training',
-        icon: 'climb',
+        icon: 'timer',
         link: () => route('training')
       }
     }});
@@ -284,7 +284,7 @@ class viewTrainingRoute {
         );
         const controls = dce({el: 'DIV', cssClass: 'training-order-controls'});
 
-        const moveUp = dce({el: 'BUTTON', content: '↑'});
+        const moveUp = dce({el: 'BUTTON', cssClass: 'btn btn_small', content: '↑'});
         moveUp.type = 'button';
         moveUp.setAttribute('aria-label', `Move step ${index + 1} up`);
         moveUp.disabled = pinned || index <= firstMiddleIndex;
@@ -294,7 +294,7 @@ class viewTrainingRoute {
           syncBoardOrder();
         });
 
-        const moveDown = dce({el: 'BUTTON', content: '↓'});
+        const moveDown = dce({el: 'BUTTON', cssClass: 'btn btn_small', content: '↓'});
         moveDown.type = 'button';
         moveDown.setAttribute('aria-label', `Move step ${index + 1} down`);
         moveDown.disabled = pinned || index >= lastMiddleIndex;
@@ -306,7 +306,7 @@ class viewTrainingRoute {
         controls.append(moveUp, moveDown);
 
         if (!pinned && index > 0 && !isPinnedGroup(lightingGroups[index - 1])) {
-          const groupButton = dce({el: 'BUTTON', cssClass: 'training-group-button', content: '🔗'});
+          const groupButton = dce({el: 'BUTTON', cssClass: 'btn btn_small training-group-button', content: '🔗'});
           groupButton.type = 'button';
           groupButton.setAttribute('aria-label', 'Group with previous step');
           groupButton.title = 'Group with previous step';
@@ -320,7 +320,7 @@ class viewTrainingRoute {
         }
 
         if (!pinned && group.length > 1) {
-          const ungroupButton = dce({el: 'BUTTON', cssClass: 'training-ungroup-button', content: '⛓️‍💥'});
+          const ungroupButton = dce({el: 'BUTTON', cssClass: 'btn btn_small training-ungroup-button', content: '⛓️‍💥'});
           ungroupButton.type = 'button';
           ungroupButton.setAttribute('aria-label', `Ungroup step ${index + 1}`);
           ungroupButton.title = 'Ungroup step';
