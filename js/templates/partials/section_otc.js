@@ -113,7 +113,13 @@ class otc {
 	let sideNavLinks = null;
 	sideNavLinks = dce({el: 'SECTION', cssClass: 'sidenav-links'});
 
-    let btnHistory = dce({el: 'A', content: 'History' });
+	let btnTraining = dce({el: 'A', content: 'Training' });
+	btnTraining.addEventListener('click', () => {
+	  route('training');
+	  document.body.classList.remove('otc')
+	}, false);
+
+	let btnHistory = dce({el: 'A', content: 'History' });
     btnHistory.addEventListener('click', () => {
       route('history');
       document.body.classList.remove('otc')
@@ -125,7 +131,7 @@ class otc {
       document.body.classList.remove('otc')
     }, false);
 
-	sideNavLinks.append(btnHistory, btnBoardSelect);
+	sideNavLinks.append(btnTraining, btnHistory, btnBoardSelect);
 
 	otcLinksContainer.append(sideNavLinks);
 	tempContainer.append(loginInfo, otcLinksContainer)

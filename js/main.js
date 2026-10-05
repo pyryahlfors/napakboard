@@ -10,6 +10,8 @@ import viewSignup from './templates/page_signup.js';
 import viewResetPassword from './templates/page_reset-password.js';
 import viewProfile from './templates/page_profile.js';
 import viewHistory from './templates/page_history.js';
+import viewTraining from './templates/page_training-session.js';
+import viewTrainingRoute from './templates/page_training-route.js';
 import viewBoardSelect
  from './templates/page_board-select.js';
 import otc from './templates/partials/section_otc.js';
@@ -26,6 +28,8 @@ const napakBoard = {
         globals.routes.login = viewLogin;
         globals.routes.profile = viewProfile;
         globals.routes.history = viewHistory;
+        globals.routes.training = viewTraining;
+        globals.routes.trainingRoute = viewTrainingRoute;
         globals.routes.resetPassword = viewResetPassword
         globals.routes.signup = viewSignup;
         globals.routes.boardSelect = viewBoardSelect;

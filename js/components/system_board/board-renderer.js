@@ -51,10 +51,17 @@ export class BoardRenderer {
         return this.holdSetupPromise;
     }
 
-    drawHolds(boardContainer, data) {
-        globals.boardSetup = data;
+    drawHolds(boardContainer, data, options = {}) {
+        if(!options.skipGlobalSetup) {
+            globals.boardSetup = data;
+        }
         const boardHeight = data.characteristics.height;
         const boardWidth = data.characteristics.width;
+        const interactiveHoldIds = options.interactiveHoldIds ? new Set(options.interactiveHoldIds) : null;
+        const lightingOrder = new Map();
+        (options.lightingOrder || []).forEach((group, index) => {
+            (Array.isArray(group) ? group : [group]).forEach((holdId) => lightingOrder.set(holdId, index + 1));
+        });
 
         boardContainer.style.height = `${(boardHeight + 1) * this.cellSize}px`;
         boardContainer.style.width = `${(boardWidth + 1) * this.cellSize}px`;
@@ -98,79 +105,107 @@ export class BoardRenderer {
                 gridCell.append(tipSpan);
                 gridCell.id = `${this.boardCols[col]}${row + 1}`;
 
-                gridCell.addEventListener('mousedown', (e) => {
-                    e.preventDefault();
-                    this.timerStart = new Date().getTime();
-                }, false);
+                if(options.onHoldClick) {
+                    if(interactiveHoldIds && !interactiveHoldIds.has(gridCell.id)) {
+                        gridCell.setAttribute('aria-hidden', 'true');
+                    } else {
+                        const order = lightingOrder.get(gridCell.id);
+                        gridCell.classList.add('training-route-hold');
+                        if(order) {
+                            gridCell.classList.add('training-in-order');
+                            gridCell.dataset.trainingOrder = String(order);
+                        }
+                        gridCell.setAttribute('role', 'button');
+                        gridCell.setAttribute('tabindex', '0');
+                        gridCell.setAttribute('aria-pressed', String(Boolean(order)));
+                        gridCell.setAttribute('aria-label', order
+                            ? `Hold ${gridCell.id.toUpperCase()}, lighting step ${order}`
+                            : `Add hold ${gridCell.id.toUpperCase()} to lighting order`);
 
-                gridCell.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    const hold = e.target;
-                    hold.classList.remove('selected', 'intermediate', 'foot', 'start', 'top');
-                    globals.standardMessage = [
-                        ...globals.standardMessage,
-                        { message: 'Removed hold from route', timeout: 1 }
-                    ];
-                    this.notifyBoardChanged();
-                }, false);
-
-                gridCell.addEventListener('mouseup', (e) => {
-                    e.preventDefault();
-                    if(globals.selectedRoute !== null) {
-                        return;
-                    }
-
-                    this.timerEnd = new Date().getTime();
-                    const hold = e.target;
-                    const holdTypes = ['intermediate', 'foot', 'start', 'top'];
-
-                    if(this.timerEnd - this.timerStart < 500) {
-                        if(hold.classList.contains('selected')) {
-                            let currentHoldType = null;
-                            let currentHoldOrder = -1;
-
-                            holdTypes.forEach((type, index) => {
-                                if(hold.classList.contains(type)) {
-                                    currentHoldType = type;
-                                    currentHoldOrder = index;
-                                }
-                            });
-
-                            if(currentHoldType !== null) {
-                                hold.classList.remove(currentHoldType);
+                        const selectHold = () => options.onHoldClick(gridCell.id);
+                        gridCell.addEventListener('click', selectHold);
+                        gridCell.addEventListener('keydown', (event) => {
+                            if(event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                selectHold();
                             }
+                        });
+                    }
+                } else {
+                    gridCell.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        this.timerStart = new Date().getTime();
+                    }, false);
 
-                            const nextOrder = currentHoldOrder + 1;
-                            if(nextOrder >= holdTypes.length) {
-                                hold.classList.remove('selected', 'undefined');
-                                globals.standardMessage = [{
-                                    message: `Removed hold from ${this.boardCols[col]}${boardHeight - row}`,
-                                    timeout: 1
-                                }];
+                    gridCell.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        const hold = e.target;
+                        hold.classList.remove('selected', 'intermediate', 'foot', 'start', 'top');
+                        globals.standardMessage = [
+                            ...globals.standardMessage,
+                            { message: 'Removed hold from route', timeout: 1 }
+                        ];
+                        this.notifyBoardChanged();
+                    }, false);
+
+                    gridCell.addEventListener('mouseup', (e) => {
+                        e.preventDefault();
+                        if(globals.selectedRoute !== null) {
+                            return;
+                        }
+
+                        this.timerEnd = new Date().getTime();
+                        const hold = e.target;
+                        const holdTypes = ['intermediate', 'foot', 'start', 'top'];
+
+                        if(this.timerEnd - this.timerStart < 500) {
+                            if(hold.classList.contains('selected')) {
+                                let currentHoldType = null;
+                                let currentHoldOrder = -1;
+
+                                holdTypes.forEach((type, index) => {
+                                    if(hold.classList.contains(type)) {
+                                        currentHoldType = type;
+                                        currentHoldOrder = index;
+                                    }
+                                });
+
+                                if(currentHoldType !== null) {
+                                    hold.classList.remove(currentHoldType);
+                                }
+
+                                const nextOrder = currentHoldOrder + 1;
+                                if(nextOrder >= holdTypes.length) {
+                                    hold.classList.remove('selected', 'undefined');
+                                    globals.standardMessage = [{
+                                        message: `Removed hold from ${this.boardCols[col]}${boardHeight - row}`,
+                                        timeout: 1
+                                    }];
+                                } else {
+                                    hold.classList.add(holdTypes[nextOrder]);
+                                    globals.standardMessage = [{
+                                        message: `Added - ${holdTypes[nextOrder]} hold to ${this.boardCols[col]}${boardHeight - row}`,
+                                        timeout: 1
+                                    }];
+                                }
                             } else {
-                                hold.classList.add(holdTypes[nextOrder]);
+                                hold.classList.add('selected', holdTypes[0]);
                                 globals.standardMessage = [{
-                                    message: `Added - ${holdTypes[nextOrder]} hold to ${this.boardCols[col]}${boardHeight - row}`,
+                                    message: `Added - ${holdTypes[0]} hold to ${this.boardCols[col]}${boardHeight - row}`,
                                     timeout: 1
                                 }];
                             }
                         } else {
-                            hold.classList.add('selected', holdTypes[0]);
+                            hold.classList.remove('selected', 'intermediate', 'foot', 'start', 'top');
                             globals.standardMessage = [{
-                                message: `Added - ${holdTypes[0]} hold to ${this.boardCols[col]}${boardHeight - row}`,
+                                message: `Removed hold from ${this.boardCols[col]}${boardHeight - row}`,
                                 timeout: 1
                             }];
                         }
-                    } else {
-                        hold.classList.remove('selected', 'intermediate', 'foot', 'start', 'top');
-                        globals.standardMessage = [{
-                            message: `Removed hold from ${this.boardCols[col]}${boardHeight - row}`,
-                            timeout: 1
-                        }];
-                    }
 
-                    this.notifyBoardChanged();
-                }, false);
+                        this.notifyBoardChanged();
+                    }, false);
+                }
 
                 cellsContainer.appendChild(gridCell);
             }

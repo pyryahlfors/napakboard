@@ -8,12 +8,14 @@ import dsIcon from '../ds-icon/index.js';
 
 class statusTicker {
   constructor(params) {
+    const options = params || {};
+    const interactive = options.interactive !== false;
     let container = dce({el: 'DIV', cssClass: 'current status-ticker'});
     let messageContainer = dce({el: 'DIV', cssClass: 'status-ticker-content'});
     container.appendChild(messageContainer);
 
     const nextPrev = (dir) => {
-      if(!globals.sortedRoutes.length) return;
+      if(!interactive || !globals.sortedRoutes.length) return;
 
       let selectedRouteOrder = globals.selectedRouteId ? globals.sortedRoutes.findIndex(route => { return route.id === globals.selectedRouteId; }) : 0;
       selectedRouteOrder += dir;
@@ -28,31 +30,35 @@ class statusTicker {
     messageContainer.appendChild(standardMessage);
 
     let currentTitle = dce({el: 'DIV', cssClass: 'current'});
-	const prevButton = new dsIcon({icon: 'chevron-back', fill: '#fff', color: "#fff", width: 24, height: 24});
+    const tickerTitle = options.title || globals.selectedRoute || 'No route selected';
+    let currentTitleContent = dce({el: 'H3', cssStyle: 'display: flex; height: 100%; align-items: center;', content: tickerTitle});
 
-    prevButton.addEventListener('click', ()=>{nextPrev(-1)}, false);
+    if(interactive) {
+      const prevButton = new dsIcon({icon: 'chevron-back', fill: '#fff', color: "#fff", width: 24, height: 24});
+      prevButton.addEventListener('click', ()=>{nextPrev(-1)}, false);
 
-    let currentTitleContent = dce({el: 'H3', cssStyle: 'display: flex; height: 100%; align-items: center;', content: globals.selectedRoute || 'No route selected'});
+      currentTitleContent.addEventListener('click', () => {
+        if(!window.mySystemBoard || !window.mySystemBoard.list) { return }
+        window.mySystemBoard.list();
+      }, false);
 
-    currentTitleContent.addEventListener('click', () => {
-      if(!window.mySystemBoard.list) { return }
-      window.mySystemBoard.list();
-    }, false);
+      const nextButton = new dsIcon({icon: 'chevron-forward', fill: '#fff', color: "#fff", width: 24, height: 24});
+      nextButton.addEventListener('click', ()=>{nextPrev(1)}, false);
+      currentTitle.append(prevButton, currentTitleContent, nextButton);
+    } else {
+      currentTitle.appendChild(currentTitleContent);
+    }
 
-	const nextButton = new dsIcon({icon: 'chevron-forward', fill: '#fff', color: "#fff", width: 24, height: 24});
-    nextButton.addEventListener('click', ()=>{nextPrev(1)}, false);
-
-    currentTitle.append(prevButton, currentTitleContent, nextButton);
     messageContainer.appendChild(currentTitle);
 
-    storeObserver.add({
+    if(interactive) storeObserver.add({
       store: globals,
       key: 'selectedRouteId',
       id: 'selectedRoute',
       callback: () => {
         let selectedRoute = globals.boardRoutes.find(({ id }) => id === globals.selectedRouteId);
         if(selectedRoute) {
-          let climbed = selectedRoute.ticks && selectedRoute.ticks.includes(getAuth().currentUser.uid);
+            let climbed = getAuth().currentUser && selectedRoute.ticks && selectedRoute.ticks.includes(getAuth().currentUser.uid);
           currentTitleContent.innerHTML = `${selectedRoute.name}&nbsp;`
           let routeGrade = new dsLegend({title: globals.grades.font[selectedRoute.grade], type: 'grade', cssClass: globals.difficulty[selectedRoute.grade]})
 
