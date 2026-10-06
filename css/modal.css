@@ -40,6 +40,7 @@
       overflow-x: hidden;
       padding: 0 var(--padding-base);
       line-height: 1.5em;
+	  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 12px), radial-gradient(circle at 50% 100%, var(--color-theme-accent-1-alpha) 0, transparent 50%);
 
       & .sticky {
         background: #373844;

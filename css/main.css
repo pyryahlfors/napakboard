@@ -213,6 +213,7 @@ h3.bold {font-weight: 600;}
   background: var(--color-black);
   border-radius: 4px;
   margin: 0 var(--padding-base-negative);
+  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 12px), radial-gradient(circle at 50% 100%, var(--color-theme-accent-1-alpha) 0, transparent 50%);
 }
 
 .login-error {
@@ -239,6 +240,7 @@ h3.bold {font-weight: 600;}
     display: flex;
     flex-direction: column;
     align-items: center;
+	gap: 10px;
   }
 }
 
