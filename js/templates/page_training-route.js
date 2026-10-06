@@ -44,7 +44,7 @@ class viewTrainingRoute {
 
     const content = dce({el: 'DIV', cssClass: 'training-route-content'});
     const editorControls = dce({el: 'SECTION', cssClass: 'training-route-controls'});
-    const routeLabel = dce({el: 'LABEL', content: 'Existing route'});
+    const routeLabel = dce({el: 'LABEL', content: 'Route'});
     const routeSelect = dce({el: 'SELECT'});
     routeSelect.name = 'training-route-source';
     const placeholder = dce({el: 'OPTION', content: 'Choose a route'});

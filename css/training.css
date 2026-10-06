@@ -18,6 +18,9 @@
   overflow: auto;
   display: block;
   padding: var(--padding-base);
+  background-image:
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 12px),
+    radial-gradient(circle at 50% 100%, var(--color-theme-accent-1-alpha) 0, transparent 50%);
 }
 
 .training-session {
@@ -25,12 +28,17 @@
   margin: 0 auto;
 }
 
+.training-route-controls {
+  background-image:
+	    repeating-linear-gradient(135deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 12px),
+    radial-gradient(circle at 50% 100%, var(--color-theme-accent-1-alpha) 0, transparent 50%);
+
+}
 .training-session h2,
 .training-route-controls h2 {
   margin: 0 0 var(--padding-base-half);
-  font-family: 'IBM Plex Mono';
-  font-size: 1.1rem;
   text-transform: uppercase;
+  text-align: center;
 }
 
 .training-status {
@@ -160,6 +168,8 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .training-route-progress {
@@ -186,6 +196,9 @@
 .training-selected-route > .training-order-controls {
   position: relative;
   z-index: 1;
+  overflow: hidden;
+  white-space: pre;
+  text-overflow: ellipsis;
 }
 
 .training-order-controls {
@@ -259,7 +272,7 @@
   height: 24px;
   border: 1px solid var(--color-black);
   border-radius: 50%;
-  background: var(--color-theme-accent-1);
+  background: var(--color-white);
   color: var(--color-black);
   font: 600 12px 'IBM Plex Mono';
   box-shadow: none;
@@ -272,7 +285,6 @@
 
 .training-board .grid-cell.training-preview-lit::after {
   background: var(--color-white);
-  box-shadow: 0 0 0 6px var(--color-theme-accent-1), 0 0 30px 14px var(--color-theme-accent-1-alpha);
   color: var(--color-black);
   transform: translate3d(-50%, -50%, 0) scale(1.2);
   animation: trainingPreviewPulse 500ms ease-in-out infinite alternate;
@@ -283,7 +295,6 @@
 }
 
 .training-board.training-preview-active .grid-cell.selected:not(.training-preview-lit) {
-  background: rgba(0, 0, 0, .55);
 }
 
 .training-board.training-preview-active .grid-cell.training-preview-hidden::before,

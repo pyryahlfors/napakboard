@@ -139,8 +139,8 @@ class viewTraining {
         elements.item.classList.toggle('is-active', sessionState === 'running' && index === activeRouteIndex);
         elements.fill.style.width = `${routeProgress.get(routeData.id) || 0}%`;
         elements.routeInfo.textContent = sessionState === 'running' && index === activeRouteIndex
-          ? `Step ${currentStepIndex + 1} of ${groups.length} · ${holdCount} holds`
-          : `${groups.length} steps · ${holdCount} holds`;
+          ? `Step ${currentStepIndex + 1} of ${groups.length}`
+          : `${groups.length} steps`;
       });
     };
 
