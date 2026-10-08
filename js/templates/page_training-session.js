@@ -48,7 +48,7 @@ class viewTraining {
     const holdIntervalLabel = dce({el: 'LABEL', content: 'Minimum delay between holds (seconds)'});
     const holdIntervalInput = dce({el: 'INPUT'});
     holdIntervalInput.type = 'number';
-    holdIntervalInput.type = 'decimal';
+    holdIntervalInput.inputMode = 'decimal';
     holdIntervalInput.name = 'training-hold-interval';
     holdIntervalInput.min = '1';
     holdIntervalInput.max = '60';
