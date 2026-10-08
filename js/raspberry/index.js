@@ -37,13 +37,21 @@ async function syncBoardStatus(extra = {}) {
   }
 }
 
+function getTrainingStartHolds(routeData) {
+  const holdSetup = routeData.holdSetup || {};
+  return Object.keys(holdSetup).filter((holdId) => {
+    const hold = holdSetup[holdId];
+    return (typeof hold === 'string' ? hold : hold && hold.type) === 'start';
+  });
+}
+
 function getTrainingGroups(routeData) {
   const holdSetup = routeData.holdSetup || {};
   const holdType = (holdId) => {
     const hold = holdSetup[holdId];
     return typeof hold === 'string' ? hold : hold && hold.type;
   };
-  const startHolds = Object.keys(holdSetup).filter((holdId) => holdType(holdId) === 'start');
+  const startHolds = getTrainingStartHolds(routeData);
   const endHolds = Object.keys(holdSetup).filter((holdId) => holdType(holdId) === 'top');
   const fixedHolds = new Set([...startHolds, ...endHolds]);
   const seenHolds = new Set(fixedHolds);
@@ -67,7 +75,6 @@ function getTrainingGroups(routeData) {
   });
 
   return [
-    ...(startHolds.length ? [startHolds] : []),
     ...middleGroups,
     ...(endHolds.length ? [endHolds] : [])
   ];
@@ -79,23 +86,20 @@ function scheduleTrainingAction(run, delayMs, action) {
   run.nextAction = action;
   run.remainingMs = Math.max(0, delayMs);
   run.deadline = Date.now() + run.remainingMs;
-  if(run.phase === 'resting') {
-    mySystemBoard.litTrainingRest(run.restMs, run.deadline);
-  } else if(run.phase === 'countdown') {
-    const routeData = run.routes[0];
+  if(run.phase === 'resting' || run.phase === 'countdown') {
+    const routeData = run.routes[run.routeIndex + (run.phase === 'resting' ? 1 : 0)];
     const holdSetup = routeData.holdSetup || {};
-    const startHolds = Object.keys(holdSetup).filter((holdId) => {
-      const hold = holdSetup[holdId];
-      return (typeof hold === 'string' ? hold : hold && hold.type) === 'start';
-    });
-    mySystemBoard.clearLights('training-countdown');
-    mySystemBoard.litTrainingRest(5000, run.deadline, holdSetup, startHolds);
-    void syncBoardStatus({
-      trainingMode: true,
-      trainingSessionId: run.sessionId,
-      trainingStatus: 'countdown',
-      trainingCountdownDeadline: run.deadline
-    });
+    const startHolds = getTrainingStartHolds(routeData);
+    if(run.phase === 'countdown') mySystemBoard.clearLights('training-countdown');
+    mySystemBoard.litTrainingRest(run.phase === 'resting' ? run.restMs : 5000, run.deadline, holdSetup, startHolds);
+    if(run.phase === 'countdown') {
+      void syncBoardStatus({
+        trainingMode: true,
+        trainingSessionId: run.sessionId,
+        trainingStatus: 'countdown',
+        trainingCountdownDeadline: run.deadline
+      });
+    }
   }
   run.timer = setTimeout(() => {
     if(trainingRun !== run || run.paused) return;
@@ -135,6 +139,7 @@ function lightNextTrainingGroup(run) {
 
   run.phase = 'lighting';
   run.currentHoldIds = group;
+  if(run.stepIndex === 0) run.recentHoldIds = getTrainingStartHolds(routeData);
   run.recentHoldIds = [...run.recentHoldIds, ...group].slice(-4);
   currentRouteMeta = {
     routeId: routeData.routeId || null,

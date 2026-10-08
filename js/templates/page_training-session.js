@@ -14,7 +14,11 @@ const isTrainingRoute = (routeData) => {
 const getLightingGroups = (routeData) => (Array.isArray(routeData.lightingOrder) ? routeData.lightingOrder : [])
   .map((entry) => {
     const holds = Array.isArray(entry) ? entry : Array.isArray(entry && entry.holds) ? entry.holds : [entry];
-    return holds.filter((holdId) => typeof holdId === 'string');
+    return holds.filter((holdId) => {
+      if (typeof holdId !== 'string') return false;
+      const hold = (routeData.holdSetup || {})[holdId];
+      return (typeof hold === 'string' ? hold : hold && hold.type) !== 'start';
+    });
   })
   .filter((group) => group.length > 0);
 
