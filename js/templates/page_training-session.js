@@ -42,7 +42,6 @@ class viewTraining {
     restInput.name = 'training-rest';
     restInput.min = '0';
     restInput.max = '3600';
-    restInput.step = '5';
     restInput.value = '30';
     restLabel.appendChild(restInput);
     const holdIntervalLabel = dce({el: 'LABEL', content: 'Minimum delay between holds (seconds)'});
@@ -52,7 +51,7 @@ class viewTraining {
     holdIntervalInput.name = 'training-hold-interval';
     holdIntervalInput.min = '1';
     holdIntervalInput.max = '60';
-    holdIntervalInput.step = '0.5';
+    holdIntervalInput.step = '0.1';
     holdIntervalInput.value = '1';
     holdIntervalLabel.appendChild(holdIntervalInput);
     settings.appendChild(restLabel);
