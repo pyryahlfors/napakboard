@@ -66,28 +66,6 @@ class viewTraining {
     settings.appendChild(restLabel);
     settings.appendChild(holdIntervalLabel);
 
-    const countdownShadow = dce({el: 'DIV', cssClass: 'modal-shadow training-countdown-shadow'});
-    countdownShadow.hidden = true;
-    const countdownDisplay = dce({el: 'DIV', cssClass: 'training-countdown'});
-    countdownDisplay.setAttribute('role', 'dialog');
-    countdownDisplay.setAttribute('aria-modal', 'true');
-    countdownDisplay.setAttribute('aria-labelledby', 'training-countdown-heading');
-    const countdownNumber = dce({el: 'P', cssClass: 'training-countdown-number', content: '5'});
-    const countdownLabel = dce({el: 'P', id: 'training-countdown-heading', cssClass: 'training-countdown-label', content: 'Put your phone away'});
-    const cancelCountdownButton = dce({el: 'BUTTON', cssClass: 'btn btn_small training-countdown-cancel', content: 'Cancel'});
-    cancelCountdownButton.type = 'button';
-    countdownDisplay.append(countdownNumber, countdownLabel, cancelCountdownButton);
-    countdownShadow.appendChild(countdownDisplay);
-    countdownDisplay.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        stopSession();
-      } else if (event.key === 'Tab') {
-        event.preventDefault();
-        cancelCountdownButton.focus();
-      }
-    });
-
     const sessionStatus = dce({el: 'P', cssClass: 'training-session-status', content: 'Select routes to prepare a session.'});
     sessionStatus.setAttribute('role', 'status');
     sessionStatus.setAttribute('aria-live', 'off');
@@ -115,7 +93,7 @@ class viewTraining {
         link: () => route('board')
       }
     }});
-    page.append(ticker.render(), content, footerNavi.render(), countdownShadow);
+    page.append(ticker.render(), content, footerNavi.render());
 
     const db = getFirestore();
     let boardRoutes = [];
@@ -123,6 +101,8 @@ class viewTraining {
     let sessionState = 'stopped';
     let saving = false;
     let sessionTimer = null;
+    let boardStartTimer = null;
+    let latestBoardStatus = null;
     let trainingSessionId = null;
     let phaseDeadline = 0;
     let phaseDurationMs = 0;
@@ -297,9 +277,11 @@ class viewTraining {
           currentStepIndex,
           updatedAt: serverTimestamp()
         }, {merge: true});
+        return true;
       } catch (error) {
         console.error('Failed to update training session:', error);
         sessionStatus.textContent = 'Could not update training session. Check your connection and try again.';
+        return false;
       } finally {
         saving = false;
         updateControls();
@@ -319,12 +301,13 @@ class viewTraining {
     };
 
     const startRoute = (routeIndex) => {
+      window.clearTimeout(boardStartTimer);
+      boardStartTimer = null;
       const routes = selectedTrainingRoutes();
       if (routeIndex >= routes.length) {
         if (sessionTimer !== null) window.clearInterval(sessionTimer);
         sessionTimer = null;
         sessionState = 'complete';
-        countdownShadow.hidden = true;
         activeRouteIndex = -1;
         sessionStatus.textContent = `Training complete · ${routes.length} routes finished.`;
         updateProgressRows();
@@ -335,7 +318,6 @@ class viewTraining {
 
       const routeData = routes[routeIndex];
       const groups = getRouteGroups(routeData);
-      countdownShadow.hidden = true;
       pauseButton.focus();
       activeRouteIndex = routeIndex;
       currentStepIndex = 0;
@@ -386,17 +368,6 @@ class viewTraining {
       }
 
       const now = Date.now();
-      if (sessionState === 'countdown') {
-        const remaining = Math.max(0, phaseDeadline - now);
-        const seconds = Math.ceil(remaining / 1000);
-        if (seconds !== lastCountdownValue) {
-          lastCountdownValue = seconds;
-          countdownNumber.textContent = String(seconds);
-        }
-        if (remaining <= 0) startRoute(0);
-        return;
-      }
-
       if (sessionState === 'running') {
         const elapsed = Math.max(0, now - routeStartedAt);
         const routeData = selectedTrainingRoutes()[activeRouteIndex];
@@ -429,6 +400,18 @@ class viewTraining {
       tickSession();
     };
 
+    const waitForBoardStart = () => {
+      window.clearTimeout(boardStartTimer);
+      boardStartTimer = window.setTimeout(() => {
+        boardStartTimer = null;
+        if (!page.isConnected || sessionState !== 'countdown') return;
+        const status = latestBoardStatus;
+        sessionStatus.textContent = status && status.trainingSessionId === trainingSessionId
+          ? `${globals.board} acknowledged training, but has not started. Board status: ${status.trainingStatus || 'unknown'}.`
+          : `${globals.board} has not acknowledged training. Last board report: ${status && (status.statusReason || status.trainingStatus) || 'no status available'}.`;
+      }, 12000);
+    };
+
     const startSession = () => {
       const routes = selectedTrainingRoutes();
       if (!routes.length || !routes.every((routeData) => getRouteGroups(routeData).length > 0)) return;
@@ -443,13 +426,12 @@ class viewTraining {
       phaseDurationMs = 5000;
       phaseDeadline = Date.now() + phaseDurationMs;
       lastCountdownValue = null;
-      countdownShadow.hidden = false;
-      countdownNumber.textContent = '5';
-      sessionStatus.textContent = 'Training starts in five seconds.';
+      sessionStatus.textContent = 'Starting…';
       updateControls();
-      void writeSessionState('countdown');
-      cancelCountdownButton.focus();
-      startSessionClock();
+      void writeSessionState('countdown').then((saved) => {
+        if (saved && sessionState === 'countdown') waitForBoardStart();
+      });
+      pauseButton.focus();
     };
 
     const pauseOrResumeSession = () => {
@@ -458,22 +440,23 @@ class viewTraining {
         phaseDeadline = Date.now() + pausedRemainingMs;
         if (sessionState === 'running') routeStartedAt = Date.now() - (routeDurationMs - pausedRemainingMs);
         pausedPhase = null;
-        countdownShadow.hidden = sessionState !== 'countdown';
-        if (sessionState === 'countdown') countdownNumber.textContent = String(Math.ceil(pausedRemainingMs / 1000));
         sessionStatus.textContent = sessionState === 'countdown'
-          ? 'Training starts when countdown ends.'
+          ? 'Starting…'
           : sessionState === 'resting' ? 'Rest resumed.' : 'Training resumed.';
         updateControls();
-        void writeSessionState(sessionState);
-        startSessionClock();
+        void writeSessionState(sessionState).then((saved) => {
+          if (saved && sessionState === 'countdown') waitForBoardStart();
+        });
+        if (sessionState !== 'countdown') startSessionClock();
         return;
       }
 
       if (!['countdown', 'running', 'resting'].includes(sessionState)) return;
+      window.clearTimeout(boardStartTimer);
+      boardStartTimer = null;
       pausedPhase = sessionState;
       pausedRemainingMs = Math.max(0, phaseDeadline - Date.now());
       if (sessionState === 'running') updateActiveProgress(routeDurationMs - pausedRemainingMs);
-      if (sessionState === 'countdown') countdownShadow.hidden = true;
       if (sessionTimer !== null) window.clearInterval(sessionTimer);
       sessionTimer = null;
       sessionState = 'paused';
@@ -483,6 +466,8 @@ class viewTraining {
     };
 
     const stopSession = (message = 'Training stopped. All route progress reset.', writeState = true) => {
+      window.clearTimeout(boardStartTimer);
+      boardStartTimer = null;
       if (sessionTimer !== null) window.clearInterval(sessionTimer);
       sessionTimer = null;
       sessionState = 'stopped';
@@ -490,7 +475,6 @@ class viewTraining {
       currentStepIndex = -1;
       pausedPhase = null;
       lastCountdownValue = null;
-      countdownShadow.hidden = true;
       resetRouteProgress();
       sessionStatus.textContent = message;
       updateControls();
@@ -498,7 +482,6 @@ class viewTraining {
     };
 
     playButton.addEventListener('click', startSession);
-    cancelCountdownButton.addEventListener('click', stopSession);
     pauseButton.addEventListener('click', pauseOrResumeSession);
     stopButton.addEventListener('click', stopSession);
     restInput.addEventListener('input', () => {
@@ -534,6 +517,30 @@ class viewTraining {
       console.error('Failed to listen for training session changes:', error);
     });
 
+    const unsubscribeBoardStatus = onSnapshot(doc(db, 'boardStatus', `boardStatus_${globals.board}`), (snapshot) => {
+      if (!page.isConnected || !snapshot.exists()) return;
+      const status = snapshot.data();
+      latestBoardStatus = status;
+      if (status.trainingSessionId !== trainingSessionId || sessionState !== 'countdown') return;
+      if (status.trainingStatus === 'countdown') {
+        phaseDeadline = status.trainingCountdownDeadline;
+      } else if (status.trainingStatus === 'running') {
+        startRoute(0);
+        startSessionClock();
+      } else if (status.trainingStatus === 'invalid-training-session') {
+        stopSession(`${globals.board} could not start training: no playable routes.`);
+      } else if (status.trainingStatus === 'training-route-load-failed') {
+        stopSession(`${globals.board} could not start training: route loading failed.`);
+      }
+    }, (error) => {
+      console.error('Failed to listen for training board status:', error);
+      if (sessionState === 'countdown') {
+        window.clearTimeout(boardStartTimer);
+        boardStartTimer = null;
+        sessionStatus.textContent = `Could not read ${globals.board}'s status: ${error.code || 'connection error'}.`;
+      }
+    });
+
     const routesQuery = query(collection(db, 'routes'), where('napakboard', '==', globals.board));
     let unsubscribe = () => {};
     unsubscribe = onSnapshot(routesQuery, (snapshot) => {
@@ -553,8 +560,10 @@ class viewTraining {
     if (pageContent) {
       const pageObserver = new MutationObserver(() => {
         if (!page.isConnected) {
+          window.clearTimeout(boardStartTimer);
           unsubscribe();
           unsubscribeSession();
+          unsubscribeBoardStatus();
           pageObserver.disconnect();
         }
       });

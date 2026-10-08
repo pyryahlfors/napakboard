@@ -139,7 +139,10 @@ class systemBoard {
       [[0, -1], [-1, 0], [1, 0], [0, 1]],
       [[0, 0]]
     ];
-    const activeHoldIds = new Set(holdIds);
+    const activeHoldIds = new Set(holdIds.filter((holdId) => {
+      const hold = holdSetup[holdId];
+      return (typeof hold === 'string' ? hold : hold && hold.type) !== 'start';
+    }));
     const holdColors = new Map();
 
     for(const holdId of recentHoldIds) {
@@ -173,6 +176,12 @@ class systemBoard {
       ws281x.render(pixels);
     };
 
+    if(!activeHoldIds.size) {
+      renderZoomFrame(zoomFrames.length - 1);
+      this.notifyStatusChange('training-step-lit');
+      return 0;
+    }
+
     let frameIndex = 0;
     renderZoomFrame(frameIndex);
     const frameDelayMs = 90;
@@ -190,8 +199,18 @@ class systemBoard {
     return frameDelayMs * (zoomFrames.length - 1);
   }
 
-  litTrainingRest(durationMs, deadline) {
-    this.trainingRest = {durationMs, deadline, remainingMs: 0, paused: false};
+  litTrainingRest(durationMs, deadline, holdSetup = {}, holdIds = []) {
+    const holdPixels = new Uint32Array(this.config.leds);
+    for(const holdId of holdIds) {
+      const hold = holdSetup[holdId];
+      const holdType = typeof hold === 'string' ? hold : hold && hold.type;
+      const color = this.holdColors[holdType] || 'ffffff';
+      const ledIndex = this.convertGridPosition(holdId);
+      if(ledIndex >= 0 && ledIndex < holdPixels.length) {
+        holdPixels[ledIndex] = Number.parseInt(color, 16) & 0xffffff;
+      }
+    }
+    this.trainingRest = {durationMs, deadline, holdPixels, remainingMs: 0, paused: false};
     this.renderTrainingRest();
   }
 
@@ -208,11 +227,11 @@ class systemBoard {
     const remainingMs = rest.paused ? rest.remainingMs : Math.max(0, rest.deadline - Date.now());
     const progress = rest.durationMs > 0 ? Math.min(1, Math.max(0, remainingMs / rest.durationMs)) : 0;
     const litColumns = Math.ceil(this.boardWidth * progress);
-    const pixels = new Uint32Array(this.config.leds);
+    const pixels = new Uint32Array(rest.holdPixels);
 
     for(let column = 0; column < litColumns; column++) {
       const ledIndex = this.getLedIndex(column, this.boardHeight - 1);
-      if(ledIndex >= 0 && ledIndex < pixels.length) pixels[ledIndex] = 0xffffff;
+      if(ledIndex >= 0 && ledIndex < pixels.length && !pixels[ledIndex]) pixels[ledIndex] = 0xffffff;
     }
     ws281x.render(pixels);
   }

@@ -10,7 +10,7 @@ import viewSignup from './templates/page_signup.js';
 import viewResetPassword from './templates/page_reset-password.js';
 import viewProfile from './templates/page_profile.js';
 import viewHistory from './templates/page_history.js';
-import viewTraining from './templates/page_training-session.js';
+import viewTraining from './templates/page_training-session.js?training-board-countdown-v3';
 import viewTrainingRoute from './templates/page_training-route.js';
 import viewBoardSelect
  from './templates/page_board-select.js';

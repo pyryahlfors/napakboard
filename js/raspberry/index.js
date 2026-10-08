@@ -81,6 +81,21 @@ function scheduleTrainingAction(run, delayMs, action) {
   run.deadline = Date.now() + run.remainingMs;
   if(run.phase === 'resting') {
     mySystemBoard.litTrainingRest(run.restMs, run.deadline);
+  } else if(run.phase === 'countdown') {
+    const routeData = run.routes[0];
+    const holdSetup = routeData.holdSetup || {};
+    const startHolds = Object.keys(holdSetup).filter((holdId) => {
+      const hold = holdSetup[holdId];
+      return (typeof hold === 'string' ? hold : hold && hold.type) === 'start';
+    });
+    mySystemBoard.clearLights('training-countdown');
+    mySystemBoard.litTrainingRest(5000, run.deadline, holdSetup, startHolds);
+    void syncBoardStatus({
+      trainingMode: true,
+      trainingSessionId: run.sessionId,
+      trainingStatus: 'countdown',
+      trainingCountdownDeadline: run.deadline
+    });
   }
   run.timer = setTimeout(() => {
     if(trainingRun !== run || run.paused) return;
@@ -234,7 +249,13 @@ async function startTrainingRun(session) {
     };
     mySystemBoard.trainingActive = true;
     console.log(`Training started on ${mySystemBoard.boardId}: ${playableRoutes.length} routes`);
-    lightNextTrainingGroup(trainingRun);
+    if(session.status === 'countdown') {
+      const run = trainingRun;
+      run.phase = 'countdown';
+      scheduleTrainingAction(run, 5000, () => lightNextTrainingGroup(run));
+    } else {
+      lightNextTrainingGroup(trainingRun);
+    }
   } catch (error) {
     console.error(`Failed to prepare training session ${sessionId}:`, error);
     void syncBoardStatus({trainingMode: false, trainingSessionId: sessionId, trainingStatus: 'training-route-load-failed'});
@@ -247,12 +268,7 @@ function handleTrainingSession(session) {
   if(!session || session.mode !== 'training') return;
   const sameSession = trainingRun && trainingRun.sessionId === session.sessionId;
 
-  if(session.status === 'countdown') {
-    if(trainingRun && !sameSession) finishTrainingRun(trainingRun, 'training-replaced');
-    return;
-  }
-
-  if(session.status === 'running' || session.status === 'resting') {
+  if(session.status === 'countdown' || session.status === 'running' || session.status === 'resting') {
     if(sameSession) {
       if(trainingRun.paused) {
         trainingRun.paused = false;
@@ -270,7 +286,7 @@ function handleTrainingSession(session) {
     trainingRun.timer = null;
     trainingRun.remainingMs = Math.max(0, trainingRun.deadline - Date.now());
     trainingRun.paused = true;
-    if(trainingRun.phase === 'resting') {
+    if(trainingRun.phase === 'resting' || trainingRun.phase === 'countdown') {
       mySystemBoard.pauseTrainingRest(trainingRun.remainingMs);
     }
     void syncBoardStatus({
