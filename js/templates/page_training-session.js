@@ -46,14 +46,23 @@ class viewTraining {
     restLabel.appendChild(restInput);
     const holdIntervalLabel = dce({el: 'LABEL', content: 'Minimum delay between holds (seconds)'});
     const holdIntervalInput = dce({el: 'INPUT'});
-    holdIntervalInput.type = 'number';
+    holdIntervalInput.type = 'text';
     holdIntervalInput.inputMode = 'decimal';
     holdIntervalInput.name = 'training-hold-interval';
-    holdIntervalInput.min = '1';
-    holdIntervalInput.max = '60';
-    holdIntervalInput.step = '0.1';
+    holdIntervalInput.required = true;
     holdIntervalInput.value = '1';
     holdIntervalLabel.appendChild(holdIntervalInput);
+
+    const getHoldIntervalSeconds = () => {
+      const value = holdIntervalInput.value.trim().replace(',', '.');
+      return /^\d+(?:\.\d*)?$/.test(value) ? Number(value) : NaN;
+    };
+    const validateHoldInterval = () => {
+      const seconds = getHoldIntervalSeconds();
+      holdIntervalInput.setCustomValidity(Number.isFinite(seconds) && seconds >= 1 && seconds <= 60
+        ? ''
+        : 'Enter a delay between 1 and 60 seconds, using a comma or dot for decimals.');
+    };
     settings.appendChild(restLabel);
     settings.appendChild(holdIntervalLabel);
 
@@ -275,7 +284,7 @@ class viewTraining {
           updatedBy: 'client',
           status: nextState,
           startDelaySeconds: 5,
-          holdIntervalSeconds: Number(holdIntervalInput.value),
+          holdIntervalSeconds: getHoldIntervalSeconds(),
           routeIds: [...selectedRouteIds],
           routes: selectedTrainingRoutes().map((routeData) => ({
             routeId: routeData.id,
@@ -297,7 +306,7 @@ class viewTraining {
       }
     };
 
-    const holdIntervalMilliseconds = () => Math.max(100, Number(holdIntervalInput.value) * 1000);
+    const holdIntervalMilliseconds = () => Math.max(100, getHoldIntervalSeconds() * 1000);
 
     const updateActiveProgress = (elapsedMs) => {
       const routeData = selectedTrainingRoutes()[activeRouteIndex];
@@ -423,6 +432,7 @@ class viewTraining {
     const startSession = () => {
       const routes = selectedTrainingRoutes();
       if (!routes.length || !routes.every((routeData) => getRouteGroups(routeData).length > 0)) return;
+      validateHoldInterval();
       if (!restInput.reportValidity() || !holdIntervalInput.reportValidity()) return;
 
       trainingSessionId = `${globals.board}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -495,6 +505,7 @@ class viewTraining {
       if (sessionState === 'stopped') renderSelectedRoutes();
     });
     holdIntervalInput.addEventListener('input', () => {
+      validateHoldInterval();
       if (sessionState === 'stopped') renderSelectedRoutes();
     });
 
