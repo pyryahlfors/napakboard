@@ -38,10 +38,23 @@ async function syncBoardStatus(extra = {}) {
 
 function getTrainingStartHolds(routeData) {
   const holdSetup = routeData.holdSetup || {};
-  return Object.keys(holdSetup).filter((holdId) => {
+  const startHolds = new Set(Object.keys(holdSetup).filter((holdId) => {
     const hold = holdSetup[holdId];
     return (typeof hold === 'string' ? hold : hold && hold.type) === 'start';
+  }));
+  (Array.isArray(routeData.lightingOrder) ? routeData.lightingOrder : []).forEach((entry) => {
+    const holdIds = Array.isArray(entry) ? entry : Array.isArray(entry && entry.holds) ? entry.holds : [entry];
+    if(!holdIds.some((holdId) => {
+      const hold = holdSetup[holdId];
+      return (typeof hold === 'string' ? hold : hold && hold.type) === 'start';
+    })) return;
+    holdIds.forEach((holdId) => {
+      const hold = holdSetup[holdId];
+      const type = typeof hold === 'string' ? hold : hold && hold.type;
+      if(typeof holdId === 'string' && hold && type !== 'top') startHolds.add(holdId);
+    });
   });
+  return [...startHolds];
 }
 
 function getTrainingGroups(routeData) {
@@ -63,7 +76,8 @@ function getTrainingGroups(routeData) {
       seenHolds.add(holdId);
       return true;
     });
-    if(group.length) middleGroups.push(group);
+    if(holdIds.some((holdId) => holdType(holdId) === 'top')) endHolds.push(...group);
+    else if(group.length) middleGroups.push(group);
   });
 
   Object.keys(holdSetup).forEach((holdId) => {
@@ -153,7 +167,11 @@ function lightNextTrainingGroup(run) {
     trainingStepIndex: run.stepIndex
   });
 
-  scheduleTrainingAction(run, Math.max(run.holdIntervalMs, zoomDurationMs), () => {
+  const hasTopHold = group.some((holdId) => {
+    const hold = (routeData.holdSetup || {})[holdId];
+    return (typeof hold === 'string' ? hold : hold && hold.type) === 'top';
+  });
+  scheduleTrainingAction(run, Math.max(run.holdIntervalMs, zoomDurationMs + (hasTopHold ? 3000 : 0)), () => {
     if(run.stepIndex + 1 < routeData.lightingGroups.length) {
       run.stepIndex += 1;
       lightNextTrainingGroup(run);

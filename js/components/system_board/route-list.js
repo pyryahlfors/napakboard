@@ -12,43 +12,97 @@ import dsSelect from '../../components/ds-select/index.js';
 import dsToggle from '../../components/ds-toggle/index.js';
 import dsRadio from '../ds-radio/index.js';
 import dsLegend from '../ds-legend/index.js';
-import { collection, doc, getFirestore, getDoc, onSnapshot, query, updateDoc, setDoc, where } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
+import { arrayRemove, arrayUnion, collection, doc, onSnapshot, query, updateDoc, setDoc, where } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
 import { calculateRouteDifficulty, calculateRouteScore, getRouteSortScore } from './route-utils.js';
+
+const routeCache = {boardId: null, userId: null, unsubscribe: null, loaded: false};
+const todoCache = {userId: null, unsubscribe: null, loaded: false, todos: [], routeIds: new Set()};
+let authCacheListener = null;
+
+const clearTodoCache = () => {
+    if(todoCache.unsubscribe) todoCache.unsubscribe();
+    Object.assign(todoCache, {userId: null, unsubscribe: null, loaded: false, todos: [], routeIds: new Set()});
+    globals.todoRoutesVersion = (globals.todoRoutesVersion || 0) + 1;
+};
+
+const clearRouteCache = () => {
+    if(routeCache.unsubscribe) routeCache.unsubscribe();
+    Object.assign(routeCache, {boardId: null, userId: null, unsubscribe: null, loaded: false});
+    globals.boardRoutes = [];
+    globals.sortedRoutes = [];
+};
 
 export class RouteListManager {
     constructor(db, onLoadRoute) {
         this.db = db;
         this.onLoadRoute = onLoadRoute;
-        this.userTodoRouteIds = new Set();
+        if(!authCacheListener) {
+            authCacheListener = getAuth().onAuthStateChanged((user) => {
+                if(routeCache.userId && routeCache.userId !== (user && user.uid)) clearRouteCache();
+                if(todoCache.userId && todoCache.userId !== (user && user.uid)) clearTodoCache();
+            });
+            storeObserver.add({
+                store: globals,
+                key: 'board',
+                id: 'routeCacheBoardChange',
+                removeOnRouteChange: false,
+                callback: () => {
+                    if(routeCache.boardId && routeCache.boardId !== globals.board) clearRouteCache();
+                }
+            });
+        }
+    }
+
+    get userTodoRouteIds() {
+        return todoCache.routeIds;
+    }
+
+    ensureRouteCache() {
+        const currentUser = getAuth().currentUser;
+        if(!currentUser) {
+            clearRouteCache();
+            return;
+        }
+        const boardId = globals.board;
+        const userId = currentUser.uid;
+        if(routeCache.boardId === boardId && routeCache.userId === userId && routeCache.unsubscribe) return;
+        clearRouteCache();
+        Object.assign(routeCache, {boardId, userId});
+        const dbQuery = query(collection(this.db, 'routes'), where('napakboard', '==', boardId));
+        routeCache.unsubscribe = onSnapshot(dbQuery, (querySnapshot) => {
+            if(routeCache.boardId !== boardId || routeCache.userId !== userId) return;
+            routeCache.loaded = true;
+            const routes = querySnapshot.docs.map((routeDoc) => ({...routeDoc.data(), id: routeDoc.id}))
+                .sort((first, second) => (first.name || '').localeCompare(second.name || ''));
+            globals.sortedRoutes = routes;
+            globals.boardRoutes = routes;
+        }, (error) => {
+            console.error('Failed to load routes:', error);
+            if(routeCache.boardId === boardId && routeCache.userId === userId) clearRouteCache();
+        });
     }
 
     async loadUserTodos() {
         const currentUser = getAuth().currentUser;
         if(!currentUser) {
-            this.userTodoRouteIds = new Set();
+            clearTodoCache();
             return;
         }
-
-        try {
-            const userRef = doc(this.db, 'users', currentUser.uid);
-            const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('loadUserTodos timeout')), 5000)
-            );
-            const userSnap = await Promise.race([getDoc(userRef), timeoutPromise]);
-            const todos = userSnap.exists() && Array.isArray(userSnap.data().todos)
-                ? userSnap.data().todos
-                : [];
-
-            this.userTodoRouteIds = new Set(
-                todos
-                    .map((todo) => (todo && typeof todo === 'object' ? todo.routeId : null))
-                    .filter(Boolean)
-            );
-        } catch(error) {
+        const userId = currentUser.uid;
+        if(todoCache.userId === userId && todoCache.unsubscribe) return;
+        clearTodoCache();
+        todoCache.userId = userId;
+        todoCache.unsubscribe = onSnapshot(doc(this.db, 'users', userId), (userSnap) => {
+            if(todoCache.userId !== userId) return;
+            todoCache.loaded = true;
+            todoCache.todos = userSnap.exists() && Array.isArray(userSnap.data().todos) ? userSnap.data().todos : [];
+            todoCache.routeIds = new Set(todoCache.todos.map((todo) => todo && todo.routeId).filter(Boolean));
+            globals.todoRoutesVersion = (globals.todoRoutesVersion || 0) + 1;
+        }, (error) => {
             console.error('Failed to load TODO routes:', error);
-            this.userTodoRouteIds = new Set();
-        }
+            if(todoCache.userId === userId) clearTodoCache();
+        });
     }
 
     open() {
@@ -232,22 +286,6 @@ export class RouteListManager {
         listDialog.append(sortOptionsContainer, routeCountContainer, showFiltersContainer);
         listDialog.append(dce({el: 'div', cssClass: 'loading', content: 'Loading routes...'}));
 
-        // Database listener for routes
-        const dbQuery = query(collection(getFirestore(), 'routes'), where('napakboard', '==', globals.board));
-        let routesUnsubscribe = onSnapshot(dbQuery, (querySnapshot) => {
-            const routes = [];
-            querySnapshot.forEach((doc) => {
-                let routeData = doc.data();
-                routeData.id = doc.id;
-                routes.push(routeData);
-            });
-            globals.boardRoutes = routes.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-            globals.sortedRoutes = globals.boardRoutes;
-        }, (error) => {
-            console.error('Failed to load routes:', error);
-            updateRouteList();
-        });
-
         // Update route list
         const updateRouteList = () => {
             let loader = listDialog.querySelector('.loading');
@@ -349,44 +387,20 @@ export class RouteListManager {
                             cssClass: 'btn btn_tiny',
                             thisOnClick: async () => {
                                 const userId = getAuth().currentUser && getAuth().currentUser.uid;
-                                if(!userId) { return; }
+                                if(!userId || todoCache.userId !== userId || !todoCache.loaded) { return; }
 
                                 try {
                                     const userRef = doc(this.db, 'users', userId);
-                                    const userSnap = await getDoc(userRef);
-                                    const currentTodos = userSnap.exists() && Array.isArray(userSnap.data().todos)
-                                        ? userSnap.data().todos
-                                        : [];
-
-                                    const hasTodoAlready = currentTodos.some((todo) => todo && todo.routeId === routeData.id);
-
-                                    let nextTodos;
-                                    let message;
-
-                                    if(hasTodoAlready) {
-                                        // Remove from TODO
-                                        nextTodos = currentTodos.filter((todo) => todo && todo.routeId !== routeData.id);
-                                        message = `${routeData.name} removed from TODO`;
-                                        this.userTodoRouteIds.delete(routeData.id);
-                                    } else {
-                                        // Add to TODO
-                                        nextTodos = [
-                                            ...currentTodos,
-                                            {
-                                                routeId: routeData.id,
-                                                date: new Date().getTime()
-                                            }
-                                        ];
-                                        message = `${routeData.name} added to TODO`;
-                                        this.userTodoRouteIds.add(routeData.id);
-                                    }
-
+                                    const existingTodos = todoCache.todos.filter((todo) => todo && todo.routeId === routeData.id);
+                                    const hasTodoAlready = existingTodos.length > 0;
                                     await setDoc(userRef, {
-                                        todos: nextTodos
+                                        todos: hasTodoAlready ? arrayRemove(...existingTodos)
+                                            : arrayUnion({routeId: routeData.id, date: Date.now()})
                                     }, { merge: true });
 
                                     updateRouteList();
 
+                                    const message = `${routeData.name} ${hasTodoAlready ? 'removed from' : 'added to'} TODO`;
                                     globals.standardMessage.push({message, timeout: 1});
                                     globals.standardMessage = globals.standardMessage;
                                 } catch(error) {
@@ -472,6 +486,13 @@ export class RouteListManager {
 
         storeObserver.add({
             store: globals,
+            key: 'todoRoutesVersion',
+            id: 'systemBoardTodosUpdate',
+            callback: () => {updateRouteList()}
+        });
+
+        storeObserver.add({
+            store: globals,
             key: 'boardAngle',
             id: 'systemBoardAngleUpdate',
             callback: () => {updateRouteList()}
@@ -488,6 +509,13 @@ export class RouteListManager {
             updateRouteList();
         });
 
+        const closeModal = () => {
+            observer.disconnect();
+            ['systemBoardRoutesUpdate', 'systemBoardNameSearchUpdate', 'systemBoardAngleUpdate', 'sortRoutesBy', 'systemBoardTodosUpdate']
+                .forEach((id) => storeObserver.remove({store: globals, id}));
+            modalWindow.close();
+        };
+
         let mother = document.querySelector('.app');
         let modalWindow = new dsModal({
             title: 'Route list',
@@ -503,23 +531,23 @@ export class RouteListManager {
                     cssClass: 'btn btn_small',
                     thisOnClick: () => {
                         globals.sortedRoutes = [];
-                        if(routesUnsubscribe) { routesUnsubscribe(); routesUnsubscribe = null; }
-                        modalWindow.close();
+                        closeModal();
                     }
                 }),
                 load: new dsButton({
                     title: 'Load',
                     cssClass: 'btn btn_small preferred',
                     thisOnClick: () => {
-                        if(routesUnsubscribe) { routesUnsubscribe(); routesUnsubscribe = null; }
                         if(selectedRoute) {
                             this.onLoadRoute(selectedRoute);
                         }
-                        modalWindow.close()
+                        closeModal();
                     }
                 })
             }],
         });
-        mother.append(modalWindow)
+        mother.append(modalWindow);
+        this.ensureRouteCache();
+        if(routeCache.loaded) updateRouteList();
     }
 }

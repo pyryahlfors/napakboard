@@ -2,7 +2,7 @@ import { dce, storeObserver } from '../../shared/helpers.js';
 import { globals } from '../../shared/globals.js';
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { BoardRenderer } from './board-renderer.js';
-import { RouteListManager } from './route-list.js';
+import { RouteListManager } from './route-list.js?route-cache-v1';
 import { RouteEditor } from './route-editor.js';
 import { RouteTicker } from './route-ticker.js';
 import { calculateRouteTickStats } from './route-utils.js';

@@ -160,7 +160,7 @@ BUTTON {
   width: 100%;
   min-height: 48px;
   height: auto;
-  margin: 0;
+  margin: 10px 0 0;
   padding: 8px var(--padding-base);
   line-height: 1.2;
 }

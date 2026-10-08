@@ -1,6 +1,6 @@
 import { dce, storeObserver } from '../shared/helpers.js';
 
-import systemBoard  from '../components/system_board/system_board.js';
+import systemBoard  from '../components/system_board/system_board.js?route-cache-v1';
 import bottomNavi   from '../components/bottom_navi/bottom_navi.js';
 import statusTicker from '../components/ds-statusticker/index.js';
 import { globals } from '../shared/globals.js';

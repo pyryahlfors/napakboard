@@ -4,7 +4,7 @@
 @import url('board.css');
 @import url('footer.css');
 @import url('history.css');
-@import url('training.css');
+@import url('training.css?training-editor-v1');
 @import url('profile.css');
 
 @import url('button.css?button-system-v4');

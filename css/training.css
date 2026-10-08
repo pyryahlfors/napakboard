@@ -393,6 +393,19 @@
   font-size: var(--font-size-small);
 }
 
+.training-hold-order-holds {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+
+.training-hold-order-item.is-grouped .training-hold-order-holds {
+  padding-left: 12px;
+  border-left: 2px solid var(--color-theme-accent-1);
+}
+
 .training-hold-order-step {
   color: var(--color-white-60);
 }

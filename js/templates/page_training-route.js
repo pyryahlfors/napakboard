@@ -31,7 +31,9 @@ const getLightingGroups = (routeData) => {
       seenHolds.add(holdId);
       return true;
     });
-    if (group.length) middleGroups.push(group);
+    if (holdIds.some((holdId) => getHoldType(holdSetup, holdId) === 'start')) startHolds.push(...group);
+    else if (holdIds.some((holdId) => getHoldType(holdSetup, holdId) === 'top')) endHolds.push(...group);
+    else if (group.length) middleGroups.push(group);
   });
 
   return [
@@ -79,13 +81,19 @@ class viewTrainingRoute {
     const saveButton = dce({el: 'BUTTON', cssClass: 'btn training-save', content: 'Save lighting order'});
     saveButton.type = 'button';
     saveButton.disabled = true;
-    const removeSequenceButton = dce({el: 'BUTTON', cssClass: 'btn destructive training-save training-remove', content: 'Remove training sequence'});
+    const removeSequenceButton = dce({el: 'BUTTON', cssClass: 'btn destructive training-save training-remove mt-10', content: 'Remove training sequence'});
     removeSequenceButton.type = 'button';
     removeSequenceButton.disabled = true;
     editorControls.append(routeLabel, status, previewControls, orderPanel, saveButton, removeSequenceButton);
     content.append(boardScroller, editorControls);
 
     const footerNavi = new bottomNavi({options: {
+	  board: {
+        title: 'Exit training',
+        icon: 'climb',
+        link: () => route('board')
+      },
+
       list: {
         title: 'Training',
         icon: 'timer',
@@ -105,8 +113,17 @@ class viewTrainingRoute {
     let previewTimer = null;
     let previewSequence = [];
     let previewIndex = -1;
+    let previewStepDeadline = 0;
     let previewing = false;
     let previewHasHighlights = false;
+
+    const getHoldLabel = (holdId) => {
+      const position = holdId.match(/^([a-z]+)(\d+)$/i);
+      const height = Number(boardSetup && boardSetup.characteristics && boardSetup.characteristics.height);
+      return position && height > 0
+        ? `${position[1].toUpperCase()}${height - Number(position[2]) + 1}`
+        : holdId.toUpperCase();
+    };
 
     const getMissingHoldIds = () => {
       const holdIds = Object.keys(selectedRoute && selectedRoute.holdSetup ? selectedRoute.holdSetup : {});
@@ -143,7 +160,7 @@ class viewTrainingRoute {
         || (Array.isArray(selectedRoute.lightingOrder) && selectedRoute.lightingOrder.length > 0));
       playPreviewButton.disabled = saving || previewing || !selectedRoute || holdCount === 0 || missingCount > 0;
       playPreviewButton.textContent = previewing ? 'Playing…' : 'Play sequence';
-      stopPreviewButton.disabled = saving || (!previewing && !previewHasHighlights);
+      stopPreviewButton.disabled = saving || !previewing;
     };
 
     const isPinnedGroup = (group) => group.some((holdId) => {
@@ -175,8 +192,8 @@ class viewTrainingRoute {
         cell.setAttribute('tabindex', '0');
         cell.setAttribute('aria-pressed', String(order >= 0));
         cell.setAttribute('aria-label', order >= 0
-          ? `Hold ${holdId.toUpperCase()}, lighting step ${order + 1}${lightingGroups[order].length > 1 ? ', lit with other holds' : ''}`
-          : `Add hold ${holdId.toUpperCase()} to lighting order`);
+          ? `Hold ${getHoldLabel(holdId)}, lighting step ${order + 1}${lightingGroups[order].length > 1 ? ', lit with other holds' : ''}`
+          : `Add hold ${getHoldLabel(holdId)} to lighting order`);
         if (order >= 0) cell.dataset.trainingOrder = String(order + 1);
         else delete cell.dataset.trainingOrder;
       } else {
@@ -238,6 +255,7 @@ class viewTrainingRoute {
       });
       scrollToPreviewGroup(group);
       previewHasHighlights = true;
+      previewStepDeadline = Date.now() + (group.some((holdId) => getHoldType(selectedRoute.holdSetup || {}, holdId) === 'top') ? 3000 : 1000);
       previewStatus.textContent = `Lighting step ${index + 1} of ${previewSequence.length}`;
     };
 
@@ -257,12 +275,13 @@ class viewTrainingRoute {
           stopPreview();
           return;
         }
+        if (Date.now() < previewStepDeadline) return;
 
         if (previewIndex + 1 >= previewSequence.length) {
           window.clearInterval(previewTimer);
           previewTimer = null;
           previewing = false;
-          previewHasHighlights = true;
+          previewHasHighlights = false;
           clearPreviewDisplay();
           previewStatus.textContent = 'Sequence complete. All route holds are visible.';
           updateSaveState();
@@ -271,7 +290,7 @@ class viewTrainingRoute {
 
         previewIndex += 1;
         showPreviewStep(previewIndex);
-      }, 1000);
+      }, 100);
     };
 
     const renderOrderList = () => {
@@ -287,10 +306,13 @@ class viewTrainingRoute {
         const holdTypes = group.map((holdId) => getHoldType(selectedRoute.holdSetup || {}, holdId));
         const groupLabel = holdTypes.includes('start') ? 'START' : holdTypes.includes('top') ? 'END' : `STEP ${index + 1}`;
         const item = dce({el: 'LI', cssClass: 'training-hold-order-item'});
+        item.classList.toggle('is-grouped', group.length > 1);
         const description = dce({el: 'DIV', cssClass: 'training-hold-order-description'});
+        const holdsList = dce({el: 'UL', cssClass: 'training-hold-order-holds'});
+        group.forEach((holdId) => holdsList.appendChild(dce({el: 'LI', content: getHoldLabel(holdId)})));
         description.append(
           dce({el: 'SPAN', cssClass: 'training-hold-order-step', content: groupLabel}),
-          dce({el: 'SPAN', cssClass: 'training-hold-order-holds', content: group.map((holdId) => holdId.toUpperCase()).join(' + ')})
+          holdsList
         );
         const controls = dce({el: 'DIV', cssClass: 'training-order-controls'});
 
@@ -315,7 +337,11 @@ class viewTrainingRoute {
         });
         controls.append(moveUp, moveDown);
 
-        if (!pinned && index > 0 && !isPinnedGroup(lightingGroups[index - 1])) {
+        const previousTypes = index > 0
+          ? lightingGroups[index - 1].map((holdId) => getHoldType(selectedRoute.holdSetup || {}, holdId))
+          : [];
+        if (index > 0 && !previousTypes.includes('top')
+          && (!pinned || (holdTypes.includes('top') && !previousTypes.includes('start')))) {
           const groupButton = dce({el: 'BUTTON', cssClass: 'btn btn_small training-group-button', content: '🔗'});
           groupButton.type = 'button';
           groupButton.setAttribute('aria-label', 'Group with previous step');
@@ -329,13 +355,21 @@ class viewTrainingRoute {
           controls.appendChild(groupButton);
         }
 
-        if (!pinned && group.length > 1) {
+        if (group.length > 1 && (!pinned || holdTypes.some((type) => type !== 'start' && type !== 'top'))) {
           const ungroupButton = dce({el: 'BUTTON', cssClass: 'btn btn_small training-ungroup-button', content: '⛓️‍💥'});
           ungroupButton.type = 'button';
           ungroupButton.setAttribute('aria-label', `Ungroup step ${index + 1}`);
           ungroupButton.title = 'Ungroup step';
           ungroupButton.addEventListener('click', () => {
-            lightingGroups.splice(index, 1, ...group.map((holdId) => [holdId]));
+            if (pinned) {
+              const fixedHolds = group.filter((holdId) => ['start', 'top'].includes(getHoldType(selectedRoute.holdSetup || {}, holdId)));
+              const otherGroups = group.filter((holdId) => !fixedHolds.includes(holdId)).map((holdId) => [holdId]);
+              lightingGroups.splice(index, 1, ...(holdTypes.includes('start')
+                ? [fixedHolds, ...otherGroups]
+                : [...otherGroups, fixedHolds]));
+            } else {
+              lightingGroups.splice(index, 1, ...group.map((holdId) => [holdId]));
+            }
             renderOrderList();
             syncBoardOrder();
           });
@@ -358,8 +392,8 @@ class viewTrainingRoute {
         cell.classList.toggle('training-in-order', order >= 0);
         cell.setAttribute('aria-pressed', String(order >= 0));
         cell.setAttribute('aria-label', order >= 0
-          ? `Hold ${holdId.toUpperCase()}, lighting step ${order + 1}${lightingGroups[order].length > 1 ? ', lit with other holds' : ''}`
-          : `Add hold ${holdId.toUpperCase()} to lighting order`);
+          ? `Hold ${getHoldLabel(holdId)}, lighting step ${order + 1}${lightingGroups[order].length > 1 ? ', lit with other holds' : ''}`
+          : `Add hold ${getHoldLabel(holdId)} to lighting order`);
         if (order >= 0) cell.dataset.trainingOrder = String(order + 1);
         else delete cell.dataset.trainingOrder;
       }
@@ -558,6 +592,7 @@ class viewTrainingRoute {
         status.textContent = 'Board setup is not available.';
         return;
       }
+      renderOrderList();
       renderBoard();
     }).catch((error) => {
       console.error('Failed to load board for training editor:', error);

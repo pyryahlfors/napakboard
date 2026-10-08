@@ -11,13 +11,17 @@ const isTrainingRoute = (routeData) => {
   return routeData.training === true || tags.some((tag) => typeof tag === 'string' && tag.toLowerCase() === 'training');
 };
 
-const getLightingGroups = (routeData) => (Array.isArray(routeData.lightingOrder) ? routeData.lightingOrder : [])
+const getLightingGroups = (routeData, includeStartGroups = false) => (Array.isArray(routeData.lightingOrder) ? routeData.lightingOrder : [])
   .map((entry) => {
     const holds = Array.isArray(entry) ? entry : Array.isArray(entry && entry.holds) ? entry.holds : [entry];
+    if (!includeStartGroups && holds.some((holdId) => {
+      const hold = (routeData.holdSetup || {})[holdId];
+      return (typeof hold === 'string' ? hold : hold && hold.type) === 'start';
+    })) return [];
     return holds.filter((holdId) => {
       if (typeof holdId !== 'string') return false;
       const hold = (routeData.holdSetup || {})[holdId];
-      return (typeof hold === 'string' ? hold : hold && hold.type) !== 'start';
+      return includeStartGroups || (typeof hold === 'string' ? hold : hold && hold.type) !== 'start';
     });
   })
   .filter((group) => group.length > 0);
@@ -86,15 +90,15 @@ class viewTraining {
     content.appendChild(sessionSection);
 
     const footerNavi = new bottomNavi({options: {
+      list: {
+        title: 'Exit training',
+        icon: 'climb',
+        link: () => route('board')
+      },
       createTrainingRoute: {
         title: 'Create route',
         icon: 'light',
         link: () => route('trainingRoute')
-      },
-      list: {
-        title: 'Climb',
-        icon: 'climb',
-        link: () => route('board')
       }
     }});
     page.append(ticker.render(), content, footerNavi.render());
@@ -154,7 +158,7 @@ class viewTraining {
       playButton.textContent = sessionState === 'countdown' ? 'Starting…' : 'Play';
       pauseButton.disabled = saving || !['countdown', 'running', 'resting', 'paused'].includes(sessionState);
       pauseButton.textContent = sessionState === 'paused' ? 'Resume' : 'Pause';
-      stopButton.disabled = saving || sessionState === 'stopped';
+      stopButton.disabled = saving || !active;
       restInput.disabled = locked;
       holdIntervalInput.disabled = locked;
       routeList.querySelectorAll('button').forEach((button) => { button.disabled = locked; });
@@ -274,7 +278,7 @@ class viewTraining {
             routeId: routeData.id,
             routeName: routeData.name || 'Unnamed route',
             holdSetup: routeData.holdSetup,
-            lightingOrder: getLightingGroups(routeData).map((holds) => ({holds: [...holds]}))
+            lightingOrder: getLightingGroups(routeData, true).map((holds) => ({holds: [...holds]}))
           })),
           restSeconds: Number(restInput.value),
           currentRouteIndex: activeRouteIndex,
@@ -294,12 +298,28 @@ class viewTraining {
 
     const holdIntervalMilliseconds = () => Math.max(100, getHoldIntervalSeconds() * 1000);
 
+    const getGroupDurationMs = (routeData, group) => {
+      const hasTopHold = group.some((holdId) => {
+        const hold = (routeData.holdSetup || {})[holdId];
+        return (typeof hold === 'string' ? hold : hold && hold.type) === 'top';
+      });
+      return Math.max(holdIntervalMilliseconds(), hasTopHold ? 3180 : 0);
+    };
+
+    const getStepIndex = (routeData, elapsedMs) => {
+      const groups = getRouteGroups(routeData);
+      let remainingMs = elapsedMs;
+      for (let index = 0; index < groups.length; index += 1) {
+        remainingMs -= getGroupDurationMs(routeData, groups[index]);
+        if (remainingMs < 0) return index;
+      }
+      return groups.length - 1;
+    };
+
     const updateActiveProgress = (elapsedMs) => {
       const routeData = selectedTrainingRoutes()[activeRouteIndex];
       if (!routeData) return;
-      const groups = getRouteGroups(routeData);
-      const intervalMs = holdIntervalMilliseconds();
-      currentStepIndex = Math.min(groups.length - 1, Math.floor(elapsedMs / intervalMs));
+      currentStepIndex = getStepIndex(routeData, elapsedMs);
       routeProgress.set(routeData.id, Math.min(100, (elapsedMs / routeDurationMs) * 100));
       updateProgressRows();
     };
@@ -327,7 +347,7 @@ class viewTraining {
       currentStepIndex = 0;
       sessionState = 'running';
       routeStartedAt = Date.now();
-      routeDurationMs = Math.max(1, groups.length * holdIntervalMilliseconds());
+      routeDurationMs = Math.max(1, groups.reduce((duration, group) => duration + getGroupDurationMs(routeData, group), 0));
       phaseDurationMs = routeDurationMs;
       phaseDeadline = routeStartedAt + routeDurationMs;
       lastCountdownValue = null;
@@ -376,7 +396,7 @@ class viewTraining {
         const elapsed = Math.max(0, now - routeStartedAt);
         const routeData = selectedTrainingRoutes()[activeRouteIndex];
         const groups = routeData ? getRouteGroups(routeData) : [];
-        const nextStep = Math.min(groups.length - 1, Math.floor(elapsed / holdIntervalMilliseconds()));
+        const nextStep = routeData ? getStepIndex(routeData, elapsed) : -1;
         if (nextStep !== currentStepIndex) {
           currentStepIndex = nextStep;
           sessionStatus.textContent = `Route ${activeRouteIndex + 1} of ${selectedRouteIds.length} · Step ${currentStepIndex + 1} of ${groups.length}`;

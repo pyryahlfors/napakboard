@@ -3,15 +3,15 @@ import { route } from './shared/route.js';
 import { globals } from './shared/globals.js';
 import { user } from './shared/user.js';
 
-import viewBoard from './templates/page_board.js';
+import viewBoard from './templates/page_board.js?route-cache-v1';
 import viewSetup from './templates/page_setup.js';
 import viewLogin from './templates/page_login.js';
 import viewSignup from './templates/page_signup.js';
 import viewResetPassword from './templates/page_reset-password.js';
 import viewProfile from './templates/page_profile.js';
 import viewHistory from './templates/page_history.js';
-import viewTraining from './templates/page_training-session.js?training-board-countdown-v4';
-import viewTrainingRoute from './templates/page_training-route.js?training-route-management-v1';
+import viewTraining from './templates/page_training-session.js?training-board-countdown-v6';
+import viewTrainingRoute from './templates/page_training-route.js?training-route-management-v3';
 import viewBoardSelect
  from './templates/page_board-select.js';
 import otc from './templates/partials/section_otc.js';
