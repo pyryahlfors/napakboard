@@ -44,6 +44,17 @@
 	grid-template-columns: auto 30px;
 }
 
+.board-loading {
+  position: absolute;
+  top: 2rem;
+  left: 1rem;
+  right: calc(30px + 1rem);
+  margin: 0;
+  color: #fff;
+  text-align: center;
+  pointer-events: none;
+}
+
 .board-container {
   margin: 0 auto 0;
   transform: translate3d(0, 0, 0);

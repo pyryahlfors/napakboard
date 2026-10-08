@@ -1,4 +1,4 @@
-import { collection, doc, getFirestore, onSnapshot, query, serverTimestamp, setDoc, where } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
+import { collection, doc, getDoc, getFirestore, onSnapshot, query, serverTimestamp, setDoc, where } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
 import { dce } from '../shared/helpers.js';
 import { globals } from '../shared/globals.js';
 import { route } from '../shared/route.js';
@@ -44,7 +44,7 @@ class viewTraining {
     restInput.step = '5';
     restInput.value = '60';
     restLabel.appendChild(restInput);
-    const holdIntervalLabel = dce({el: 'LABEL', content: 'Delay between holds (seconds)'});
+    const holdIntervalLabel = dce({el: 'LABEL', content: 'Minimum delay between holds (seconds)'});
     const holdIntervalInput = dce({el: 'INPUT'});
     holdIntervalInput.type = 'number';
     holdIntervalInput.name = 'training-hold-interval';
@@ -113,6 +113,7 @@ class viewTraining {
     let sessionState = 'stopped';
     let saving = false;
     let sessionTimer = null;
+    let trainingSessionId = null;
     let phaseDeadline = 0;
     let phaseDurationMs = 0;
     let pausedRemainingMs = 0;
@@ -222,7 +223,7 @@ class viewTraining {
 
       if (sessionState === 'stopped') {
         sessionStatus.textContent = selectedRouteIds.length
-          ? `${selectedRouteIds.length} route${selectedRouteIds.length === 1 ? '' : 's'} selected · ${restInput.value}s rest · ${holdIntervalInput.value}s between holds.`
+          ? `${selectedRouteIds.length} route${selectedRouteIds.length === 1 ? '' : 's'} selected · ${restInput.value}s rest · minimum ${holdIntervalInput.value}s between holds.`
           : 'Select routes to prepare a session.';
       }
       updateControls();
@@ -268,12 +269,17 @@ class viewTraining {
       try {
         await setDoc(doc(db, 'trainingSessions', globals.board), {
           boardId: globals.board,
+          mode: 'training',
+          sessionId: trainingSessionId,
+          updatedBy: 'client',
           status: nextState,
           startDelaySeconds: 5,
           holdIntervalSeconds: Number(holdIntervalInput.value),
           routeIds: [...selectedRouteIds],
           routes: selectedTrainingRoutes().map((routeData) => ({
             routeId: routeData.id,
+            routeName: routeData.name || 'Unnamed route',
+            holdSetup: routeData.holdSetup,
             lightingOrder: getLightingGroups(routeData).map((holds) => ({holds: [...holds]}))
           })),
           restSeconds: Number(restInput.value),
@@ -418,6 +424,7 @@ class viewTraining {
       if (!routes.length || !routes.every((routeData) => getRouteGroups(routeData).length > 0)) return;
       if (!restInput.reportValidity() || !holdIntervalInput.reportValidity()) return;
 
+      trainingSessionId = `${globals.board}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       resetRouteProgress();
       activeRouteIndex = -1;
       currentStepIndex = -1;
@@ -464,7 +471,7 @@ class viewTraining {
       void writeSessionState('paused');
     };
 
-    const stopSession = () => {
+    const stopSession = (message = 'Training stopped. All route progress reset.', writeState = true) => {
       if (sessionTimer !== null) window.clearInterval(sessionTimer);
       sessionTimer = null;
       sessionState = 'stopped';
@@ -474,9 +481,9 @@ class viewTraining {
       lastCountdownValue = null;
       countdownShadow.hidden = true;
       resetRouteProgress();
-      sessionStatus.textContent = 'Training stopped. All route progress reset.';
+      sessionStatus.textContent = message;
       updateControls();
-      void writeSessionState('stopped');
+      if (writeState) void writeSessionState('stopped');
     };
 
     playButton.addEventListener('click', startSession);
@@ -488,6 +495,31 @@ class viewTraining {
     });
     holdIntervalInput.addEventListener('input', () => {
       if (sessionState === 'stopped') renderSelectedRoutes();
+    });
+
+    getDoc(doc(db, 'trainingSessions', globals.board)).then((snapshot) => {
+      if (!page.isConnected || !snapshot.exists()) return;
+      const session = snapshot.data();
+      const savedRest = Number(session.restSeconds);
+      const savedHoldInterval = Number(session.holdIntervalSeconds);
+      if (Number.isFinite(savedRest) && savedRest >= 0 && savedRest <= 3600) restInput.value = String(savedRest);
+      if (Number.isFinite(savedHoldInterval) && savedHoldInterval >= 1 && savedHoldInterval <= 60) {
+        holdIntervalInput.value = String(savedHoldInterval);
+      }
+      renderSelectedRoutes();
+    }).catch((error) => {
+      console.error('Failed to load training settings for this board:', error);
+    });
+
+    let unsubscribeSession = () => {};
+    unsubscribeSession = onSnapshot(doc(db, 'trainingSessions', globals.board), (snapshot) => {
+      if (!page.isConnected || !snapshot.exists()) return;
+      const session = snapshot.data();
+      if (session.updatedBy === 'raspberry' && session.status === 'stopped' && sessionState !== 'stopped') {
+        stopSession(session.stopReason || 'A normal route was selected. Training stopped.', false);
+      }
+    }, (error) => {
+      console.error('Failed to listen for training session changes:', error);
     });
 
     const routesQuery = query(collection(db, 'routes'), where('napakboard', '==', globals.board));
@@ -510,6 +542,7 @@ class viewTraining {
       const pageObserver = new MutationObserver(() => {
         if (!page.isConnected) {
           unsubscribe();
+          unsubscribeSession();
           pageObserver.disconnect();
         }
       });

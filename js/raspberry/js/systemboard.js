@@ -59,6 +59,9 @@ class systemBoard {
     this.lastScreensaverMode = null;
     this.animationContexts = {};
     this.statusChangeHandler = null;
+    this.trainingActive = false;
+    this.trainingAnimationTimer = null;
+    this.trainingRest = null;
   }
 
   initialize() {
@@ -117,9 +120,128 @@ class systemBoard {
     return this.getLedIndex(x, y);
   }
 
+  litTrainingGroup(holdSetup, holdIds, recentHoldIds = holdIds) {
+    this.trainingRest = null;
+    this.lastAction = Date.now();
+    if(this.trainingAnimationTimer !== null) {
+      clearTimeout(this.trainingAnimationTimer);
+      this.trainingAnimationTimer = null;
+    }
+    if(this.screensaverMode) {
+      delete this.animationContexts[this.screensaverMode];
+    }
+    this.screensaverRunning = false;
+    this.screensaverMode = null;
+    this.screensaverStartedAt = 0;
+
+    const zoomFrames = [
+      [[-1, -2], [0, -2], [1, -2], [-2, -1], [2, -1], [-2, 0], [2, 0], [-2, 1], [2, 1], [-1, 2], [0, 2], [1, 2]],
+      [[0, -1], [-1, 0], [1, 0], [0, 1]],
+      [[0, 0]]
+    ];
+    const activeHoldIds = new Set(holdIds);
+    const holdColors = new Map();
+
+    for(const holdId of recentHoldIds) {
+      const hold = holdSetup[holdId];
+      const holdType = typeof hold === 'string' ? hold : hold && hold.type;
+      const color = this.holdColors[holdType] || 'ffffff';
+      const pixelColor = Number.parseInt(String(color).replace(/^#|^0x/i, ''), 16);
+      if(Number.isFinite(pixelColor)) holdColors.set(holdId, pixelColor & 0xffffff);
+    }
+
+    const renderZoomFrame = (frameIndex) => {
+      const pixels = new Uint32Array(this.config.leds);
+      for(const holdId of recentHoldIds) {
+        const color = holdColors.get(holdId);
+        if(color === undefined) continue;
+
+        const match = holdId.match(/[a-zA-Z]+|[0-9]+/g);
+        if(!match) continue;
+        const x = this.boardCols.indexOf(match[0].toLowerCase());
+        const y = Number(match[1]) - 1;
+        const offsets = activeHoldIds.has(holdId) ? zoomFrames[frameIndex] : [[0, 0]];
+
+        for(const [offsetX, offsetY] of offsets) {
+          const column = x + offsetX;
+          const row = y + offsetY;
+          if(column < 0 || column >= this.boardWidth || row < 0 || row >= this.boardHeight) continue;
+          const ledIndex = this.getLedIndex(column, row);
+          if(ledIndex >= 0 && ledIndex < pixels.length) pixels[ledIndex] = color;
+        }
+      }
+      ws281x.render(pixels);
+    };
+
+    let frameIndex = 0;
+    renderZoomFrame(frameIndex);
+    const frameDelayMs = 90;
+    const advanceZoom = () => {
+      if(frameIndex >= zoomFrames.length - 1) {
+        this.trainingAnimationTimer = null;
+        return;
+      }
+      frameIndex += 1;
+      renderZoomFrame(frameIndex);
+      this.trainingAnimationTimer = setTimeout(advanceZoom, frameDelayMs);
+    };
+    this.trainingAnimationTimer = setTimeout(advanceZoom, frameDelayMs);
+    this.notifyStatusChange('training-step-lit');
+    return frameDelayMs * (zoomFrames.length - 1);
+  }
+
+  litTrainingRest(durationMs, deadline) {
+    this.trainingRest = {durationMs, deadline, remainingMs: 0, paused: false};
+    this.renderTrainingRest();
+  }
+
+  pauseTrainingRest(remainingMs) {
+    if(!this.trainingRest) return;
+    this.trainingRest.remainingMs = remainingMs;
+    this.trainingRest.paused = true;
+    this.renderTrainingRest();
+  }
+
+  renderTrainingRest() {
+    const rest = this.trainingRest;
+    if(!rest) return;
+    const remainingMs = rest.paused ? rest.remainingMs : Math.max(0, rest.deadline - Date.now());
+    const progress = rest.durationMs > 0 ? Math.min(1, Math.max(0, remainingMs / rest.durationMs)) : 0;
+    const litColumns = Math.ceil(this.boardWidth * progress);
+    const pixels = new Uint32Array(this.config.leds);
+
+    for(let column = 0; column < litColumns; column++) {
+      const ledIndex = this.getLedIndex(column, this.boardHeight - 1);
+      if(ledIndex >= 0 && ledIndex < pixels.length) pixels[ledIndex] = 0xffffff;
+    }
+    ws281x.render(pixels);
+  }
+
+  clearLights(reason = 'training-cleared') {
+    this.trainingRest = null;
+    this.lastAction = Date.now();
+    if(this.trainingAnimationTimer !== null) {
+      clearTimeout(this.trainingAnimationTimer);
+      this.trainingAnimationTimer = null;
+    }
+    if(this.screensaverMode) {
+      delete this.animationContexts[this.screensaverMode];
+    }
+    this.screensaverRunning = false;
+    this.screensaverMode = null;
+    this.screensaverStartedAt = 0;
+    ws281x.render(new Uint32Array(this.config.leds));
+    this.notifyStatusChange(reason);
+  }
+
   /** ROUTE LIGHTING */
   lit(route) {
+    this.trainingRest = null;
     this.lastAction = Date.now();
+    if(this.trainingAnimationTimer !== null) {
+      clearTimeout(this.trainingAnimationTimer);
+      this.trainingAnimationTimer = null;
+    }
 
     if(this.screensaverMode){
       delete this.animationContexts[this.screensaverMode];
@@ -142,6 +264,11 @@ class systemBoard {
 
   /** MAIN LOOP */
   tick() {
+    if(this.trainingActive) {
+      if(this.trainingRest && !this.trainingRest.paused) this.renderTrainingRest();
+      return;
+    }
+
     /** start screensaver if idle */
     if(!this.screensaverRunning && Date.now() - this.lastAction > this.activateScreenSaverDuration && Date.now() > this.nextScreensaverAllowed){
       this.startScreensaver();

@@ -181,7 +181,12 @@ class systemBoard {
     loadBoardSetup(fromGlobals) {
         this.boardContainerWrapper.innerHTML = "";
         this.boardContainer.innerHTML = "";
-        this.boardContainerWrapper.append(this.boardContainer, this.routeCommentsHelp);
+        const loadingMessage = dce({el: 'p', cssClass: 'board-loading', attrbs: [['role', 'status']]});
+        loadingMessage.append(
+            dce({el: 'span', cssClass: 'spinner spin360', attrbs: [['aria-hidden', 'true']]}),
+            document.createTextNode('Loading board setup')
+        );
+        this.boardContainerWrapper.append(this.boardContainer, this.routeCommentsHelp, loadingMessage);
 
         ( async () => {
             // Ensure hold setup is loaded before rendering
@@ -199,20 +204,24 @@ class systemBoard {
             if (docSnap.exists() && docSnap.data().boardSetup ) {
                 this.boardRenderer.drawHolds(this.boardContainer, fromGlobals ? fromGlobals : docSnap.data().boardSetup);
             } else {
-                fetch(`/hold_setup.json?doUpdate=${new Date().getTime()}`)
+                await fetch(`/hold_setup.json?doUpdate=${new Date().getTime()}`)
                 .then(response => response.json())
                 .then(data => {
                     if(fromGlobals) data = fromGlobals;
                     this.boardRenderer.drawHolds(this.boardContainer, data);
                 })
             }
+            loadingMessage.remove();
 
             // Load route if one is selected (give board time to render first)
             if(globals.selectedRouteId) {
                 await new Promise(resolve => setTimeout(resolve, 50));
                 this.loadRoute(globals.selectedRouteId)
             }
-        })();
+        })().catch((error) => {
+            loadingMessage.textContent = 'Unable to load board setup';
+            console.error('Failed to load board setup:', error);
+        });
     }
 
     loadRoute(routeId) {
