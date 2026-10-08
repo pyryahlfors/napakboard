@@ -10,7 +10,6 @@ const db = new fireStore().initialize();
 const trainingSessionDoc = db.collection('trainingSessions').doc(mySystemBoard.boardId);
 
 let current = null;
-let currentRouteData = null;
 let currentRouteMeta = {
   routeId: null,
   routeName: null
@@ -113,12 +112,9 @@ function finishTrainingRun(run, reason) {
   if(!run || trainingRun !== run) return;
   if(run.timer) clearTimeout(run.timer);
   trainingRun = null;
+  currentRouteMeta = {routeId: null, routeName: null};
   mySystemBoard.trainingActive = false;
   mySystemBoard.clearLights(reason);
-
-  if(currentRouteData) {
-    mySystemBoard.lit(currentRouteData);
-  }
 
   void syncBoardStatus({
     trainingMode: false,
@@ -139,13 +135,16 @@ function lightNextTrainingGroup(run) {
 
   run.phase = 'lighting';
   run.currentHoldIds = group;
-  if(run.stepIndex === 0) run.recentHoldIds = getTrainingStartHolds(routeData);
-  run.recentHoldIds = [...run.recentHoldIds, ...group].slice(-4);
+  if(run.stepIndex === 0) {
+    const startHolds = getTrainingStartHolds(routeData);
+    run.recentHoldGroups = startHolds.length ? [startHolds] : [];
+  }
+  run.recentHoldGroups = [...run.recentHoldGroups, group].slice(-4);
   currentRouteMeta = {
     routeId: routeData.routeId || null,
     routeName: routeData.routeName || routeData.name || `Training route ${run.routeIndex + 1}`
   };
-  const zoomDurationMs = mySystemBoard.litTrainingGroup(routeData.holdSetup || {}, group, run.recentHoldIds);
+  const zoomDurationMs = mySystemBoard.litTrainingGroup(routeData.holdSetup || {}, group, run.recentHoldGroups.flat());
   void syncBoardStatus({
     trainingMode: true,
     trainingSessionId: run.sessionId,
@@ -170,7 +169,7 @@ function lightNextTrainingGroup(run) {
     const beginNextRoute = () => {
       run.routeIndex += 1;
       run.stepIndex = 0;
-      run.recentHoldIds = [];
+      run.recentHoldGroups = [];
       lightNextTrainingGroup(run);
     };
 
@@ -241,7 +240,7 @@ async function startTrainingRun(session) {
       routes: playableRoutes,
       routeIndex: 0,
       stepIndex: 0,
-        recentHoldIds: [],
+      recentHoldGroups: [],
       holdIntervalMs: toSeconds(session.holdIntervalSeconds, 1, 0.1) * 1000,
       restMs: toSeconds(session.restSeconds, 60) * 1000,
       timer: null,
@@ -252,6 +251,8 @@ async function startTrainingRun(session) {
       phase: 'lighting',
       paused: false
     };
+    current = null;
+    currentRouteMeta = {routeId: null, routeName: null};
     mySystemBoard.trainingActive = true;
     console.log(`Training started on ${mySystemBoard.boardId}: ${playableRoutes.length} routes`);
     if(session.status === 'countdown') {
@@ -366,8 +367,6 @@ routeDoc.onSnapshot(
     if(isSameRoute && !trainingRun) return;
 
     current = routeData;
-    currentRouteData = routeData;
-    currentRouteMeta = { routeId, routeName };
     const interruptedTraining = trainingRun;
     if(interruptedTraining) {
       finishTrainingRun(interruptedTraining, 'normal-route-selected');
@@ -382,6 +381,7 @@ routeDoc.onSnapshot(
         console.error('Failed to mark training stopped:', error);
       });
     }
+    currentRouteMeta = { routeId, routeName };
     await syncBoardStatus({
       routeId,
       routeName,
@@ -391,7 +391,7 @@ routeDoc.onSnapshot(
     console.log(`Name: ${routeName} - ID: ${routeId}`);
     console.log(renderRouteAscii(routeData, mySystemBoard));
 
-    if(!interruptedTraining) mySystemBoard.lit(routeData);
+    mySystemBoard.lit(routeData);
   },
   (error) => {
     console.error(error);

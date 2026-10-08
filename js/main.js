@@ -11,7 +11,7 @@ import viewResetPassword from './templates/page_reset-password.js';
 import viewProfile from './templates/page_profile.js';
 import viewHistory from './templates/page_history.js';
 import viewTraining from './templates/page_training-session.js?training-board-countdown-v4';
-import viewTrainingRoute from './templates/page_training-route.js';
+import viewTrainingRoute from './templates/page_training-route.js?alphabetical-routes-v1';
 import viewBoardSelect
  from './templates/page_board-select.js';
 import otc from './templates/partials/section_otc.js';

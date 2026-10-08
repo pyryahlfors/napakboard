@@ -417,14 +417,16 @@ class viewTrainingRoute {
     const renderRouteOptions = () => {
       const currentId = routeSelect.value;
       routeSelect.replaceChildren(placeholder);
-      boardRoutes.filter((routeData) => !routeData.archived).forEach((routeData) => {
-        const grade = globals.grades.font[routeData.grade] || '';
-        const tags = Array.isArray(routeData.tags) ? routeData.tags : [routeData.tags];
-        const isTrainingRoute = routeData.training === true || tags.some((tag) => typeof tag === 'string' && tag.toLowerCase() === 'training');
-        const option = dce({el: 'OPTION', content: `${isTrainingRoute ? '(T) ' : ''}${routeData.name || 'Unnamed route'}${grade ? ` · ${grade}` : ''}`});
-        option.value = routeData.id;
-        routeSelect.appendChild(option);
-      });
+      boardRoutes.filter((routeData) => !routeData.archived)
+        .sort((first, second) => (first.name || 'Unnamed route').localeCompare(second.name || 'Unnamed route'))
+        .forEach((routeData) => {
+          const grade = globals.grades.font[routeData.grade] || '';
+          const tags = Array.isArray(routeData.tags) ? routeData.tags : [routeData.tags];
+          const isTrainingRoute = routeData.training === true || tags.some((tag) => typeof tag === 'string' && tag.toLowerCase() === 'training');
+          const option = dce({el: 'OPTION', content: `${isTrainingRoute ? '(T) ' : ''}${routeData.name || 'Unnamed route'}${grade ? ` · ${grade}` : ''}`});
+          option.value = routeData.id;
+          routeSelect.appendChild(option);
+        });
       if (boardRoutes.some((routeData) => routeData.id === currentId)) routeSelect.value = currentId;
     };
 
