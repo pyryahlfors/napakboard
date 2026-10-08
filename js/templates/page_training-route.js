@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getFirestore, onSnapshot, query, updateDoc, where } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
+import { collection, deleteField, doc, getDoc, getFirestore, onSnapshot, query, updateDoc, where } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js';
 import { BoardRenderer } from '../components/system_board/board-renderer.js?training';
 import bottomNavi from '../components/bottom_navi/bottom_navi.js';
@@ -6,6 +6,10 @@ import statusTicker from '../components/ds-statusticker/index.js?training';
 import { dce } from '../shared/helpers.js';
 import { globals } from '../shared/globals.js';
 import { route } from '../shared/route.js';
+
+const isTrainingTag = (tag) => typeof tag === 'string' && tag.toLowerCase() === 'training';
+const isTrainingRoute = (routeData) => routeData.training === true
+  || (Array.isArray(routeData.tags) ? routeData.tags : [routeData.tags]).some(isTrainingTag);
 
 const getHoldType = (holdSetup, holdId) => {
   const value = holdSetup[holdId];
@@ -75,7 +79,10 @@ class viewTrainingRoute {
     const saveButton = dce({el: 'BUTTON', cssClass: 'btn training-save', content: 'Save lighting order'});
     saveButton.type = 'button';
     saveButton.disabled = true;
-    editorControls.append(routeLabel, status, previewControls, orderPanel, saveButton);
+    const removeSequenceButton = dce({el: 'BUTTON', cssClass: 'btn destructive training-save training-remove', content: 'Remove training sequence'});
+    removeSequenceButton.type = 'button';
+    removeSequenceButton.disabled = true;
+    editorControls.append(routeLabel, status, previewControls, orderPanel, saveButton, removeSequenceButton);
     content.append(boardScroller, editorControls);
 
     const footerNavi = new bottomNavi({options: {
@@ -130,7 +137,10 @@ class viewTrainingRoute {
       const missingCount = getMissingHoldIds().length;
       const stepCount = lightingGroups.length;
       orderSummary.textContent = `Lighting order · ${stepCount} steps · ${holdCount - missingCount} of ${holdCount} holds`;
+      routeSelect.disabled = saving;
       saveButton.disabled = saving || !selectedRoute || holdCount === 0 || missingCount > 0;
+      removeSequenceButton.disabled = saving || !selectedRoute || !(isTrainingRoute(selectedRoute)
+        || (Array.isArray(selectedRoute.lightingOrder) && selectedRoute.lightingOrder.length > 0));
       playPreviewButton.disabled = saving || previewing || !selectedRoute || holdCount === 0 || missingCount > 0;
       playPreviewButton.textContent = previewing ? 'Playing…' : 'Play sequence';
       stopPreviewButton.disabled = saving || (!previewing && !previewHasHighlights);
@@ -418,12 +428,11 @@ class viewTrainingRoute {
       const currentId = routeSelect.value;
       routeSelect.replaceChildren(placeholder);
       boardRoutes.filter((routeData) => !routeData.archived)
-        .sort((first, second) => (first.name || 'Unnamed route').localeCompare(second.name || 'Unnamed route'))
+        .sort((first, second) => Number(isTrainingRoute(second)) - Number(isTrainingRoute(first))
+          || (first.name || 'Unnamed route').localeCompare(second.name || 'Unnamed route'))
         .forEach((routeData) => {
           const grade = globals.grades.font[routeData.grade] || '';
-          const tags = Array.isArray(routeData.tags) ? routeData.tags : [routeData.tags];
-          const isTrainingRoute = routeData.training === true || tags.some((tag) => typeof tag === 'string' && tag.toLowerCase() === 'training');
-          const option = dce({el: 'OPTION', content: `${isTrainingRoute ? '(T) ' : ''}${routeData.name || 'Unnamed route'}${grade ? ` · ${grade}` : ''}`});
+          const option = dce({el: 'OPTION', content: `${isTrainingRoute(routeData) ? '(T) ' : ''}${routeData.name || 'Unnamed route'}${grade ? ` · ${grade}` : ''}`});
           option.value = routeData.id;
           routeSelect.appendChild(option);
         });
@@ -464,6 +473,50 @@ class viewTrainingRoute {
       } catch (error) {
         console.error('Failed to save training route:', error);
         status.textContent = 'Could not save this route. Check your connection and try again.';
+      } finally {
+        saving = false;
+        updateSaveState();
+      }
+    });
+
+    removeSequenceButton.addEventListener('click', async () => {
+      if (saving || !selectedRoute) return;
+      if (!getAuth().currentUser) {
+        status.textContent = 'Sign in to remove a training sequence.';
+        return;
+      }
+      const routeData = selectedRoute;
+      if (!window.confirm(`Remove the training sequence from ${routeData.name || 'this route'}? The climbing route will be kept.`)) return;
+
+      if (previewing || previewHasHighlights) stopPreview();
+      saving = true;
+      updateSaveState();
+      status.textContent = 'Removing training sequence…';
+      const updates = {
+        training: false,
+        lightingOrder: deleteField(),
+        trainingUpdatedAt: deleteField()
+      };
+      if (Array.isArray(routeData.tags)) updates.tags = routeData.tags.filter((tag) => !isTrainingTag(tag));
+      else if (isTrainingTag(routeData.tags)) updates.tags = deleteField();
+
+      try {
+        await updateDoc(doc(db, 'routes', routeData.id), updates);
+        routeData.training = false;
+        delete routeData.lightingOrder;
+        delete routeData.trainingUpdatedAt;
+        if (Array.isArray(routeData.tags)) routeData.tags = updates.tags;
+        else if (isTrainingTag(routeData.tags)) delete routeData.tags;
+        boardRoutes = boardRoutes.map((entry) => entry.id === routeData.id ? routeData : entry);
+        selectedRoute = routeData;
+        lightingGroups = getLightingGroups(routeData);
+        renderRouteOptions();
+        renderOrderList();
+        renderBoard();
+        status.textContent = 'Training sequence removed. Climbing route kept.';
+      } catch (error) {
+        console.error('Failed to remove training sequence:', error);
+        status.textContent = 'Could not remove training sequence. Check your connection and try again.';
       } finally {
         saving = false;
         updateSaveState();
