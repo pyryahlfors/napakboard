@@ -16,12 +16,6 @@ class viewSetup {
     window.mySystemBoard = mySystemBoard;
 
 	let footerNavi = new bottomNavi({options : {
-	      list: {
-    	    title: 'Climb',
-        	icon: 'climb',
-			link: () => {route('board')}
-			},
-
 		save: {
 			title: 'Save',
 			icon: 'save',
@@ -43,8 +37,12 @@ class viewSetup {
 			link: () => {
 				mySystemBoard.nukeRoutes();
 				}
+			},
+		list: {
+			title: 'Climb',
+			icon: 'climb',
+			link: () => {route('board')}
 			}
-
 		}
 	});
 

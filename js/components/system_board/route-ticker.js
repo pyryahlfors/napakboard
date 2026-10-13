@@ -100,7 +100,7 @@ export class RouteTicker {
             const commentLabel = dce({el: 'h3', cssStyle: 'margin: 0 0 0.5rem;', content: 'Comment'});
             const commentInput = dce({
                 el: 'textarea',
-                cssStyle: 'width: 100%; min-height: 6rem; resize: vertical; padding: 0.75rem; box-sizing: border-box; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 10px; font: inherit;',
+                cssStyle: 'width: 100%; min-height: 6rem; resize: vertical; padding: 0.75rem; box-sizing: border-box; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 2px; font: inherit;',
                 attrbs: [
                     ['name', 'comment'],
                     ['placeholder', 'Add a short note about the climb']
@@ -108,7 +108,14 @@ export class RouteTicker {
             });
             commentBlock.append(commentLabel, commentInput);
 
-            routeTickForm.append(tickType, approval, difficulty, commentBlock);
+            routeTickForm.append(
+				tickType,
+				document.createElement("hr"),
+				approval,
+				document.createElement("hr"),
+				difficulty,
+				document.createElement("hr"),
+				commentBlock);
             tickDialog.appendChild(routeTickForm);
         }
 

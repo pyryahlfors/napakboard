@@ -177,8 +177,9 @@ class systemBoard {
 									})
 								});
 
+								let holdsTransformForm = dce({el: 'div', cssStyle: 'z-index: 2; margin-left: -20px; margin-right: -20px; padding: 10px 20px; background: rgb(32,32,32)'});
 								/** rotation */
-								let rotationContainer = dce({el: 'div', cssStyle: 'display: flex; position: relative; z-index: 1'});
+								let rotationContainer = dce({el: 'div', cssClass: 'sortby-container'});
 
 								let rotationTitle = dce({el: 'h3', cssStyle: 'width: 50%', content: 'Rotation'});
 								let rotationValue = dce({el: 'span', content: ` (${globals.boardSetup.holdSetup[hold.id]?.rotation || 0}°)`});
@@ -204,7 +205,7 @@ class systemBoard {
 								rotationContainer.append(rotateHold);
 
 								/** Offset X */
-								let offsetXContainer = dce({el: 'div', cssStyle: 'display: flex; position: relative; z-index: 1'});
+								let offsetXContainer = dce({el: 'div', cssClass: 'sortby-container'});
 
 								let offsetXTitle = dce({el: 'h3', cssStyle: 'width: 50%', content: 'Offset X'});
 								let offsetXValue = dce({el: 'span', content: ` (${globals.boardSetup.holdSetup[hold.id]?.offsetX || 0})`});
@@ -230,7 +231,7 @@ class systemBoard {
 								offsetXContainer.append(offsetX);
 
 								/** Offset Y */
-								let offsetYContainer = dce({el: 'div', cssStyle: 'display: flex; position: relative; z-index: 1'});
+								let offsetYContainer = dce({el: 'div', cssClass: 'sortby-container'});
 
 								let offsetYTitle = dce({el: 'h3', cssStyle: 'width: 50%', content: 'Offset Y '});
 								let offsetYValue = dce({el: 'span', content: `(${globals.boardSetup.holdSetup[hold.id]?.offsetY || 0})`});
@@ -257,7 +258,7 @@ class systemBoard {
 
 
 								/** Scale X */
-								let scaleXContainer = dce({el: 'div', cssStyle: 'display: flex'});
+								let scaleXContainer = dce({el: 'div', cssClass: 'sortby-container'});
 
 								let scaleXTitle = dce({el: 'h3', cssStyle: 'width: 50%', content: 'Scale X '});
 								let scaleXValue = dce({el: 'span', content: `(${globals.boardSetup.holdSetup[hold.id]?.scaleX / 100|| 0})`});
@@ -283,7 +284,7 @@ class systemBoard {
 								scaleXContainer.append(scaleX);
 
 								/** Scale Y */
-								let scaleYContainer = dce({el: 'div', cssStyle: 'display: flex'});
+								let scaleYContainer = dce({el: 'div', cssClass: 'sortby-container'});
 
 								let scaleYTitle = dce({el: 'h3', cssStyle: 'width: 50%', content: 'Scale Y '});
 								let scaleYValue = dce({el: 'span', content: `(${globals.boardSetup.holdSetup[hold.id]?.scaleY / 100|| 0})`});
@@ -310,7 +311,7 @@ class systemBoard {
 
 
 								/** color */
-								let colorContainer = dce({el: 'div', cssStyle: 'display: flex'});
+								let colorContainer = dce({el: 'div', cssClass: 'sortby-container'});
 								colorContainer.append(dce({el: 'h3', cssStyle: 'width: 50%', content: 'Color'}));
 
 								let color = new dsInput({
@@ -333,7 +334,7 @@ class systemBoard {
 								colorContainer.append(color);
 
 								/** mirror setup */
-								let mirrorContainer = dce({el: 'div', cssStyle: 'display: flex'});
+								let mirrorContainer = dce({el: 'div', cssClass: 'sortby-container'});
 								mirrorContainer.append(dce({el: 'h3', cssStyle: 'width: 50%; margin-bottom: 20px;', content: 'Has mirrored counterpart'}));
 
 								let mirror = document.createElement("input");
@@ -347,15 +348,23 @@ class systemBoard {
 								}, false);
 								mirrorContainer.append(mirror);
 
-								holdsTransformContainer.append(holdsContainer,
+								holdsTransformForm.append(
 									rotationContainer,
+									document.createElement('HR'),
 									offsetXContainer,
+									document.createElement('HR'),
 									offsetYContainer,
+									document.createElement('HR'),
 									scaleXContainer,
+									document.createElement('HR'),
 									scaleYContainer,
+									document.createElement('HR'),
 									colorContainer,
+									document.createElement('HR'),
 									mirrorContainer
-									)
+									);
+
+								holdsTransformContainer.append(holdsContainer, holdsTransformForm);
 
 								let mother = document.querySelector('.app');
 								let modalWindow = new dsModal({
