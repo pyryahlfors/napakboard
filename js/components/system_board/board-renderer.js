@@ -213,6 +213,7 @@ export class BoardRenderer {
                                     timeout: 1
                                 }];
                             }
+							this.notifyBoardChanged();
                         } else {
                             removeHold(hold);
                         }
@@ -311,12 +312,13 @@ export class BoardRenderer {
                 }
             }
 
+			// Bolt
             holdCanvasCtx.shadowColor = 'transparent';
             holdCanvasCtx.shadowBlur = 0;
-            holdCanvasCtx.arc(holdCanvas.width / 2, holdCanvas.width / 2, 2.5, 0, 2 * Math.PI, false);
-            holdCanvasCtx.fillStyle = 'rgba(255,255,255,.8)';
+            holdCanvasCtx.arc(holdCanvas.width / 2, holdCanvas.width / 2, 4, 0, 2 * Math.PI, false);
+            holdCanvasCtx.fillStyle = 'rgba(200,200,200,1)';
             holdCanvasCtx.strokeStyle = 'rgba(0,0,0,.5)';
-            holdCanvasCtx.lineWidth = 2;
+            holdCanvasCtx.lineWidth = 3;
             holdCanvasCtx.fill();
             holdCanvasCtx.stroke();
 
