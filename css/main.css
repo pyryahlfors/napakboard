@@ -360,7 +360,7 @@ hr {
 .route-stats-card {
   background: #1a1a1a;
   border: 1px solid #2a2a2a;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 1rem;
 }
 
@@ -460,4 +460,8 @@ hr {
 @keyframes fadein {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+.striped {
+	background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 12px), radial-gradient(circle at 50% 100%, var(--color-theme-accent-1-alpha) 0, transparent 50%);
 }

@@ -54,7 +54,6 @@
   --padding-base-wide-horizontal: 32px;
   --padding-base-negative: -16px;
   --grid-base: 4px;
-  --pinch-to-zoom: 1em
 }
 
   @media (orientation: portrait) {

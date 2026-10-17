@@ -16,7 +16,7 @@ class systemBoard {
 		this.routeCommentsHelp = dce({el: 'div', cssClass: 'swipe-help'});
 		this.routeCommentsHelp.innerHTML = "Swipe right for route info";
 
-        this.routeComments = dce({el: 'section', cssStyle: 'background: #111; width: 100vw; flex-shrink: 0; scroll-snap-align: start; padding: 2ch; box-sizing: border-box; height: calc(100vh - 80px);'});
+        this.routeComments = dce({el: 'section', cssClass: 'route-stats-container striped'});
         this.routeCommentsBody = dce({el: 'div', cssStyle: 'max-width: 52rem; margin: 0 auto; display: grid; gap: 1rem;'});
         this.routeComments.append(this.routeCommentsBody);
 
@@ -60,9 +60,9 @@ class systemBoard {
             const summaryGrid = dce({el: 'div', cssStyle: 'display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0.75rem;'});
 
             const statCard = (label, value) => {
-                const card = dce({el: 'div', cssStyle: 'background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1rem;'});
+                const card = dce({el: 'div', cssClass: 'route-stats-card'});
                 card.append(
-                    dce({el: 'div', cssStyle: 'font-size: 0.8rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.06em;', content: label}),
+                    dce({el: 'h3', content: label}),
                     dce({el: 'div', cssStyle: 'font-size: 1.8rem; font-weight: 700; margin-top: 0.25rem;', content: `${value}`})
                 );
                 return card;
@@ -106,7 +106,7 @@ class systemBoard {
                 commentsList.append(dce({el: 'p', cssStyle: 'margin: 0; opacity: 0.75;', content: 'No comments yet.'}));
             } else {
                 stats.comments.slice(0, 10).forEach((entry) => {
-                    const commentCard = dce({el: 'article', cssStyle: 'background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1rem;'});
+                    const commentCard = dce({el: 'article', cssClass: 'route-stats-card'});
                     const commentDate = entry.date ? new Date(entry.date).toLocaleString() : '';
                     const commentType = entry.type === 'redpoint' ? 'Redpoint' : 'Flash';
                     const commentHeader = dce({el: 'div', cssStyle: 'display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.5rem;'});

@@ -44,14 +44,12 @@ BUTTON {
   &.disabled,
   &:disabled {
     pointer-events: none;
-    opacity: 0.3;
   }
 
   & svg {
     height: 100%;
     position: relative;
     left: 0;
-    margin-right: var(--padding-base-half);
   }
 
   & img {
@@ -100,7 +98,7 @@ BUTTON {
   align-items: center;
   font-size: var(--font-size-small);
   text-transform: uppercase;
-  line-height: 1rem;
+  line-height: 2em;
   padding: 0 var(--padding-base-half);
 }
 
@@ -116,25 +114,21 @@ BUTTON {
 }
 
 .training-route-choice {
-  width: 100%;
-  min-height: 48px;
-  height: auto;
-  margin: 0;
-  padding: 8px 12px;
-  border: 1px solid var(--color-white-20);
-  background: var(--color-theme-background-light);
-  color: var(--color-white);
-  justify-content: flex-start;
-  line-height: 1.3;
-  font-weight: 400;
-  text-align: left;
-  text-transform: none;
+	text-transform: uppercase;
+	margin: 0;
+	padding: var(--padding-base-half);
+	color: var(--color-white);
+	background: var(--color-theme-background-dark);
+	border-radius: 4px;
+	position: relative;
+	width: 100%;
+	justify-content: left;
+	gap: 10px;
 }
 
 .training-route-choice.is-selected {
-  border-color: var(--color-theme-accent-1);
-  background: var(--color-theme-accent-1-dim);
-  color: var(--color-white);
+	box-shadow: 0 0 0 4px var(--color-theme-accent-1);
+	background: #222;
 }
 
 .training-order-controls .btn_small {

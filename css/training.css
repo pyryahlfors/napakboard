@@ -1,297 +1,308 @@
 .page-training {
-  height: 100%;
-  display: grid;
-  grid-template-rows: 40px minmax(0, 1fr) 40px;
-  position: relative;
-  background: linear-gradient(135deg, rgba(0, 255, 203, .08), transparent 48%),
-    rgba(0, 0, 0, .3);
-  z-index: 2;
+	height: 100%;
+	display: grid;
+	grid-template-rows: 40px minmax(0, 1fr) 40px;
+	position: relative;
+	background: linear-gradient(135deg, rgba(0, 255, 203, .08), transparent 48%),
+		rgba(0, 0, 0, .3);
+	z-index: 2;
 }
 
 .page-training > .status-ticker,
 .page-training-route > .status-ticker {
-  grid-area: auto;
+	grid-area: auto;
 }
 
 .training-content {
-  min-height: 0;
-  overflow: auto;
-  display: block;
-  padding: var(--padding-base);
-  background-image:
-    repeating-linear-gradient(135deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 12px),
-    radial-gradient(circle at 50% 100%, var(--color-theme-accent-1-alpha) 0, transparent 50%);
+	min-height: 100%;
+	overflow: auto;
+	display: block;
+	padding: var(--padding-base) var(--padding-base) 0;
 }
 
 .training-session {
-  width: min(100%, 760px);
-  margin: 0 auto;
+	width: min(100%, 760px);
+	margin: 0 auto;
 }
 
 .training-route-controls {
-  background-image:
-	    repeating-linear-gradient(135deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 12px),
-    radial-gradient(circle at 50% 100%, var(--color-theme-accent-1-alpha) 0, transparent 50%);
+	background-image:
+		repeating-linear-gradient(135deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 12px),
+		radial-gradient(circle at 50% 100%, var(--color-theme-accent-1-alpha) 0, transparent 50%);
 
 }
 .training-session h2,
 .training-route-controls h2 {
-  margin: 0 0 var(--padding-base-half);
-  text-transform: uppercase;
-  text-align: center;
+	margin: 0 0 var(--padding-base-half);
+	text-transform: uppercase;
+	text-align: center;
 }
 
 .training-status {
-  min-height: 1.4em;
-  font-size: var(--font-size-small);
+	min-height: 1.4em;
+	font-size: var(--font-size-small);
 }
 
 .training-route-list,
 .training-selected-routes,
 .training-hold-order {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+	list-style: none;
+	margin: 0;
+	padding: 0;
 }
 
 .training-route-list {
-  display: grid;
-  gap: 4px;
+	display: grid;
+	gap: 10px;
+	list-style-type: none;
+	margin: 0;
 }
 
 .training-route-item {
-  min-width: 0;
+	min-width: 0;
 }
 
+
 .training-session-settings {
-  margin: var(--padding-base) 0;
-  padding: var(--padding-base) 0;
-  border-block: 1px solid var(--color-white-20);
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--padding-base);
+	margin: var(--padding-base) 0;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--padding-base);
 }
 
 .training-session-settings.is-session-active {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  padding: var(--padding-base-half) var(--padding-base);
-  background: var(--color-theme-background-dark);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, .55);
+	position: sticky;
+	top: 0;
+	z-index: 3;
+	padding: var(--padding-base-half) var(--padding-base);
+	background: var(--color-theme-background-dark);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, .55);
 }
 
 .training-session-settings label,
 .training-route-controls label {
-  display: grid;
-  gap: var(--padding-base-half);
-  font-size: var(--font-size-small);
+	display: grid;
+	gap: var(--padding-base-half);
+	font-size: var(--font-size-small);
 }
 
 .training-session-settings input,
 .training-route-controls input,
 .training-route-controls select {
-  min-height: 44px;
+	min-height: 44px;
 }
 
 .training-countdown {
-  position: fixed;
-  z-index: 999;
-  top: 50%;
-  left: 50%;
-  width: min(calc(100vw - 32px), 24rem);
-  min-height: 190px;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  margin: 0;
-  padding: var(--padding-base-double);
-  transform: translate(-50%, -50%);
-  border: 1px solid var(--color-theme-accent-1-alpha);
-  border-radius: 4px;
-  background: var(--color-theme-background-dark);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, .65);
-  text-align: center;
+	position: fixed;
+	z-index: 999;
+	top: 50%;
+	left: 50%;
+	width: min(calc(100vw - 32px), 24rem);
+	min-height: 190px;
+	display: grid;
+	place-content: center;
+	justify-items: center;
+	margin: 0;
+	padding: var(--padding-base-double);
+	transform: translate(-50%, -50%);
+	border: 1px solid var(--color-theme-accent-1-alpha);
+	border-radius: 4px;
+	background: var(--color-theme-background-dark);
+	box-shadow: 0 16px 48px rgba(0, 0, 0, .65);
+	text-align: center;
 }
 
 .training-countdown-shadow[hidden] {
-  display: none;
+	display: none;
 }
 
 .training-countdown-number {
-  margin: 0;
-  color: var(--color-theme-accent-1);
-  font-family: 'IBM Plex Mono';
-  font-size: 5rem;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
+	margin: 0;
+	color: var(--color-theme-accent-1);
+	font-family: 'IBM Plex Mono';
+	font-size: 5rem;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
 }
 
 .training-countdown-label {
-  margin: var(--padding-base-half) 0 0;
-  font-family: 'IBM Plex Mono';
-  font-size: var(--font-size-small);
-  text-transform: uppercase;
+	margin: var(--padding-base-half) 0 0;
+	font-family: 'IBM Plex Mono';
+	font-size: var(--font-size-small);
+	text-transform: uppercase;
 }
 
 .training-countdown .training-countdown-cancel {
-  min-width: 120px;
-  min-height: 44px;
-  margin: var(--padding-base-double) auto 0;
+	min-width: 120px;
+	min-height: 44px;
+	margin: var(--padding-base-double) auto 0;
 }
 
 .training-session h3 {
-  margin: var(--padding-base) 0 var(--padding-base-half);
-  font-family: 'IBM Plex Mono';
-  font-size: var(--font-size-small);
-  text-transform: uppercase;
+	margin: var(--padding-base) 0 var(--padding-base-half);
+	font-family: 'IBM Plex Mono';
+	font-size: var(--font-size-small);
+	text-transform: uppercase;
 }
 
 .training-selected-routes,
 .training-hold-order {
-  display: grid;
-  gap: 4px;
+	display: grid;
 }
 
 .training-selected-route,
 .training-hold-order-item {
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--padding-base-half);
-  padding: 4px 0;
-  border-bottom: 1px solid var(--color-white-10);
+	min-height: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--padding-base-half);
+	padding: 4px 0;
+	border-bottom: 1px solid var(--color-white-10);
 }
 
 .training-selected-route {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+
+	.training-route-info {
+		display: block;
+	}
 }
 
 .training-route-progress {
-  display: block;
-  position: absolute;
-  z-index: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: rgba(255, 255, 255, .12);
-  pointer-events: none;
+	display: block;
+	position: absolute;
+	z-index: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 2px;
+	background: rgba(255, 255, 255, .12);
+	pointer-events: none;
 }
 
 .training-route-progress-fill {
-  display: block;
-  width: 0;
-  height: 2px;
-  background: var(--color-theme-accent-1);
-  transition: width 120ms linear;
+	display: block;
+	width: 0;
+	height: 2px;
+	background: var(--color-theme-accent-1);
+	transition: width 120ms linear;
 }
 
 .training-selected-route > span:not(.training-route-progress),
 .training-selected-route > .training-order-controls {
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  white-space: pre;
-  text-overflow: ellipsis;
+	position: relative;
+	z-index: 1;
+	overflow: hidden;
+	white-space: pre;
+	text-overflow: ellipsis;
 }
 
 .training-order-controls {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 4px;
+	display: flex;
+	flex: 0 0 auto;
+	gap: 8px;
+	justify-self: end;
 }
 
 .training-session-controls {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--padding-base-half);
-  margin-top: var(--padding-base-double);
+	position: sticky;
+	bottom: 0;
+	background: var(--color-theme-background);
+	margin: var(--padding-base-double) var(--padding-base-negative) 0;
+	padding: var(--padding-base);
+	box-shadow: 0 -10px 10px var(--color-black-60);
+	border-top: 1px solid var(--color-white-10);
+
+	.control-buttons {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: var(--padding-base-half);
+	}
 }
 
 .training-session-status {
-  min-height: 1.5em;
-  margin: var(--padding-base) 0 0;
-  color: var(--color-theme-accent-1);
-  font-family: 'IBM Plex Mono';
-  font-size: var(--font-size-small);
-  text-transform: uppercase;
+	min-height: 1.5em;
+	margin: var(--padding-base) 0 0;
+	color: var(--color-theme-accent-1);
+	font-family: 'IBM Plex Mono';
+	font-size: var(--font-size-small);
+	text-transform: uppercase;
 }
 
 .page-training-route {
-  height: 100%;
-  display: grid;
-  grid-template-rows: 40px minmax(0, 1fr) 40px;
-  position: relative;
-  background: rgba(0, 0, 0, .3);
-  z-index: 2;
+	height: 100%;
+	display: grid;
+	grid-template-rows: 40px minmax(0, 1fr) 40px;
+	position: relative;
+	background: rgba(0, 0, 0, .3);
+	z-index: 2;
 }
 
 .training-route-content {
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
-  overflow: hidden;
+	min-height: 0;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
+	overflow: hidden;
 }
 
 .training-board-scroller {
-  min-width: 0;
-  min-height: 0;
-  overflow: auto;
-  background: #292b2d;
-  overscroll-behavior: contain;
-  scroll-behavior: smooth;
+	min-width: 0;
+	min-height: 0;
+	overflow: auto;
+	background: #292b2d;
+	overscroll-behavior: contain;
+	scroll-behavior: smooth;
 }
 
 .training-board {
-  margin: 0 auto;
+	margin: 0 auto;
 }
 
 .training-board-scroller canvas {
-  position: absolute;
-  pointer-events: none;
-  top: 0;
-  left: 0;
+	position: absolute;
+	pointer-events: none;
+	top: 0;
+	left: 0;
 }
 
 .training-board .grid-cell.training-route-hold {
-  cursor: pointer;
-  touch-action: manipulation;
+	cursor: pointer;
+	touch-action: manipulation;
 }
 
 .training-board .grid-cell.training-in-order::after {
-  content: attr(data-training-order);
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border: 1px solid var(--color-black);
-  border-radius: 50%;
-  background: var(--color-white);
-  color: var(--color-black);
-  font: 600 12px 'IBM Plex Mono';
-  box-shadow: none;
-  z-index: 3;
+	content: attr(data-training-order);
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	border: 1px solid var(--color-black);
+	border-radius: 50%;
+	background: var(--color-white);
+	color: var(--color-black);
+	font: 600 12px 'IBM Plex Mono';
+	box-shadow: none;
+	z-index: 3;
 }
 
 .training-board .grid-cell.training-in-order::before {
-  animation: none;
+	animation: none;
 }
 
 .training-board .grid-cell.training-preview-lit::after {
-  background: var(--color-white);
-  color: var(--color-black);
-  transform: translate3d(-50%, -50%, 0) scale(1.2);
-  animation: trainingPreviewPulse 500ms ease-in-out infinite alternate;
+	background: var(--color-white);
+	color: var(--color-black);
+	transform: translate3d(-50%, -50%, 0) scale(1.2);
+	animation: trainingPreviewPulse 500ms ease-in-out infinite alternate;
 }
 
 .training-board .grid-cell.training-preview-lit::before {
-  animation: none;
+	animation: none;
 }
 
 .training-board.training-preview-active .grid-cell.selected:not(.training-preview-lit) {
@@ -299,134 +310,149 @@
 
 .training-board.training-preview-active .grid-cell.training-preview-hidden::before,
 .training-board.training-preview-active .grid-cell.training-preview-hidden::after {
-  opacity: 0;
-  animation: none;
-  box-shadow: none;
+	opacity: 0;
+	animation: none;
+	box-shadow: none;
 }
 
 .training-board.training-preview-active .grid-cell.training-preview-revealed::before {
-  opacity: 0;
-  animation: none;
+	opacity: 0;
+	animation: none;
 }
 
 .training-board.training-preview-active .grid-cell.training-preview-revealed::after {
-  opacity: .45;
-  box-shadow: 0 0 0 2px var(--color-theme-accent-1);
+	opacity: .45;
+	box-shadow: 0 0 0 2px var(--color-theme-accent-1);
 }
 
 @keyframes trainingPreviewPulse {
-  from { filter: brightness(1); }
-  to { filter: brightness(1.8); }
+	from { filter: brightness(1); }
+	to { filter: brightness(1.8); }
 }
 
 .training-route-controls {
-  min-width: 0;
-  min-height: 0;
-  overflow: auto;
-  padding: var(--padding-base);
-  border-left: 1px solid var(--color-white-20);
+	min-width: 0;
+	min-height: 0;
+	overflow: auto;
+	padding: var(--padding-base);
+	border-left: 1px solid var(--color-white-20);
 }
 
 .training-route-content,
 .training-content,
 .training-board-scroller {
-  touch-action: pan-y;
+	touch-action: pan-y;
 }
 
 .training-board-scroller {
-  touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
 }
 
 .training-route-controls label {
-  margin-bottom: var(--padding-base);
+	margin-bottom: var(--padding-base);
 }
 
 .training-preview-controls {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--padding-base-half);
-  margin: var(--padding-base) 0;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--padding-base-half);
+	margin: var(--padding-base) 0;
 }
 
 .training-preview-status {
-  grid-column: 1 / -1;
-  min-height: 1.4em;
-  margin: 0;
-  color: var(--color-white-80);
-  font-family: 'IBM Plex Mono';
-  font-size: var(--font-size-small);
-  text-transform: uppercase;
+	grid-column: 1 / -1;
+	min-height: 1.4em;
+	margin: 0;
+	color: var(--color-white-80);
+	font-family: 'IBM Plex Mono';
+	font-size: var(--font-size-small);
+	text-transform: uppercase;
 }
 
 .training-order-panel {
-  margin-top: var(--padding-base);
-  border-top: 1px solid var(--color-white-20);
-  border-bottom: 1px solid var(--color-white-20);
+	margin-top: var(--padding-base);
+	border-top: 1px solid var(--color-white-20);
+	border-bottom: 1px solid var(--color-white-20);
 }
 
 .training-order-panel > h2 {
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  margin: 0;
-  font-family: 'IBM Plex Mono';
-  font-size: var(--font-size-small);
-  text-transform: uppercase;
+	min-height: 48px;
+	display: flex;
+	align-items: center;
+	margin: 0;
+	font-family: 'IBM Plex Mono';
+	font-size: var(--font-size-small);
+	text-transform: uppercase;
 }
 
 .training-order-panel .training-hold-order {
-  max-height: min(36vh, 360px);
-  overflow: auto;
-  padding-bottom: var(--padding-base-half);
+	max-height: min(36vh, 360px);
+	overflow: auto;
+	padding-bottom: var(--padding-base-half);
 }
 
 .training-hold-order-description {
-  min-width: 0;
-  display: grid;
-  gap: 2px;
+	min-width: 0;
+	display: grid;
+	gap: 2px;
 }
 
 .training-hold-order-step,
 .training-hold-order-holds {
-  display: block;
-  font-family: 'IBM Plex Mono';
-  font-size: var(--font-size-small);
+	display: block;
+	font-family: 'IBM Plex Mono';
+	font-size: var(--font-size-small);
 }
 
 .training-hold-order-holds {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 4px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	gap: 4px;
 }
 
 .training-hold-order-item.is-grouped .training-hold-order-holds {
-  padding-left: 12px;
-  border-left: 2px solid var(--color-theme-accent-1);
+	padding-left: 12px;
+	border-left: 2px solid var(--color-theme-accent-1);
 }
 
 .training-hold-order-step {
-  color: var(--color-white-60);
+	color: var(--color-white-60);
 }
 
 @media (max-width: 700px) {
-  .training-route-content {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(240px, 1fr) auto;
-    overflow: auto;
-  }
+	.training-route-content {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: minmax(240px, 1fr) auto;
+		overflow: auto;
+	}
 
-  .training-route-controls {
-    border-left: 0;
-    border-top: 1px solid var(--color-white-20);
-  }
+	.training-route-controls {
+		border-left: 0;
+		border-top: 1px solid var(--color-white-20);
+	}
 
 }
 
 @media (max-width: 360px) {
-  .training-session-controls {
-    gap: 4px;
-  }
-
+	.training-session-controls {
+		gap: 4px;
+	}
 }
+
+
+.training-routes {
+	background-color: #37373e;
+	margin: 0 var(--padding-base-negative);
+	padding: var(--padding-base);
+}
+
+.training-settings {
+	background-color: rgb(32,32,32);
+	margin: 0 var(--padding-base-negative);
+	padding: var(--padding-base);
+	background-color: rgb(32,32,32);
+	border-bottom: 1px solid var(--color-white-10);
+}
+

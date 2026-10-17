@@ -3,6 +3,7 @@ import { globals } from '../../shared/globals.js';
 import dsModal  from '../../components/ds-modal/index.js';
 import dsButton from '../../components/ds-button/index.js';
 import dsInput from '../../components/ds-input/index.js';
+import dsToggle from '../../components/ds-toggle/index.js';
 import { collection, doc, getFirestore, getDoc, getDocs, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 
 
@@ -169,9 +170,9 @@ class systemBoard {
 												}
 
 											}, false);
-											let holdNameContainer = dce({el: 'div', cssClass: 'hold-name'});
-											holdNameContainer.append(document.createTextNode(holdname ));
-											holdContainer.append(holdImage, holdNameContainer );
+//											let holdNameContainer = dce({el: 'div', cssClass: 'hold-name'});
+//											holdNameContainer.append(document.createTextNode(holdname ));
+											holdContainer.append(holdImage); //, holdNameContainer );
 											holdsContainer.append(holdContainer)
 										}
 									})
@@ -337,16 +338,19 @@ class systemBoard {
 								let mirrorContainer = dce({el: 'div', cssClass: 'sortby-container'});
 								mirrorContainer.append(dce({el: 'h3', cssStyle: 'width: 50%; margin-bottom: 20px;', content: 'Has mirrored counterpart'}));
 
-								let mirror = document.createElement("input");
-								mirror.name="mirror"
-								mirror.style.margin = '0 0 20px' ;
-								mirror.type = 'checkbox';
-								mirror.checked = globals.boardSetup.holdSetup[hold.id]?.mirror || false;
-								mirror.addEventListener('input', (e) => {
-									holdTransform['mirror'] = e.target.checked;
-									updateBoardJSON(hold);
-								}, false);
-								mirrorContainer.append(mirror);
+								let mirror = new dsToggle({
+									cssClass: 'horizontal-menu justify-center full-width',
+									targetObj: 'setupMirror',
+									options: [
+										{title: 'No', value: false, selected: !globals.boardSetup.holdSetup[hold.id]?.mirror},
+										{title: 'Yes', value: true, selected: Boolean(globals.boardSetup.holdSetup[hold.id]?.mirror)}
+									],
+									onToggle: () => {
+										holdTransform['mirror'] = globals.setupMirror;
+										updateBoardJSON(hold);
+									}
+								});
+								mirrorContainer.append(mirror.render());
 
 								holdsTransformForm.append(
 									rotationContainer,

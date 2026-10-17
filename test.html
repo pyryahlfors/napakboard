@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ds-quantity Test</title>
+  <link rel="stylesheet" href="/projects/napakboard/css/main.css">
+</head>
+<body>
+  <main></main>
+  <script type="module">
+    import dsQuantity from './js/components/ds-quantity/index.js';
+
+    document.querySelector('main').append(new dsQuantity({
+      label: 'Quantity',
+      attrbs: [['aria-label', 'Quantity']],
+	  attrbs: [
+		['min', '-10'],
+		['max', '60'],
+		['step', '0.5']
+	]
+
+    }));
+  </script>
+</body>
+</html>

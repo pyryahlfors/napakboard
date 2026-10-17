@@ -306,3 +306,13 @@
   left: 0;
   }
 }
+
+.route-stats-container {
+	background: #111;
+	width: 100vw;
+	flex-shrink: 0;
+	scroll-snap-align: start;
+	padding: 2ch;
+	box-sizing: border-box;
+	height: calc(100vh - 80px);
+}

@@ -12,8 +12,6 @@ export class BoardRenderer {
         this.holdSize = 30;
         this.cellSize = 40;
         this.boardCols = 'abcdefghijklmnopqrstuvwxyz';
-        this.timerStart = 0;
-        this.timerEnd = 0;
         this.holdSetupPromise = null;
     }
 
@@ -132,33 +130,53 @@ export class BoardRenderer {
                         });
                     }
                 } else {
-                    gridCell.addEventListener('mousedown', (e) => {
-                        e.preventDefault();
-                        this.timerStart = new Date().getTime();
-                    }, false);
+                    let pressStart = null;
 
-                    gridCell.addEventListener('contextmenu', (e) => {
-                        e.preventDefault();
-                        const hold = e.target;
+                    const removeHold = (hold) => {
                         hold.classList.remove('selected', 'intermediate', 'foot', 'start', 'top');
                         globals.standardMessage = [
                             ...globals.standardMessage,
                             { message: 'Removed hold from route', timeout: 1 }
                         ];
                         this.notifyBoardChanged();
+                    };
+
+                    gridCell.addEventListener('pointerdown', (e) => {
+                        if(e.button !== 0) {
+                            return;
+                        }
+                        e.preventDefault();
+                        pressStart = Date.now();
+                        gridCell.setPointerCapture(e.pointerId);
                     }, false);
 
-                    gridCell.addEventListener('mouseup', (e) => {
+                    gridCell.addEventListener('contextmenu', (e) => {
                         e.preventDefault();
+                        if(pressStart !== null) {
+                            if(Date.now() - pressStart >= 500) {
+                                pressStart = null;
+                                removeHold(e.target);
+                            }
+                            return;
+                        }
+                        removeHold(e.target);
+                    }, false);
+
+                    gridCell.addEventListener('pointerup', (e) => {
+                        if(pressStart === null) {
+                            return;
+                        }
+                        e.preventDefault();
+                        const pressDuration = Date.now() - pressStart;
+                        pressStart = null;
                         if(globals.selectedRoute !== null) {
                             return;
                         }
 
-                        this.timerEnd = new Date().getTime();
                         const hold = e.target;
                         const holdTypes = ['intermediate', 'foot', 'start', 'top'];
 
-                        if(this.timerEnd - this.timerStart < 500) {
+                        if(pressDuration < 500) {
                             if(hold.classList.contains('selected')) {
                                 let currentHoldType = null;
                                 let currentHoldOrder = -1;
@@ -196,14 +214,13 @@ export class BoardRenderer {
                                 }];
                             }
                         } else {
-                            hold.classList.remove('selected', 'intermediate', 'foot', 'start', 'top');
-                            globals.standardMessage = [{
-                                message: `Removed hold from ${this.boardCols[col]}${boardHeight - row}`,
-                                timeout: 1
-                            }];
+                            removeHold(hold);
                         }
 
-                        this.notifyBoardChanged();
+                    }, false);
+
+                    gridCell.addEventListener('pointercancel', () => {
+                        pressStart = null;
                     }, false);
                 }
 

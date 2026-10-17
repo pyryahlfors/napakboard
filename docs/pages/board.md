@@ -15,7 +15,7 @@ Load the board layout, open the route list from the ticker/menu, filter and choo
 ## UI / Components
 | Component | Data and state | Actions |
 | --- | --- | --- |
-| `BoardRenderer` | Board dimensions/visual holds; DOM hold classes; cached SVG promise | Draw grid/canvas; cycle hold types on short mouse press; remove on long press/context menu; notify board change |
+| `BoardRenderer` | Board dimensions/visual holds; DOM hold classes; cached SVG promise | Draw grid/canvas; cycle hold types on short press; remove on long press or context menu; notify board change |
 | `RouteListManager` | Shared board route/user TODO caches; selected modal route; global filters | Search, sort, angle/tick/TODO filtering, TODO toggle, owner archive, Load |
 | `RouteEditor` | Current selected DOM holds; save-form values | Confirm Clear; validate and add route; create optional mirrored route |
 | `RouteTicker` | Fresh route tick state; Auth user; ascent/vote/comment form | Add/remove tick and related route/user arrays |

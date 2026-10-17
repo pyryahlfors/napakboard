@@ -12,11 +12,22 @@ select {
   user-select: auto;
   -webkit-user-select: text;
   outline: none;
-  font-size: var(--font-size-base);
+  font-size: 1.25em;
   transition: box-shadow 300ms ease-in-out;
   -webkit-appearance: none;
   text-indent: 0;
   padding-left: var(--padding-base-half);
+}
+
+input, select, button {
+	line-height: 24px;
+	padding : 12px;
+}
+
+button {
+	font-family: 'Roboto';
+	line-height: 3em;
+	font-size: var(--font-size-base);
 }
 
 input {
@@ -127,4 +138,93 @@ form[name=tick-form] {
 	font-size: 1.25em;
 }
 form[name=tick-form] h3{
+}
+
+input[type="range"]{
+  -webkit-appearance:none;
+  appearance:none;
+  flex:1;
+  height:4px;
+  border-radius:3px;
+  outline:none;
+  min-width:0;
+  box-shadow: none;
+  padding: 0;
+}
+
+input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:var(--color-black);
+    border:2px solid var(--color-theme-accent-1);
+    cursor:pointer;
+}
+
+input[type="range"]::-moz-range-thumb{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:var(--color-black);
+    border:2px solid var(--color-theme-accent-1);
+    cursor:pointer;}
+
+input[type="range"]::-moz-range-progress{
+  background:var(--color-theme-accent-1);
+  height:4px;
+  border-radius:3px;
+}
+
+input[type="range"]::-webkit-range-progress{
+  background:var(--color-theme-accent-1);
+  height:4px;
+  border-radius:3px;
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  appearance: textfield;
+}
+
+
+.ds-quantity {
+	display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+
+	input {
+		border-radius: 0;
+		min-width: 0;
+        box-sizing: border-box;
+		text-align: right;
+		padding-right: 8px;
+	}
+	button {
+		height: 100%;
+        width: auto;
+        aspect-ratio: 1;
+        box-sizing: border-box;
+        padding: 0;
+        line-height: 1;
+		font-size: 28px;
+
+		&:first-of-type {
+			border-top-left-radius: 4px;
+			border-top-right-radius: 0px;
+			border-bottom-right-radius: 0px;
+			border-bottom-left-radius: 4px;
+		}
+		&:last-of-type {
+			border-top-left-radius: 0px;
+			border-top-right-radius: 4px;
+			border-bottom-right-radius: 4px;
+			border-bottom-left-radius: 0px;
+		}
+	}
 }

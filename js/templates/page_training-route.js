@@ -6,6 +6,8 @@ import statusTicker from '../components/ds-statusticker/index.js?training';
 import { dce } from '../shared/helpers.js';
 import { globals } from '../shared/globals.js';
 import { route } from '../shared/route.js';
+import { createElement, Link2, Link2Off } from 'https://esm.sh/lucide@0.468.0';
+
 
 const isTrainingTag = (tag) => typeof tag === 'string' && tag.toLowerCase() === 'training';
 const isTrainingRoute = (routeData) => routeData.training === true
@@ -342,7 +344,8 @@ class viewTrainingRoute {
           : [];
         if (index > 0 && !previousTypes.includes('top')
           && (!pinned || (holdTypes.includes('top') && !previousTypes.includes('start')))) {
-          const groupButton = dce({el: 'BUTTON', cssClass: 'btn btn_small training-group-button', content: '🔗'});
+          const groupButton = dce({el: 'BUTTON', cssClass: 'btn btn_small training-group-button'});
+		  groupButton.appendChild(createElement(Link2, { width: 20, height: 20, 'aria-hidden': 'true', focusable: 'false'}));
           groupButton.type = 'button';
           groupButton.setAttribute('aria-label', 'Group with previous step');
           groupButton.title = 'Group with previous step';
@@ -356,7 +359,10 @@ class viewTrainingRoute {
         }
 
         if (group.length > 1 && (!pinned || holdTypes.some((type) => type !== 'start' && type !== 'top'))) {
-          const ungroupButton = dce({el: 'BUTTON', cssClass: 'btn btn_small training-ungroup-button', content: '⛓️‍💥'});
+          const ungroupButton = dce({el: 'BUTTON', cssClass: 'btn btn_small training-ungroup-button'});
+
+		  ungroupButton.appendChild(createElement(Link2Off, { width: 20, height: 20, 'aria-hidden': 'true', focusable: 'false' }));
+
           ungroupButton.type = 'button';
           ungroupButton.setAttribute('aria-label', `Ungroup step ${index + 1}`);
           ungroupButton.title = 'Ungroup step';
