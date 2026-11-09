@@ -188,7 +188,7 @@ class systemBoard {
 
         unsubscribeBoardStatus = onSnapshot(doc(this.db, 'boardStatus', `boardStatus_${boardId}`), (snapshot) => {
             if(globals.board !== boardId || !snapshot.exists()) return;
-            if(snapshot.data().screensaverOn && globals.lightsOn) {
+            if(snapshot.data().statusReason === 'screensaver-started' && globals.lightsOn) {
                 globals.lightsOn = false;
             }
         }, (error) => console.error('Failed to listen for board status:', error));
