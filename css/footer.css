@@ -78,14 +78,16 @@ footer {
         }
 
         &.keep-selected svg {
-          color: var(--color-theme-accent-1);
-          stroke: var(--color-theme-accent-1);
+          color: var(--color-black);
+          stroke: var(--color-black);
         }
       }
 
       & .keep-selected {
-        color: var(--color-theme-accent-1);
-        stroke: var(--color-theme-accent-1);
+		background-color: var(--color-theme-accent-1);
+		border-radius: 999px;
+        color: var(--color-black);
+        stroke: var(--color-black);
       }
     }
   }

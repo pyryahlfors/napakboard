@@ -1,19 +1,22 @@
 import { dce, storeObserver } from '../../shared/helpers.js';
 import { globals } from '../../shared/globals.js';
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js";
 import { BoardRenderer } from './board-renderer.js';
 import { RouteListManager } from './route-list.js?route-cache-v1';
 import { RouteEditor } from './route-editor.js';
 import { RouteTicker } from './route-ticker.js';
 import { calculateRouteTickStats } from './route-utils.js';
 
+const lightUpClientId = crypto.randomUUID();
+let unsubscribeCurrentRoute;
+let unsubscribeBoardStatus;
 
 class systemBoard {
     constructor() {
 		this.snapContainer = dce({el: 'div', cssClass: 'snap-container'})
         this.boardContainerWrapper = dce({el: 'div', cssClass:'board-wrapper'});
         this.boardContainer = dce({el: 'div', cssClass:`board-container ${globals.board.toLowerCase()}`});
-		this.routeCommentsHelp = dce({el: 'div', cssClass: 'swipe-help'});
+		this.routeCommentsHelp = dce({el: 'div', cssClass: 'swipe-help striped'});
 		this.routeCommentsHelp.innerHTML = "Swipe right for route info";
 
         this.routeComments = dce({el: 'section', cssClass: 'route-stats-container striped'});
@@ -171,6 +174,25 @@ class systemBoard {
     }
 
     changeBoard() {
+        unsubscribeCurrentRoute?.();
+        unsubscribeBoardStatus?.();
+        globals.lightsOn = false;
+
+        const boardId = globals.board;
+        unsubscribeCurrentRoute = onSnapshot(doc(this.db, 'current', `currentRoute_${boardId}`), (snapshot) => {
+            if(globals.board !== boardId || !snapshot.exists()) return;
+            if(snapshot.data().routeData?.lightUpClientId !== lightUpClientId && globals.lightsOn) {
+                globals.lightsOn = false;
+            }
+        }, (error) => console.error('Failed to listen for board lighting:', error));
+
+        unsubscribeBoardStatus = onSnapshot(doc(this.db, 'boardStatus', `boardStatus_${boardId}`), (snapshot) => {
+            if(globals.board !== boardId || !snapshot.exists()) return;
+            if(snapshot.data().screensaverOn && globals.lightsOn) {
+                globals.lightsOn = false;
+            }
+        }, (error) => console.error('Failed to listen for board status:', error));
+
         this.loadBoardSetup();
     }
 
@@ -277,14 +299,22 @@ class systemBoard {
             });
 
             (async () => {
-                const routeRef = doc(this.db, "current", `currentRoute_${globals.board}`);
+                const boardId = globals.board;
+                const routeRef = doc(this.db, "current", `currentRoute_${boardId}`);
+                const lightUpRequestId = crypto.randomUUID();
+                this.lightUpRequestId = lightUpRequestId;
 
-                await setDoc(routeRef, {
-                    routeData: {holdSetup: holdSetup},
-                    routeName: globals.selectedRoute || 'Unsaved route',
-                    routeId: globals.selectedRouteId || 'No id',
-                    boardId: globals.board
-                });
+                try {
+                    await setDoc(routeRef, {
+                        routeData: {holdSetup: holdSetup, lightUpClientId, lightUpRequestId},
+                        routeName: globals.selectedRoute || 'Unsaved route',
+                        routeId: globals.selectedRouteId || 'No id',
+                        boardId
+                    });
+                } catch (error) {
+                    if(globals.board === boardId && this.lightUpRequestId === lightUpRequestId) globals.lightsOn = false;
+                    console.error('Failed to light up board:', error);
+                }
             })();
         }
     }

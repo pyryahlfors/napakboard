@@ -38,9 +38,17 @@ class viewBoard {
 			selected: globals.lightsOn,
 			link: () => {
 				globals.lightsOn =! globals.lightsOn;
-				footerNavi.toggle('light', globals.lightsOn);
 				}
 			},
+		}
+	});
+
+	storeObserver.add({
+		store: globals,
+		key: 'lightsOn',
+		id: 'pageBoardLightsToggle',
+		callback: () => {
+			footerNavi.toggle('light', globals.lightsOn)
 		}
 	});
 

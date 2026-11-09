@@ -238,12 +238,12 @@ export class BoardRenderer {
         const ctx = setupCanvas.getContext('2d');
         const dpr = window.devicePixelRatio;
 
-        setupCanvas.width = this.holdSize * (boardWidth + 1) * dpr;
-        setupCanvas.height = this.holdSize * (boardHeight + 1) * dpr;
-        setupCanvas.style.width = `${(boardWidth + 1) * this.cellSize}px`;
-        setupCanvas.style.height = `${(boardHeight + 1) * this.cellSize}px`;
-        setupCanvas.style.top = `${this.cellSize / 2}px`;
-        setupCanvas.style.left = `${this.cellSize / 2}px`;
+        setupCanvas.width = this.holdSize * boardWidth * dpr;
+        setupCanvas.height = this.holdSize * boardHeight * dpr;
+        setupCanvas.style.width = `${boardWidth * this.cellSize}px`;
+        setupCanvas.style.height = `${boardHeight * this.cellSize}px`;
+        setupCanvas.style.top = `${this.cellSize}px`;
+        setupCanvas.style.left = `${this.cellSize}px`;
 
         boardContainer.appendChild(setupCanvas);
 
@@ -324,7 +324,7 @@ export class BoardRenderer {
 
             const x = Number(this.boardCols.indexOf(holdId.toString()[0]));
             const y = Number(holdId.replace(/\D/g, '') - 1);
-            ctx.drawImage(holdCanvas, x * this.holdSize * dpr, y * this.holdSize * dpr);
+            ctx.drawImage(holdCanvas, (x - 0.5) * this.holdSize * dpr, (y - 0.5) * this.holdSize * dpr);
         }
     }
 
