@@ -40,8 +40,8 @@ class bottomNavi {
         }
 
         this.toggle = ( item, onoff ) => {
-            if(onoff) {document.querySelector(`#footer-${item}`).classList.add('keep-selected')}
-            else {document.querySelector(`#footer-${item}`).classList.remove('keep-selected')}
+            params.options[item].selected = !!onoff;
+            this.naviContainer.querySelector(`#footer-${item}`)?.classList.toggle('keep-selected', !!onoff);
         }
 
         this.setDisabled = ( item, disabled ) => {
