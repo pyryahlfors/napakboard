@@ -220,6 +220,5 @@ form[name="boardselect"] ul {
   & .board-status {
     width: 100%;
     padding: var(--padding-base);
-    text-align: right;
   }
 }

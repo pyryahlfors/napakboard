@@ -162,11 +162,26 @@ class otc {
 			<div class="mb"><h3>Board</h3>${status.boardId || boardId}</div>
 			<div class="mb"><h3>Status</h3><span style="color: ${statusColor}">${onlineLabel}</span></div>
 		</div>
-		<div class="mb"><h3>Route</h3> ${status.routeName || '-'}</div>
+		<div class="mb board-status-route"><h3>Route</h3> ${status.routeName || '-'}</div>
 		${isAdmin ? `<div class="mb"><h3>Route ID</h3>${status.routeId || '-'}</div>` : ''}
 		${isAdmin ? `<div class="mb"><h3>Screensaver</h3> ${status.screensaverOn ? 'On' : 'Off'} ${status.screensaverMode ? `(${status.screensaverMode})` : ''}</div>` : ''}
 		<div class="mb"><h3>Last seen</h3> ${lastSeen}</div>
 		`;
+
+		const routeId = status.routeId;
+		if(routeId && routeId !== 'No id' && !status.trainingMode) {
+			const loadRouteButton = dce({el: 'A', cssClass: 'btn btn_small mb', content: 'Load route'});
+			loadRouteButton.addEventListener('click', () => {
+				document.body.classList.remove('otc');
+				if(globals.route === 'board' && window.mySystemBoard) {
+					window.mySystemBoard.loadRoute(routeId);
+				} else {
+					globals.selectedRouteId = routeId;
+					route('board');
+				}
+			}, false);
+			nakki.querySelector('.board-status-route').after(loadRouteButton);
+		}
 	};
 
 	const refreshStatusForAdminState = () => {
